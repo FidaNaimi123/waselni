@@ -1,0 +1,120 @@
+<!-- templates/notifications/notification_add.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if notification %}Edit Notification{% else %}Add Notification{% endif %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff; /* Bootstrap Primary Color */
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1; /* Highlight on hover */
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff; /* Bootstrap Primary Color */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker shade of blue on hover */
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: 1px solid #007bff;
+            color: #007bff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination span {
+            padding: 8px 12px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{% if notification %}Edit Notification{% else %}Add Notification{% endif %}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="type_notification">Type:</label>
+        <select name="type_notification" id="type_notification" required>
+            <option value="info" {% if notification and notification.type_notification == 'info' %}selected{% endif %}>Information</option>
+            <option value="warn" {% if notification and notification.type_notification == 'warn' %}selected{% endif %}>Warning</option>
+            <option value="alert" {% if notification and notification.type_notification == 'alert' %}selected{% endif %}>Alert</option>
+        </select>
+        <br>
+
+        <label for="message">Message:</label>
+        <textarea name="message" id="message" required>{% if notification %}{{ notification.message }}{% endif %}</textarea>
+        <br>
+
+        <label for="status_notification">Status:</label>
+        <select name="status_notification" id="status_notification" required>
+            <option value="sent" {% if notification and notification.status_notification == 'sent' %}selected{% endif %}>Sent</option>
+            <option value="pending" {% if notification and notification.status_notification == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="failed" {% if notification and notification.status_notification == 'failed' %}selected{% endif %}>Failed</option>
+        </select>
+        <br>
+
+        <button type="submit">{% if notification %}Update{% else %}Create{% endif %}</button>
+    </form>
+
+    <a href="{% url 'notification_list' %}">Back to Notification List</a>
+</body>
+</html>
