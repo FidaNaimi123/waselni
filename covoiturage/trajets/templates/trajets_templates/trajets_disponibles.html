@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Trajets Disponibles</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-image: url("{% static 'cov.png' %}"); /* Image de fond */
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            color: #333; /* Couleur du texte */
+        }
+
+        h1 {
+            text-align: center; /* Centrer le titre */
+            color: #1e88e5; /* Couleur bleue */
+            font-size: 24px;
+            margin-top: 0; /* Enlever la marge du haut pour qu'il soit en haut de la page */
+            padding-top: 20px; /* Ajouter un peu d'espace au-dessus du titre */
+        }
+
+        .trajets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .trajet-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .trajet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .trajet-card img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .trajet-info {
+            padding: 15px;
+            display: flex; /* Affichage en ligne */
+            flex-wrap: wrap; /* Les éléments passent à la ligne si nécessaire */
+            justify-content: space-between;
+        }
+
+        .trajet-info h3 {
+            color: #1e88e5;
+            font-size: 18px;
+            margin-bottom: 10px;
+            flex-basis: 100%; /* Pour que le titre occupe toute la ligne */
+        }
+
+        .trajet-info p {
+            font-size: 14px;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            flex-basis: 48%; /* Prend 48% de l'espace pour aligner deux éléments côte à côte */
+            margin-bottom: 10px;
+        }
+
+        .trajet-info p i {
+            margin-right: 10px;
+            color: #1e88e5;
+        }
+
+        .button {
+            background-color: #1e88e5;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin-left: auto; /* Centrer le bouton */
+            margin-right: auto; /* Centrer le bouton */
+            display: block;
+        }
+
+        .button:hover {
+            background-color: #1976d2;
+        }
+
+        /* Style pour le formulaire de recherche */
+        form {
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"], input[type="date"], button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #1e88e5;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1976d2;
+        }
+
+        /* Style pour la flèche de pagination */
+        .pagination-arrow {
+            position: fixed; /* Positionné de façon fixe */
+            bottom: 20px; /* À 20px du bas */
+            right: 20px; /* À 20px du bord droit */
+            background-color: #1e88e5;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 24px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination-arrow:hover {
+            background-color: #1976d2;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Liste des Trajets Disponibles</h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="GET">
+        <label for="point_depart">Ville de Départ :</label>
+        <input type="text" id="point_depart" name="point_depart" placeholder="Ville de départ" value="{{ point_depart }}">
+
+        <label for="point_arrivee">Ville d'Arrivée :</label>
+        <input type="text" id="point_arrivee" name="point_arrivee" placeholder="Ville d'arrivée" value="{{ point_arrivee }}">
+
+        <label for="date_depart">Date de Départ :</label>
+        <input type="date" id="date_depart" name="date_depart" value="{{ date_depart }}">
+
+        <button type="submit">Rechercher</button>
+        
+    </form>
+
+    <!-- Conteneur des trajets -->
+    <div class="trajets-container">
+        {% for trajet in trajets %}
+            <div class="trajet-card">
+                <img src="{% static 'rec.jpg' %}" alt="Image de trajet">
+                <div class="trajet-info">
+                    <h3>{{ trajet.point_depart }} → {{ trajet.point_arrivee }}</h3>
+                    <p><i class="fas fa-calendar-alt"></i> {{ trajet.date_depart }}</p>
+                    <p><i class="fas fa-clock"></i> {{ trajet.heure_depart }}</p>
+                    <p><i class="fas fa-credit-card"></i> {{ trajet.prix_par_place }} DT</p>
+                    <p><i class="fas fa-users"></i> {{ trajet.places_disponibles }}</p>
+                    <a href="{% url 'afficher_carte' trajet.id %}" class="button">Plus de détails</a>
+                </div>
+            </div>
+        {% empty %}
+            <p>Aucun trajet disponible.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Flèche de pagination -->
+    <a href="{% url 'creer_trajet' %}" class="pagination-arrow">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+
+</body>
+</html>
