@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier le Compte Utilisateur</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info" onclick="this.remove();">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+
+<!-- Afficher la valeur de user.role pour le débogage -->
+
+
+    <div class="registration-container">
+        <div class="form-wrapper">
+            <div class="form-header">
+                <h2>Modifier Votre Compte</h2>
+                <p>Mettez à jour vos informations pour continuer à profiter de notre service de covoiturage !</p>
+                <!--<p>Role de l'utilisateur: {{ user.role }}</p>-->
+            </div>
+            <form action="{% url 'modifier_compte' compte.phone compte.email %}" method="POST" class="registration-form">
+                {% csrf_token %}
+            
+                <!-- Autres champs -->
+                <div class="input-group">
+                    <label for="fullname">Nom Complet</label>
+                    <input type="text" id="fullname" name="fullname" value="{{ compte.fullname }}" required>
+                </div>
+            
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ compte.email }}" required>
+                </div>
+            
+                <div class="input-group">
+                    <label for="phone">Numéro de Téléphone</label>
+                    <input type="tel" id="phone" name="phone" value="{{ compte.phone }}" required>
+                </div>
+            
+                <!-- Champ rôle -->
+                <div class="input-group" style="display: flex; align-items: center;">
+                    <label for="role" style="margin-right: 20px;">Rôle</label>
+                    <div style="display: flex; align-items: center; margin-right: 20px;">
+                        <!-- Rôle Administrateur -->
+                        <input type="radio" id="admin" name="role" value="Administrateur" {% if user.role == 'Administrateur' %}checked{% endif %}>
+                        <label for="admin" style="margin-left: 5px;">Administrateur</label>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <!-- Rôle Utilisateur -->
+                        <input type="radio" id="user" name="role" value="Utilisateur" {% if user.role == 'Utilisateur' %}checked{% endif %}>
+                        <label for="user" style="margin-left: 5px;">Utilisateur</label>
+                    </div>
+                </div>
+            
+                <!-- Bouton de soumission -->
+                <div class="input-group">
+                    <button type="submit" class="btn">Modifier</button>
+                </div>
+            </form>
+            
+            
+        </div>
+        <div class="form-image">
+            <img src="/static/image/pppp.jpg" alt="Description de l'image" />
+        </div>
+    </div>
+</body>
+</html>

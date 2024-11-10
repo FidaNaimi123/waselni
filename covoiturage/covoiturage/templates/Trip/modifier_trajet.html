@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier un Trajet</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url("{% static 'cov.png' %}");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e88e5; /* Couleur bleue pour le titre */
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #1e88e5; /* Bordure bleue au focus */
+            box-shadow: 0px 0px 8px rgba(30, 136, 229, 0.5); /* Ombre bleue au focus */
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #1e88e5; /* Couleur bleue pour le bouton */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #1565c0; /* Une couleur bleue plus foncée au survol */
+            transform: translateY(-2px);
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s;
+        }
+
+        .back-link {
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            color: #1e88e5; /* Couleur bleue pour le lien retour */
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #1565c0; /* Une couleur bleue plus foncée au survol */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modifier le Trajet</h1>
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Point de départ -->
+            <label for="id_point_depart">Point de départ :</label>
+            {{ form.point_depart }}
+            {% if form.point_depart.errors %}
+                <div class="error">{{ form.point_depart.errors }}</div>
+            {% endif %}
+
+            <!-- Point d'arrivée -->
+            <label for="id_point_arrivee">Point d'arrivée :</label>
+            {{ form.point_arrivee }}
+            {% if form.point_arrivee.errors %}
+                <div class="error">{{ form.point_arrivee.errors }}</div>
+            {% endif %}
+
+            <!-- Date de départ -->
+            <label for="id_date_depart">Date de départ :</label>
+            <input type="date" name="date_depart" id="id_date_depart" value="{{ trajet.date_depart|date:'Y-m-d' }}" required>
+            {% if form.date_depart.errors %}
+                <div class="error">{{ form.date_depart.errors }}</div>
+            {% endif %}
+
+            <!-- Heure de départ -->
+            <label for="id_heure_depart">Heure de départ :</label>
+            {{ form.heure_depart }}
+            {% if form.heure_depart.errors %}
+                <div class="error">{{ form.heure_depart.errors }}</div>
+            {% endif %}
+
+            <!-- Prix par place -->
+            <label for="id_prix_par_place">Prix par place :</label>
+            {{ form.prix_par_place }}
+            {% if form.prix_par_place.errors %}
+                <div class="error">{{ form.prix_par_place.errors }}</div>
+            {% endif %}
+
+            <!-- Places disponibles -->
+            <label for="id_places_disponibles">Places disponibles :</label>
+            {{ form.places_disponibles }}
+            {% if form.places_disponibles.errors %}
+                <div class="error">{{ form.places_disponibles.errors }}</div>
+            {% endif %}
+
+            <!-- Statut -->
+            <label for="id_statut">Statut :</label>
+            {{ form.statut }}
+            {% if form.statut.errors %}
+                <div class="error">{{ form.statut.errors }}</div>
+            {% endif %}
+
+            <!-- Nom et prénom du conducteur -->
+            <label for="id_conducteur_nom_complet">Nom et prénom du conducteur :</label>
+            {{ form.conducteur_nom_complet }}
+            {% if form.conducteur_nom_complet.errors %}
+                <div class="error">{{ form.conducteur_nom_complet.errors }}</div>
+            {% endif %}
+
+            <!-- Contact du conducteur -->
+            <label for="id_conducteur_contact">Contact du conducteur :</label>
+            {{ form.conducteur_contact }}
+            {% if form.conducteur_contact.errors %}
+                <div class="error">{{ form.conducteur_contact.errors }}</div>
+            {% endif %}
+
+            <!-- Matricule -->
+            <label for="id_matricule">Matricule :</label>
+            {{ form.matricule }}
+            {% if form.matricule.errors %}
+                <div class="error">{{ form.matricule.errors }}</div>
+            {% endif %}
+
+            <button type="submit">Modifier</button>
+        </form>
+        <a href="{% url 'liste_trajets' %}" class="back-link">Retour à la liste des trajets</a>
+    </div>
+    <script>
+        // Validation JavaScript pour interdire la sélection d'une date antérieure à aujourd'hui
+        document.getElementById('id_date_depart').setAttribute('min', new Date().toISOString().split('T')[0]);
+    </script>
+</body>
+</html>

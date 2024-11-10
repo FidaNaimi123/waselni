@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Trajets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .container {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des trajets</h1>
+        
+        <!-- Affichage de la liste des trajets -->
+        <form method="POST" action="{% url 'select_trip' %}">  <!-- Utilisez 'select_trip' -->
+
+            {% csrf_token %}
+            {% if trips %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Destination</th>
+                        <th>Date de départ</th>
+                        <th>Sélectionner</th>  <!-- Nouvelle colonne pour la sélection -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trip in trips %}
+                    <tr>
+                        <td>{{ trip.id }}</td>
+                        <td>{{ trip.destination }}</td>
+                        <td>{{ trip.departure_date|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <input type="radio" name="selected_trip" value="{{ trip.id }}" required>  <!-- Bouton radio pour sélectionner le trajet -->
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Sélectionner ce trajet</button>  <!-- Bouton pour soumettre le formulaire -->
+            {% else %}
+            <p>Aucun trajet trouvé.</p>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>

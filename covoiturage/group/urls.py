@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-    path('login/', views.custom_login_view, name='login'),
+    path('login/', views.custom_login_view, name='login1'),
     path('carpool', views.carpool_list, name='carpool_list'),
     path('carpool/add/', views.carpool_add, name='carpool_add'),
     path('carpool/<int:pk>/edit/', views.carpool_edit, name='carpool_edit'),

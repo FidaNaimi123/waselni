@@ -16,8 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('group/',include('group.urls'))
+    path('evaluation/', include('evaluation.urls')),
+    path('commentaire/', include('commentaire.urls')),
+    path('reclammation/', include('reclammation.urls')),
+    path('reservation/', include('Reservations.urls')),  # Routes pour Reservation
+    path('trips/', include('Trip.urls')),  # Routes pour Trip
+    path('users/', include('users.urls')),  # Routes pour Users
+    path('login/', include('users.urls')),  # Remarquez l'URL 'login/'
+    path('group/',include('group.urls')),
+    path('notifications/', include('Notification.urls')),
+    path('home', TemplateView.as_view(template_name='home/home.html'), name='home1'), 
+    path('', TemplateView.as_view(template_name='login/index.html'), name='login'),
 ]

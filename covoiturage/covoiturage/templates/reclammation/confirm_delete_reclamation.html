@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Êtes-vous sûr de vouloir supprimer cette réclamation ?</h3>
+    <p><strong>Description:</strong> {{ reclamation.description }}</p>
+    <p><strong>Date de réclamation:</strong> {{ reclamation.date_reclamation }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a href="{% url 'trajet_detail' trajet_id=reclamation.trajet.id %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{% if commentaire %}Modifier{% else %}Ajouter{% endif %} un commentaire</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_texte">Commentaire</label>
+            {{ form.texte|add_class:"form-control" }}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">{% if commentaire %}Modifier{% else %}Ajouter{% endif %}</button>
+    </form>
+</div>
+{% endblock %}

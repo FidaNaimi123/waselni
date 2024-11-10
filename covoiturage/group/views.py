@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import AuthenticationForm
+from Notification.models import Notification  # Import the Notification model
 
 @login_required
 def invitation_list(request):
@@ -15,7 +16,7 @@ def invitation_list(request):
     return render(request, 'group/invitation_list.html', {'invitations': invitations})
 
 class CustomLogoutView(LogoutView):
-    next_page = 'login'
+    next_page = 'login1'
 @login_required
 def invite_member(request, carpool_id):
     carpool = get_object_or_404(Carpool, id=carpool_id)
@@ -56,10 +57,22 @@ def apply_to_join(request, carpool_id):
 
     if created:
         messages.success(request, "Your application to join the carpool has been submitted.")
+        
+        # Create a notification for the carpool creator
+        Notification.objects.create(
+            type_notification='Application',
+            message=f"{request.user.username} has applied to join {carpool.name}.",
+            status_notification='sent',
+            user=request.user,  # The user applying (sender)
+            recipient=carpool.creator,  # The carpool creator (recipient)
+            read=False
+        )
+        
     else:
         messages.warning(request, "You have already applied to join this carpool.")
 
     return redirect('carpool_detail', carpool_id=carpool_id)
+
 @login_required
 def respond_to_invitation(request, invitation_id, response):
     invitation = get_object_or_404(MembershipInvitation, id=invitation_id)
@@ -75,25 +88,66 @@ def respond_to_invitation(request, invitation_id, response):
             invitation.status = 'accepted'
             invitation.carpool.members.add(invitation.user)
             messages.success(request, "You have accepted the invitation to join the carpool.")
+
+            # Create a notification for accepting the invitation
+            Notification.objects.create(
+                type_notification='Accept',
+                message=f"{request.user.username} has accepted the invitation to join {invitation.carpool.name}.",
+                status_notification='sent',
+                user=request.user,  # The user accepting the invitation (sender)
+                recipient=invitation.carpool.creator,  # The carpool creator (recipient)
+                read=False
+            )
+
         elif request.user == invitation.carpool.creator:
             # Group creator accepts a user's invitation to join
             invitation.status = 'accepted'
             invitation.carpool.members.add(invitation.user)
             messages.success(request, f"You have accepted {invitation.user.username}'s request to join the carpool.")
 
+            # Create a notification for the user whose invitation is accepted
+            Notification.objects.create(
+                type_notification='Accept',
+                message=f"Your request to join {invitation.carpool.name} has been accepted by {request.user.username}.",
+                status_notification='sent',
+                user=request.user,  # The group creator (sender)
+                recipient=invitation.user,  # The invited user (recipient)
+                read=False
+            )
+
     elif response == 'decline':
         if request.user == invitation.user:
             # User declines their own invitation
             invitation.status = 'declined'
             messages.success(request, "You have declined the invitation to join the carpool.")
+
+            # Create a notification for declining the invitation
+            Notification.objects.create(
+                type_notification='Decline',
+                message=f"{request.user.username} has declined the invitation to join {invitation.carpool.name}.",
+                status_notification='sent',
+                user=request.user,  # The user declining the invitation (sender)
+                recipient=invitation.carpool.creator,  # The carpool creator (recipient)
+                read=False
+            )
+
         elif request.user == invitation.carpool.creator:
             # Group creator declines a user's invitation to join
             invitation.status = 'declined'
             messages.success(request, f"You have declined {invitation.user.username}'s request to join the carpool.")
 
+            # Create a notification for the user whose invitation is declined
+            Notification.objects.create(
+                type_notification='Decline',
+                message=f"Your request to join {invitation.carpool.name} has been declined by {request.user.username}.",
+                status_notification='sent',
+                user=request.user,  # The group creator (sender)
+                recipient=invitation.user,  # The invited user (recipient)
+                read=False
+            )
+
     invitation.save()
     return redirect('carpool_detail', carpool_id=invitation.carpool.id)
-
 
 def custom_login_view(request):
     if request.method == 'POST':
@@ -107,7 +161,7 @@ def custom_login_view(request):
                 return redirect('carpool_list')
     else:
         form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'group/login.html', {'form': form})
 
 @login_required
 @login_required

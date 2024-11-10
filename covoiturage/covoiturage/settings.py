@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n=m4_0t*!kljeu%mon&z8yzmjqqz@%3+zwv5rqd9hz^tz^r6*7'
+SECRET_KEY = 'django-insecure-$&e-$+1y_5mkq&$l7&j#r$i(q*7%tsna-3r83n0+3k#2dn^g&='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,7 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'group'
+    'commentaire',
+    'evaluation',
+    'reclammation',
+    'Reservations',
+    'Trip',
+    'users',
+    'registration',
+    'group',
+    'Notification',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +63,7 @@ ROOT_URLCONF = 'covoiturage.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR /'covoiturage/Template'],
+        'DIRS': [os.path.join(BASE_DIR, 'covoiturage/templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +126,18 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'covoiturage' / 'static',
+    
+]
+LOGOUT_REDIRECT_URL = 'login1'
+LOGIN_URL = 'login1'
+#AUTH_USER_MODEL = 'users.Users'
+

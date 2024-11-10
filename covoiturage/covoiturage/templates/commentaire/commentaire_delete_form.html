@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Êtes-vous sûr de vouloir supprimer ce commentaire ?</h3>
+    <p><strong>{{ commentaire.texte }}</strong></p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a href="{% url 'evaluation_detail' evaluation_id=commentaire.evaluation.id %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}
