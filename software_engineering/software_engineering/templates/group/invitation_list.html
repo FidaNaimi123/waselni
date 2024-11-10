@@ -1,0 +1,12 @@
+<h1>Your Invitations</h1>
+<ul>
+    {% for invitation in invitations %}
+        <li>
+            You have been invited to join the carpool "{{ invitation.carpool.name }}".
+            <a href="{% url 'respond_to_invitation' invitation.id 'accept' %}">Accept</a>
+            <a href="{% url 'respond_to_invitation' invitation.id 'decline' %}">Decline</a>
+        </li>
+    {% empty %}
+        <li>No invitations found.</li>
+    {% endfor %}
+</ul>

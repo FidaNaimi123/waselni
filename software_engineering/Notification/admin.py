@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Notification
 
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('user_name', 'type_notification', 'message', 'status_notification', 'date_sent')
+    list_display = ('user_name', 'type_notification', 'message', 'status_notification', 'date_sent' )
     list_filter = ('status_notification', 'type_notification')
     search_fields = ('user__username', 'message')
 

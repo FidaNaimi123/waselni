@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Notification'
+    'Notification',
+    'group'
     
 ]
 
@@ -126,3 +127,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+LOGIN_REDIRECT_URL = 'notification_list'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'

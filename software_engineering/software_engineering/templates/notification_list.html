@@ -1,15 +1,15 @@
-<!-- templates/notifications/notification_list.html -->
 {% load static %}  <!-- Load static files -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <meta charset="UTF-8">
     <title>Your Notifications</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url("{% static 'background.jpg' %}");
             background-size: cover; /* Cover the entire background */
             background-position: center; /* Center the image */
             padding: 20px;
@@ -89,9 +89,38 @@
             padding: 8px 12px;
             margin: 0 5px;
         }
+        .logout-btn {
+    position: absolute;
+    top: 20px;  /* Adjust top positioning */
+    right: 20px; /* Adjust right positioning */
+    padding: 10px 15px;
+    background-color: #ff0000; /* Bootstrap Primary Color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+
+
     </style>
 </head>
 <body>
+    <a href="{% url 'logout' %}"><button class="logout-btn">Logout</button></a>
+
+    
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Hey!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+    {% endif %}
+
     <h1>Your Notifications</h1>
     <a href="{% url 'notification_add' %}"><button>Add Notification</button></a>
 
@@ -113,23 +142,30 @@
     </form>
 
     {% if notifications %}
+    <h2>Notifications Sent by You</h2>
+
     <table>
         <thead>
             <tr>
                 <th>Type</th>
                 <th>Message</th>
                 <th>Status</th>
+                <th>Recipient</th>  <!-- New column -->
                 <th>Sent On</th>
+                <th>Read</th>
                 <th>Actions</th>  <!-- New column for actions -->
             </tr>
         </thead>
         <tbody>
-            {% for notification in notifications %}
+            {% for notification in sender_notifications  %}
                 <tr>
                     <td>{{ notification.type_notification }}</td>
-                    <td>{{ notification.message }}</td>
+                    <td>{{ notification.message|truncatechars:50 }}</td>
                     <td>{{ notification.status_notification }}</td>
+                    <td>{{ notification.recipient.username }}</td>  <!-- Display recipient's username -->
                     <td>{{ notification.date_sent }}</td>
+                    <td>{{ notification.read }}</td>  <!-- Display recipient's username -->
+
                     <td>
                         <a href="{% url 'notification_edit' notification.id_notification %}">Edit</a>
                         <a href="{% url 'notification_delete' notification.id_notification %}">Delete</a>
@@ -138,23 +174,53 @@
             {% endfor %}
         </tbody>
     </table>
+    <h2>Notifications Received by You</h2>
 
-        <div class="pagination">
-            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-            <div>
-                {% if page_obj.has_previous %}
-                    <a href="?page=1&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">First</a>
-                    <a href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">Previous</a>
-                {% endif %}
-                <span> | </span>
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">Next</a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">Last</a>
-                {% endif %}
-            </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Recipient</th>  <!-- New column -->
+                <th>Sent On</th>
+                <th>Read</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for notification in recipient_notifications   %}
+                <tr>
+                    <td>{{ notification.type_notification }}</td>
+                    <td>{{ notification.message|truncatechars:50 }}</td>
+                    <td>{{ notification.status_notification }}</td>
+                    <td>{{ notification.recipient.username }}</td>  <!-- Display recipient's username -->
+                    <td>{{ notification.date_sent }}</td>
+                    <td>{{ notification.read }}</td>  <!-- Display recipient's username -->
+
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <div>
+            {% if page_obj.has_previous %}
+                <a href="?page=1&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">Previous</a>
+            {% endif %}
+            <span> | </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}">Last</a>
+            {% endif %}
         </div>
+    </div>
     {% else %}
         <p>You have no notifications.</p>
     {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

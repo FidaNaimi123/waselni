@@ -1,10 +1,10 @@
-<!-- templates/notifications/notification_add.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{% if notification %}Edit Notification{% else %}Add Notification{% endif %}</title>
     <style>
+        /* Your existing CSS */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -42,7 +42,7 @@
             margin-bottom: 20px;
         }
 
-        input[type="text"], select {
+        input[type="text"], select, textarea {
             padding: 10px;
             margin-right: 10px;
             border: 1px solid #ccc;
@@ -89,31 +89,41 @@
 </head>
 <body>
     <h1>{% if notification %}Edit Notification{% else %}Add Notification{% endif %}</h1>
-
-    <form method="POST">
+    <form method="post">
         {% csrf_token %}
-        <label for="type_notification">Type:</label>
-        <select name="type_notification" id="type_notification" required>
-            <option value="info" {% if notification and notification.type_notification == 'info' %}selected{% endif %}>Information</option>
-            <option value="warn" {% if notification and notification.type_notification == 'warn' %}selected{% endif %}>Warning</option>
-            <option value="alert" {% if notification and notification.type_notification == 'alert' %}selected{% endif %}>Alert</option>
-        </select>
-        <br>
+        <label for="type_notification">Notification Type:</label>
+        <select name="type_notification">
+            <option value="info">Information</option>
+            <option value="warn">Warning</option>
+            <option value="alert">Alert</option>
+            <option value="Invitation">Invitation</option>
+            <option value="Accept">Accept Application</option>
+            <option value="Decline">Decline Application</option>
 
+            <option value="Application"> Application</option>
+
+        </select>
+    
         <label for="message">Message:</label>
-        <textarea name="message" id="message" required>{% if notification %}{{ notification.message }}{% endif %}</textarea>
-        <br>
-
+        <textarea name="message" required></textarea>
+    
         <label for="status_notification">Status:</label>
-        <select name="status_notification" id="status_notification" required>
-            <option value="sent" {% if notification and notification.status_notification == 'sent' %}selected{% endif %}>Sent</option>
-            <option value="pending" {% if notification and notification.status_notification == 'pending' %}selected{% endif %}>Pending</option>
-            <option value="failed" {% if notification and notification.status_notification == 'failed' %}selected{% endif %}>Failed</option>
+        <select name="status_notification">
+            <option value="sent">Sent</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
         </select>
-        <br>
 
-        <button type="submit">{% if notification %}Update{% else %}Create{% endif %}</button>
+        <label for="recipient">Recipient:</label>
+        <select name="recipient" required>
+            {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+    
+        <button type="submit">Add Notification</button>
     </form>
+    
 
     <a href="{% url 'notification_list' %}">Back to Notification List</a>
 </body>
