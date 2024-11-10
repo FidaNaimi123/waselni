@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import  Trajet
+class TripAdmin(admin.ModelAdmin):
+    pass
 
-# Register your models here.
+admin.site.register(Trajet, TripAdmin)

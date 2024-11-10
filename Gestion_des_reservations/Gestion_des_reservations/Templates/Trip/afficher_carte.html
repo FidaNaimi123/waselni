@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte du Trajet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #007BFF;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        form {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            transition: border 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .results {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            margin-top: 30px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carte du Trajet</h1>
+
+    <form id="routeForm">
+        <label for="startPoint">Point de départ :</label>
+        <input type="text" id="startPoint" name="startPoint" placeholder="Ex: ESPRIT, ARIANA" required>
+        <label for="endPoint">Point d'arrivée :</label>
+        <input type="text" id="endPoint" name="endPoint" placeholder="Ex: L'aéroport Tunis-Carthage, Tunis" required>
+        <button type="submit">Calculer l'itinéraire</button>
+    </form>
+
+    <div class="results">
+        <p><strong>Distance :</strong> <span id="distance">Calcul en cours...</span></p>
+        <p><strong>Durée :</strong> <span id="duration">Calcul en cours...</span></p>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        const apiKey = "5b3ce3597851110001cf6248f0f4b18811a4438bae4ec09abfc13954"; 
+
+        function getRoute(startPoint, endPoint) {
+            fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(startPoint)}&format=json`)
+                .then(response => response.json())
+                .then(startData => {
+                    if (startData.length === 0) {
+                        alert("Le point de départ n'a pas pu être trouvé.");
+                        return;
+                    }
+                    const startLat = startData[0].lat;
+                    const startLon = startData[0].lon;
+
+                    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endPoint)}&format=json`)
+                        .then(response => response.json())
+                        .then(endData => {
+                            if (endData.length === 0) {
+                                alert("Le point d'arrivée n'a pas pu être trouvé.");
+                                return;
+                            }
+                            const endLat = endData[0].lat;
+                            const endLon = endData[0].lon;
+
+                            fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=${apiKey}&start=${startLon},${startLat}&end=${endLon},${endLat}`)
+                                .then(response => response.json())
+                                .then(routeData => {
+                                    if (!routeData.features || routeData.features.length === 0) {
+                                        alert("Aucun itinéraire trouvé.");
+                                        return;
+                                    }
+                                    const duration = routeData.features[0].properties.segments[0].duration / 60;
+                                    const distance = routeData.features[0].properties.segments[0].distance / 1000;
+
+                                    document.getElementById("duration").textContent = duration.toFixed(2) + " min";
+                                    document.getElementById("distance").textContent = distance.toFixed(2) + " km";
+
+                                    const map = L.map('map').setView([startLat, startLon], 12);
+                                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                        attribution: '© OpenStreetMap'
+                                    }).addTo(map);
+
+                                    L.marker([startLat, startLon]).addTo(map).bindPopup(startPoint).openPopup();
+                                    L.marker([endLat, endLon]).addTo(map).bindPopup(endPoint).openPopup();
+
+                                    const polyline = L.polyline([[startLat, startLon], [endLat, endLon]], {color: 'blue'}).addTo(map);
+                                    map.fitBounds(polyline.getBounds());
+                                })
+                                .catch(error => {
+                                    console.error("Erreur lors de la récupération de l'itinéraire:", error);
+                                    alert("Erreur lors de la récupération des données d'itinéraire.");
+                                });
+                        })
+                        .catch(error => {
+                            console.error("Erreur lors de la recherche du point d'arrivée:", error);
+                            alert("Erreur lors de la recherche du point d'arrivée.");
+                        });
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la recherche du point de départ:", error);
+                    alert("Erreur lors de la recherche du point de départ.");
+                });
+        }
+
+        document.getElementById("routeForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const startPoint = document.getElementById("startPoint").value;
+            const endPoint = document.getElementById("endPoint").value;
+            getRoute(startPoint, endPoint);
+        });
+    </script>
+</body>
+</html>

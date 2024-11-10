@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Reservation  # Ajoutez l'importation pour le modèle Reservation
 
-from Trip.models import Trip  # Assurez-vous que ce modèle est défini
+from .models import Trajet  # Assurez-vous que ce modèle est défini
 from .ReservationForm import ReservationForm
 from users.models import Users
-
+from django.utils import timezone
+"""
 def list_trips(request):
     trips = Trip.objects.all()  # Récupérer tous les trajets
     for trip in trips:
@@ -14,9 +15,8 @@ def list_trips(request):
     return render(request, 'Reservations/list_trips.html', {'trips': trips})
 
 
+"""
 
-def home(request):
-    return render(request, 'home.html')  # Assurez-vous que le template 'home.html' existe
 
 def select_trip(request):
     if request.method == 'POST':
@@ -24,20 +24,37 @@ def select_trip(request):
         return redirect('create_reservation', trip_id=selected_trip_id)  # Redirigez vers la vue de création de réservation
     return redirect('home')  # Redirigez vers la page d'accueil si la méthode n'est pas POST
 
+
+def home(request):
+    return render(request, 'home.html')  # Assurez-vous que le template 'home.html' existe
+
+
+
+
 def create_reservation(request, trip_id):
-    trip = get_object_or_404(Trip, id=trip_id)  # Récupérez le trajet correspondant
+    trip = get_object_or_404(Trajet, id=trip_id)  # Récupère le trajet sélectionné
+
+    # Vérifiez si l'utilisateur est connecté
+    if 'user_id' not in request.session:
+        return redirect('connect')  # Redirige vers la page de connexion si non connecté
+
+    # Récupérez l'utilisateur connecté
+    user_id = request.session['user_id']
+    user = get_object_or_404(Users, id=user_id)
+
     if request.method == 'POST':
         form = ReservationForm(request.POST)
         if form.is_valid():
-            reservation = form.save(commit=False)  # Ne pas encore sauvegarder
-            reservation.trip_id = trip  # Associez le trajet à la réservation
-            reservation.save()  # Sauvegardez la réservation
-            return redirect('home')  # Redirigez vers la page d'accueil ou une autre page
+            reservation = form.save(commit=False)
+            reservation.trip_id = trip  # Associe le trajet sélectionné
+            reservation.user_id = user  # Associe l'utilisateur connecté
+            reservation.save()
+            return redirect('home')  # Redirige vers la page d'accueil
+
     else:
-        form = ReservationForm(initial={'trip_id': trip})  # Pré-remplissez le formulaire avec le trajet
+        form = ReservationForm()  # Formulaire vide en cas de méthode GET
 
     return render(request, 'Reservations/create_reservation.html', {'form': form, 'trip': trip})
-
 
 def check_user(request):
     user_exists = None
@@ -74,3 +91,25 @@ def delete_reservation(request, reservation_id):
         return redirect('home')  # Redirigez vers une autre page après la suppression
 
     return render(request, 'Reservations/delete_reservation.html', {'reservation': reservation})
+
+def user_reservations(request):
+    # Vérifiez si l'utilisateur est connecté
+    if 'user_id' not in request.session:
+        return redirect('connect')  # Redirige vers la page de connexion si non connecté
+
+    # Récupérez l'utilisateur connecté
+    user_id = request.session['user_id']
+    user = get_object_or_404(Users, id=user_id)
+
+    # Récupérez les réservations associées à cet utilisateur
+    reservations = Reservation.objects.filter(user_id=user)
+
+    # Récupérez la date d'aujourd'hui
+    today = timezone.now().date()
+
+    # Passez la date d'aujourd'hui dans le contexte
+    return render(request, 'Reservations/user_reservations.html', {
+        'user': user,
+        'reservations': reservations,
+        'today': today  # La date d'aujourd'hui est incluse dans le contexte
+    })

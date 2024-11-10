@@ -16,12 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView 
-from django.views.generic import RedirectView  # Importez RedirectView ici
+from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Route pour l'interface d'administration
-    path('Trip/', include('Trip.urls')),  # Inclure les URLs de l'application Trip
-    path('reservation/', include('Reservations.urls')),  # Inclure les URLs de l'application Reservation
+    path('admin/', admin.site.urls),  # Interface d'administration
+
+    # Inclure les autres applications
+    path('reservation/', include('Reservations.urls')),  # Routes pour Reservation
+    path('trips/', include('Trip.urls')),  # Routes pour Trip
+    path('users/', include('users.urls')),  # Routes pour Users
+
+    # Inclure les URLs de l'application login
+    path('login/', include('users.urls')),  # Remarquez l'URL 'login/'
+   
+
+    
+    # Page d'accueil par défaut
     path('', TemplateView.as_view(template_name='Home/home.html'), name='home'),  # Page d'accueil
 ]

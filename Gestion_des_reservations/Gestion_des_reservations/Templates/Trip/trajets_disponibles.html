@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Trajets Disponibles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #1e88e5;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        input[type="text"], input[type="date"], button {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #1e88e5;
+            color: white;
+            cursor: pointer;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .radio-column {
+            text-align: center;
+        }
+        .btn-disabled {
+            cursor: not-allowed;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Liste des Trajets Disponibles</h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="GET">
+        <label for="point_depart">Ville de Départ :</label>
+        <input type="text" id="point_depart" name="point_depart" placeholder="Ville de départ" value="{{ point_depart }}">
+
+        <label for="point_arrivee">Ville d'Arrivée :</label>
+        <input type="text" id="point_arrivee" name="point_arrivee" placeholder="Ville d'arrivée" value="{{ point_arrivee }}">
+
+        <label for="date_depart">Date de Départ :</label>
+        <input type="date" id="date_depart" name="date_depart" value="{{ date_depart }}">
+
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <!-- Liste des trajets avec option de sélection -->
+    <form method="POST" action="{% url 'select_trip' %}">
+        {% csrf_token %}
+        {% if trajets %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Départ</th>
+                        <th>Arrivée</th>
+                        <th>Date</th>
+                        <th>Sélectionner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trajet in trajets %}
+                    {% with today_date=now.date %}
+                    {% if reservation.trip_id.date_depart|date:"Y-m-d" >= today_date %}
+                                <!-- Afficher uniquement les trajets dont la date est dans le futur -->
+                                <tr>
+                                    <td>{{ trajet.id }}</td>
+                                    <td>{{ trajet.point_depart }}</td>
+                                    <td>{{ trajet.point_arrivee }}</td>
+                                    <td>{{ trajet.date_depart }}</td>
+                                    <td class="radio-column">
+                                        <input type="radio" name="selected_trip" value="{{ trajet.id }}" required>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Sélectionner ce trajet</button>
+        {% else %}
+            <p>Aucun trajet trouvé.</p>
+        {% endif %}
+    </form>
+</div>
+
+</body>
+</html>
