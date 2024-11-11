@@ -24,7 +24,6 @@ class EvaluationForm(forms.ModelForm):
         evaluateur = cleaned_data.get('evaluateur')
         evale = cleaned_data.get('evale')
 
-        if evaluateur == evale:
-            raise ValidationError("Vous ne pouvez pas évaluer vous-même.")
+       
 
         return cleaned_data

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'evaluation/base.html' %}
 
 {% block content %}
 <div class="container mt-5">
@@ -10,7 +10,7 @@
     <form method="POST">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Supprimer</button>
-        <a href="{% url 'trajet_detail' trajet_id=evaluation.trajet.id %}" class="btn btn-secondary">Annuler</a>
+        <a href="{% url 'trajets_disponibles' trajet_id=evaluation.trajet.id %}" class="btn btn-secondary">Annuler</a>
     </form>
 </div>
 {% endblock %}

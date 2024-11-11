@@ -29,6 +29,6 @@ urlpatterns = [
     path('login/', include('users.urls')),  # Remarquez l'URL 'login/'
     path('group/',include('group.urls')),
     path('notifications/', include('Notification.urls')),
-    path('home', TemplateView.as_view(template_name='home/home.html'), name='home1'), 
+    path('home', TemplateView.as_view(template_name='home/index.html'), name='home1'), 
     path('', TemplateView.as_view(template_name='login/index.html'), name='login'),
 ]

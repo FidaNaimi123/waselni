@@ -1,22 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'evaluation/base.html' %}
 
 {% block content %}
 <div class="container mt-5">
     <h2>{% if evaluation %}Modifier{% else %}Ajouter{% endif %} une évaluation</h2>
-    <form method="POST">
+    <form method="POST" >
         {% csrf_token %}
-        <div class="form-group">
-            <label for="id_note">Note</label>
-            {{ form.note|add_class:"form-control" }}
-        </div>
-        <div class="form-group">
-            <label for="id_commentaire">Commentaire</label>
-            {{ form.commentaire|add_class:"form-control" }}
-        </div>
-        <div class="form-group">
-            <label for="id_date_evaluation">Date d'évaluation</label>
-            {{ form.date_evaluation|add_class:"form-control" }}
-        </div>
+        {{ form.as_p }}
         <button type="submit" class="btn btn-primary mt-3">{% if evaluation %}Modifier{% else %}Ajouter{% endif %}</button>
     </form>
     {% if form.errors %}

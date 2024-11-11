@@ -29,24 +29,10 @@
 
     <header class="header">
         <nav class="navbar">
-            <a href="#">Accueil</a>
-            <a href="#">À propos</a>
-            <a href="#">Réservation trajet</a>
-            <a href="#">Carpool</a>
-            <a href="#">Paiement</a>
-            <a href="#">Evaluation</a>
             
-            <!-- Conteneur pour "Administrer" et "Déconnecter" sur la même ligne -->
+            
             <div class="navbar-right">
-                <div class="dropdown">
-                    <a href="#" id="admin-link" class="{% if not is_logged_in %}disabled{% endif %}" 
-                       {% if is_logged_in and is_admin %}href="javascript:void(0);" {% else %}onclick="return false;"{% endif %}>Administrateur</a>
-                    <!-- Le sous-menu est caché par défaut avec display: none -->
-                    <div class="dropdown-content" style="display: none;">
-                        <a href="{% url 'liste_users' %}">Liste utilisateurs</a>
-                        <a href="#">S'inscrire</a>
-                    </div>
-                </div>
+                
                 
                 <!-- Lien Déconnecter -->
                 <a href="{% url 'disconnect' %}" id="logout-link" style="{% if not is_logged_in %}display: none;{% else %}display: inline;{% endif %}">Déconnecter</a>

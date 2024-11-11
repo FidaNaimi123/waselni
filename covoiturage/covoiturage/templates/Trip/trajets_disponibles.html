@@ -166,6 +166,7 @@
         <button type="submit">Rechercher</button>
         
     </form>
+    <a href="{% url 'creer_trajet' %}">Create Traject</a>
 
     <!-- Conteneur des trajets -->
     <div class="trajets-container">
@@ -183,7 +184,12 @@
                 <form method="POST" action="{% url 'select_trip' %}">
                     {% csrf_token %}
                     <input type="hidden" name="selected_trip" value="{{ trajet.id }}">
-                    <button type="submit" class="button">Choisir ce trajet</button>
+                    <button type="submit" class="button">reserver pour ce trajet</button>
+                </form>
+                <form method="POST" action="{% url 'select_trip1' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="selected_trip1" value="{{ trajet.id }}">
+                    <button type="submit" class="button">ajouter evaluation</button>
                 </form>
             </div>
         {% empty %}

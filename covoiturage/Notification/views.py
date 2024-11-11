@@ -10,26 +10,32 @@ from django.contrib import messages  # Import messages framework
 from django.contrib.auth.models import User  # Assuming you are linking to the Django User model
 
 
-from django.contrib import messages
-from django.db.models import Q
-from django.views.generic import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Notification
-
-class NotificationListView(LoginRequiredMixin, ListView):
+class RecipientNotificationListView(LoginRequiredMixin, ListView):
     model = Notification
-    template_name = 'Notification/notification_list.html'
-    context_object_name = 'notifications'
+    template_name = 'Notification/recipient_notification_list.html'  # Ensure the correct template path
+    context_object_name = 'notifications1'
     paginate_by = 10  # Number of notifications per page
 
     def get_queryset(self):
-        # Notifications where the logged-in user is the sender
-        sender_notifications = Notification.objects.filter(user=self.request.user).order_by('-date_sent')
+        # Retrieve notifications where the recipient is the currently logged-in user
+        queryset = Notification.objects.filter(recipient=self.request.user).order_by('-date_sent')
 
-        # Notifications where the logged-in user is the recipient
-        recipient_notifications = Notification.objects.filter(recipient=self.request.user).order_by('-date_sent')
+        # Apply filtering by status if provided
+        status_filter = self.request.GET.get('status_filter')
+        if status_filter:
+            queryset = queryset.filter(status_notification=status_filter)
 
-        return sender_notifications, recipient_notifications
+        # Apply filtering by type if provided
+        type_filter = self.request.GET.get('type_filter')
+        if type_filter:
+            queryset = queryset.filter(type_notification=type_filter)
+
+        # Apply search by message if provided
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(Q(message__icontains=search_query))
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -37,34 +43,12 @@ class NotificationListView(LoginRequiredMixin, ListView):
         context['status_filter'] = self.request.GET.get('status_filter', '')
         context['type_filter'] = self.request.GET.get('type_filter', '')
 
-        # Retrieve both sender and recipient notifications
-        sender_notifications, recipient_notifications = self.get_queryset()
-
-        # Apply any filters to the sender notifications (status, type, search)
-        if self.request.GET.get('status_filter'):
-            sender_notifications = sender_notifications.filter(status_notification=self.request.GET.get('status_filter'))
-        if self.request.GET.get('type_filter'):
-            sender_notifications = sender_notifications.filter(type_notification=self.request.GET.get('type_filter'))
-        if self.request.GET.get('search'):
-            sender_notifications = sender_notifications.filter(Q(message__icontains=self.request.GET.get('search')))
-
-        # Apply any filters to the recipient notifications (status, type, search)
-        if self.request.GET.get('status_filter'):
-            recipient_notifications = recipient_notifications.filter(status_notification=self.request.GET.get('status_filter'))
-        if self.request.GET.get('type_filter'):
-            recipient_notifications = recipient_notifications.filter(type_notification=self.request.GET.get('type_filter'))
-        if self.request.GET.get('search'):
-            recipient_notifications = recipient_notifications.filter(Q(message__icontains=self.request.GET.get('search')))
-
-        # Add the notifications to the context
-        context['sender_notifications'] = sender_notifications
-        context['recipient_notifications'] = recipient_notifications
-
-        # Check if there are any unread notifications for the logged-in user
+        # Check for unread notifications specifically for the logged-in user as the recipient
         unread_notifications = Notification.objects.filter(
             recipient=self.request.user,
             read=False
         )
+
         if unread_notifications.exists():
             # Get the senders of the unread notifications
             senders = unread_notifications.values_list('user__username', flat=True).distinct()
@@ -73,10 +57,48 @@ class NotificationListView(LoginRequiredMixin, ListView):
             # Add a personalized message with sender information
             messages.success(self.request, f"You have {unread_notifications.count()} new notification(s) from {senders_list}.")
 
-            # Mark all unread notifications as read
+            # Optionally mark all unread notifications as read
             unread_notifications.update(read=True)
 
-        # Add custom messages for specific types of notifications
+        return context
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = 'Notification/notification_list.html'  # Ensure the correct template path
+    context_object_name = 'notifications'
+    paginate_by = 10  # Number of notifications per page
+
+    def get_queryset(self):
+        # Retrieve notifications for the currently logged-in user
+        queryset = Notification.objects.filter(user=self.request.user).order_by('-date_sent')
+        
+        # Apply filtering by status if provided
+        status_filter = self.request.GET.get('status_filter')
+        if status_filter:
+            queryset = queryset.filter(status_notification=status_filter)
+
+        # Apply filtering by type if provided
+        type_filter = self.request.GET.get('type_filter')
+        if type_filter:
+            queryset = queryset.filter(type_notification=type_filter)
+
+        # Apply search by message if provided
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(Q(message__icontains=search_query))
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search'] = self.request.GET.get('search', '')
+        context['status_filter'] = self.request.GET.get('status_filter', '')
+        context['type_filter'] = self.request.GET.get('type_filter', '')
+
+        # Check if there are any unread notifications for the logged-in user
+        unread_notifications = Notification.objects.filter(
+            recipient=self.request.user,
+            read=False
+        )
         invite_notification = Notification.objects.filter(
             recipient=self.request.user,
             type_notification="Invitation",
@@ -92,35 +114,47 @@ class NotificationListView(LoginRequiredMixin, ListView):
             type_notification="Decline",
             read=False
         )
-        application_notification = Notification.objects.filter(
+        Application_notification = Notification.objects.filter(
             recipient=self.request.user,
             type_notification="Application",
             read=False
         )
-
-        # Display custom success messages based on notification types
         if decline_notification.exists():
             senders_decline = decline_notification.values_list('user__username', flat=True).distinct()
+            # Join the usernames into a comma-separated string
             senders_dec_list = ', '.join(senders_decline)
             messages.success(self.request, f"{senders_dec_list} declined your invitation.")
 
-        if application_notification.exists():
-            senders_app = application_notification.values_list('user__username', flat=True).distinct()
+        if Application_notification.exists():
+            senders_app = accept_notification.values_list('user__username', flat=True).distinct()
+            # Join the usernames into a comma-separated string
             senders_app_list = ', '.join(senders_app)
-            messages.success(self.request, f"{senders_app_list} requested to join your carpool.")
+            messages.success(self.request, f"{senders_app_list} requested to join your carpool")
 
         if accept_notification.exists():
             senders_accept = accept_notification.values_list('user__username', flat=True).distinct()
+            # Join the usernames into a comma-separated string
             senders_accept_list = ', '.join(senders_accept)
             messages.success(self.request, f"{senders_accept_list} accepted your invitation.")
 
         if invite_notification.exists():
             senders_invitation = invite_notification.values_list('user__username', flat=True).distinct()
+            # Join the usernames into a comma-separated string
             senders_invitation_list = ', '.join(senders_invitation)
             messages.success(self.request, f"{senders_invitation_list} invited you to join their carpool.")
 
-        return context
+        if unread_notifications.exists():
+            # Get the senders of the unread notifications
+            senders = unread_notifications.values_list('user__username', flat=True).distinct()
+            senders_list = ', '.join(senders)  # Join senders' names in a comma-separated list
 
+            # Add a personalized message with sender information
+            messages.success(self.request, f"You have {unread_notifications.count()} new notification(s) from {senders_list}.")
+
+            # Mark all unread notifications as read
+            unread_notifications.update(read=True)
+
+        return context
 
 
 @login_required
@@ -137,14 +171,14 @@ def notification_add(request):
             messages.error(request, 'Selected recipient does not exist.')
             return redirect('notification_add')
 
-        # Create the notification with `read` set to `False`
+        # Create the notification with read set to False
         Notification.objects.create(
             user=request.user,  # Sender (current logged-in user)
             type_notification=type_notification,
             message=message,
             status_notification=status_notification,
             recipient=recipient,  # Add recipient field
-            read=False,  # Set `read` to `False` by default
+            read=False,  # Set read to False by default
         )
 
         # Add a success message to be displayed on the next page load

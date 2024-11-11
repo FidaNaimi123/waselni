@@ -43,7 +43,7 @@ class ReclamationForm(forms.ModelForm):
     
     def clean_trajet(self):
         trajet = self.cleaned_data.get('trajet')
-        if trajet.date_arrivee < timezone.now():
+        if trajet.date_depart < timezone.now().date():
             raise ValidationError("Vous ne pouvez pas faire une réclamation pour un trajet déjà terminé.")
         return trajet
     

@@ -1,15 +1,24 @@
-{% extends 'base.html' %}
+{% extends 'reclammation/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h3>Êtes-vous sûr de vouloir supprimer cette réclamation ?</h3>
-    <p><strong>Description:</strong> {{ reclamation.description }}</p>
-    <p><strong>Date de réclamation:</strong> {{ reclamation.date_reclamation }}</p>
+<div class="container mt-5 p-4 bg-light rounded shadow-sm">
+    <div class="text-center mb-4">
+        <h3 class="text-danger">Confirmation de suppression</h3>
+    </div>
+    <div class="alert alert-warning" role="alert">
+        <strong>Êtes-vous sûr de vouloir supprimer cette réclamation ?</strong>
+    </div>
+    <div class="mb-3">
+        <p><strong>Description:</strong> {{ reclamation.description }}</p>
+        <p><strong>Date de réclamation:</strong> {{ reclamation.date_reclamation }}</p>
+    </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Supprimer</button>
-        <a href="{% url 'trajet_detail' trajet_id=reclamation.trajet.id %}" class="btn btn-secondary">Annuler</a>
-    </form>
+    <div class="d-flex justify-content-center">
+        <form method="POST" class="me-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger px-4">Supprimer</button>
+        </form>
+        <a href="{% url 'trajet_detail' trajet_id=reclamation.trajet.id %}" class="btn btn-secondary px-4">Annuler</a>
+    </div>
 </div>
 {% endblock %}

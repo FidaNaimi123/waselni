@@ -9,12 +9,12 @@ from django.utils import timezone
 class ReclamationCreateView(LoginRequiredMixin, CreateView):
     model = Reclamation
     form_class = ReclamationForm
-    template_name = 'reclamation_form.html'
+    template_name = 'reclammation/reclammation_form.html'
 
     def form_valid(self, form):
         trajet = get_object_or_404(Trajet, id=self.kwargs['trajet_id'])
 
-        if trajet.date_arrivee < timezone.now():
+        if trajet.date_depart < timezone.now():
             form.add_error(None, "Vous ne pouvez pas faire une réclamation pour un trajet déjà terminé.")
             return self.form_invalid(form)
 
@@ -29,7 +29,7 @@ class ReclamationCreateView(LoginRequiredMixin, CreateView):
 class ReclamationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Reclamation
     form_class = ReclamationForm
-    template_name = 'reclamation_form.html'
+    template_name = 'reclammation/reclammation_form.html'
 
     def test_func(self):
         reclamation = self.get_object()
@@ -41,7 +41,7 @@ class ReclamationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
 
 class ReclamationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Reclamation
-    template_name = 'confirm_delete_reclamation.html'
+    template_name = 'reclammation/confirm_delete_reclamation.html'
     success_url = reverse_lazy('trajet_list')
 
     def test_func(self):
