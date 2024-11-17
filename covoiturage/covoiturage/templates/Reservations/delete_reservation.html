@@ -1,74 +1,17 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Supprimer la réservation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 400px;
-        }
-        h1 {
-            color: #1e88e5;
-            font-size: 1.8em;
-        }
-        p {
-            font-size: 1.1em;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .buttons {
-            display: flex;
-            justify-content: space-around;
-        }
-        .buttons button, .buttons a {
-            padding: 10px 20px;
-            font-size: 1.1em;
-            border-radius: 5px;
-            text-decoration: none;
-            color: white;
-            transition: background-color 0.3s;
-        }
-        .buttons .confirm-btn {
-            background-color: #e53935;
-        }
-        .buttons .confirm-btn:hover {
-            background-color: #d32f2f;
-        }
-        .buttons .cancel-btn {
-            background-color: #1e88e5;
-        }
-        .buttons .cancel-btn:hover {
-            background-color: #1976d2;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Supprimer la réservation #{{ reservation.id }}</h1>
-        <p>Êtes-vous sûr de vouloir supprimer cette réservation ?</p>
+{% extends 'Home/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Supprimer la réservation #{{ reservation.id }}</h1>
+    <p>Êtes-vous sûr de vouloir supprimer cette réservation ?</p>
+    
+    <form method="POST">
+        {% csrf_token %}
         
-        <form method="POST">
-            {% csrf_token %}
-            <div class="buttons">
-                <button type="submit" class="confirm-btn">Confirmer la suppression</button>
-                <a href="{% url 'home' %}" class="cancel-btn">Annuler</a>
-            </div>
-        </form>
-    </div>
-</body>
-</html>
+        <div class="buttons">
+            <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

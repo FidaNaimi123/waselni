@@ -1,241 +1,98 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des Trajets</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url("{% static 'cov.png' %}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #333;
-            min-height: 100vh;
-        }
+{% extends 'Home/base.html' %}
+{% load static %}
 
-        h1 {
-            text-align: center;
-            color: #1E90FF;
-            font-size: 2.5em;
-            margin-top: 20px;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-        }
+{% block content %}
+    <!-- Background Section -->
+    <div class="page-container" style="background-image: url('{% static 'cov.png' %}'); background-size: cover; background-position: center;">
+        
+        <!-- Content Section with Transparent Background -->
+        <div class="container my-5 p-4 rounded shadow-sm" style="background-color: rgba(255, 255, 255, 0.8);">
+            
+            <!-- Top Section with Button -->
+            <div class="top-section mb-4 text-center">
+                <a href="{% url 'creer_trajet' %}" class="btn btn-primary px-4 py-2 rounded">Ajouter un nouveau trajet</a>
+            </div>
 
-        .button {
-            padding: 10px 15px;
-            background-color: #1E90FF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-decoration: none;
-            margin-top: 20px;
-        }
+            <h1 class="mb-4 text-center">Liste des Trajets</h1>
 
-        .button:hover {
-            background-color: #4682B4;
-        }
+            <!-- Search Form -->
+            <form method="GET" class="mb-4 p-4 bg-light rounded shadow-sm d-flex align-items-center">
+                <div class="form-group mr-3">
+                    <label for="point_depart" class="sr-only">Ville de Départ :</label>
+                    <input type="text" id="point_depart" name="point_depart" class="form-control" placeholder="Ville de départ" value="{{ point_depart }}">
+                </div>
+            
+                <div class="form-group mr-3">
+                    <label for="point_arrivee" class="sr-only">Ville d'Arrivée :</label>
+                    <input type="text" id="point_arrivee" name="point_arrivee" class="form-control" placeholder="Ville d'arrivée" value="{{ point_arrivee }}">
+                </div>
+            
+                <div class="form-group mr-3">
+                    <label for="date_depart" class="sr-only">Date de Départ :</label>
+                    <input type="date" id="date_depart" name="date_depart" class="form-control" value="{{ date_depart }}">
+                </div>
+            
+                <button type="submit" class="btn btn-primary">Rechercher</button>
+            </form>
 
-        .top-section {
-            display: flex;
-            align-items: center;
-            padding-left: 20px;
-            margin-bottom: 20px;
-        }
+            <!-- Traject Table -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Point de Départ</th>
+                        <th>Point d'Arrivée</th>
+                        <th>Date de Départ</th>
+                        <th>Heure de Départ</th>
+                        <th>Prix par Place</th>
+                        <th>Places Disponibles</th>
+                        <th>Statut</th>
+                        <th>Conducteur</th>
+                        <th>Contact</th>
+                        <th>Matricule</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trajet in trajets %}
+                        <tr class="{% if trajet.statut == 'annulé' %}annule{% endif %}">
+                            <td>{{ trajet.point_depart }}</td>
+                            <td>{{ trajet.point_arrivee }}</td>
+                            <td>{{ trajet.date_depart }}</td>
+                            <td>{{ trajet.heure_depart }}</td>
+                            <td>{{ trajet.prix_par_place }} DT</td>
+                            <td>{{ trajet.places_disponibles }}</td>
+                            <td>
+                                {% if trajet.places_disponibles == 0 %}
+                                    <span class="complet">Complet</span>
+                                {% else %}
+                                    {{ trajet.statut }}
+                                {% endif %}
+                            </td>
+                            <td>{{ trajet.conducteur_nom_complet }}</td>
+                            <td>{{ trajet.conducteur_contact }}</td>
+                            <td>{{ trajet.matricule }}</td>
+                            <td class="actions">
+                                {% if trajet.date_depart >= today %}
+                                    <a href="{% url 'modifier_trajet' trajet.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="{% url 'supprimer_trajet' trajet.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Supprimer</a>
+                                {% else %}
+                                    <span>Non modifiable</span>
+                                    <a href="{% url 'supprimer_trajet' trajet.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Supprimer</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="11" class="empty-message text-center">Aucun trajet disponible.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        table {
-            width: 80%;
-            margin: 0 auto;
-            border-collapse: collapse;
-            background-color: rgba(255, 255, 255, 0.4); /* Transparence augmentée */
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 1000px;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid rgba(255, 255, 255, 0.5); /* Bordures avec un peu de transparence */
-            color: #333;
-        }
-
-        th {
-            background-color: rgba(30, 144, 255, 0.8); /* Légèrement transparent */
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: rgba(245, 245, 245, 0.5); /* Couleur de fond pour les lignes paires */
-        }
-
-        tr:hover {
-            background-color: rgba(225, 245, 254, 0.5); /* Fond en survol légèrement transparent */
-        }
-
-        .annule {
-            background-color: rgba(244, 67, 54, 0.8); /* Rouge transparent pour les trajets annulés */
-            color: white;
-            font-weight: bold;
-        }
-
-        .complet {
-            background-color: rgba(255, 182, 193, 0.6); /* Rose doux transparent pour "Complet" */
-            color: black;
-            font-weight: bold;
-        }
-
-        a {
-            color: #1E90FF;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .empty-message {
-            text-align: center;
-            font-size: 1.2em;
-            color: #1E90FF;
-            font-weight: bold;
-        }
-
-        /* Style pour le formulaire de recherche */
-        form {
-            margin-bottom: 30px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        input[type="text"], input[type="date"], button {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        button {
-            background-color: #1e88e5;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #1976d2;
-        }
-
-        /* Style pour la flèche de pagination */
-        .pagination-arrow {
-            position: fixed; /* Positionné de façon fixe */
-            bottom: 20px; /* À 20px du bas */
-            right: 20px; /* À 20px du bord droit */
-            background-color: #1e88e5;
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            text-decoration: none;
-            font-size: 24px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .pagination-arrow:hover {
-            background-color: #1976d2;
-        }
-    </style>
-</head>
-<body>
-    <div class="top-section">
-        <a href="{% url 'creer_trajet' %}" class="button">Ajouter un nouveau trajet</a>
+            <!-- Pagination Link -->
+            <a href="{% url 'creer_trajet' %}" class="btn btn-link text-center d-block mt-4">
+                Ajouter un nouveau trajet <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
     </div>
-    <h1>Liste des Trajets</h1>
-    <!-- Formulaire de recherche -->
-    <form method="GET">
-        <label for="point_depart">Ville de Départ :</label>
-        <input type="text" id="point_depart" name="point_depart" placeholder="Ville de départ" value="{{ point_depart }}">
-
-        <label for="point_arrivee">Ville d'Arrivée :</label>
-        <input type="text" id="point_arrivee" name="point_arrivee" placeholder="Ville d'arrivée" value="{{ point_arrivee }}">
-
-        <label for="date_depart">Date de Départ :</label>
-        <input type="date" id="date_depart" name="date_depart" value="{{ date_depart }}">
-
-        <button type="submit">Rechercher</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Point de Départ</th>
-                <th>Point d'Arrivée</th>
-                <th>Date de Départ</th>
-                <th>Heure de Départ</th>
-                <th>Prix par Place</th>
-                <th>Places Disponibles</th>
-                <th>Statut</th>
-                <th>Conducteur</th>
-                <th>Contact</th>
-                <th>Matricule</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for trajet in trajets %}
-                <tr class="{% if trajet.statut == 'annulé' %}annule{% endif %}">
-                    <td>{{ trajet.point_depart }}</td>
-                    <td>{{ trajet.point_arrivee }}</td>
-                    <td>{{ trajet.date_depart }}</td>
-                    <td>{{ trajet.heure_depart }}</td>
-                    <td>{{ trajet.prix_par_place }} DT</td>
-                    <td>{{ trajet.places_disponibles }}</td>
-                    <td>
-                        {% if trajet.places_disponibles == 0 %}
-                            <span class="complet">Complet</span>
-                        {% else %}
-                            {{ trajet.statut }}
-                        {% endif %}
-                    </td>
-                    <td>{{ trajet.conducteur_nom_complet }}</td>
-                    <td>{{ trajet.conducteur_contact }}</td>
-                    <td>{{ trajet.matricule }}</td>
-                    <td class="actions">
-                        {% if trajet.date_depart >= today %}
-                            <a href="{% url 'modifier_trajet' trajet.id %}" class="button">Modifier</a>
-                            <a href="{% url 'supprimer_trajet' trajet.id %}" class="button" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Supprimer</a>
-                           
-                        {% else %}
-                            <span>Non modifiable</span>
-                            <a href="{% url 'supprimer_trajet' trajet.id %}" class="button" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Supprimer</a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="11" class="empty-message">Aucun trajet disponible.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'creer_trajet' %}" class="pagination-arrow">
-        <i class="fas fa-arrow-right"></i>
-    </a>
-
-</body>
-</html>
+{% endblock %}

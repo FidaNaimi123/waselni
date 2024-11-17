@@ -1,38 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carpool List</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        /* Custom style for the blue header */
-        .bg-blue {
-            background-color: #007BFF; /* Bootstrap primary color */
-            color: white; /* White text for contrast */
-        }
-        /* Custom style for lighter blue buttons */
-        .btn-light-blue {
-            background-color: #85C1FF; /* Lighter blue */
-            color: white; /* White text for contrast */
-        }
-        .btn-light-blue:hover {
-            background-color: #66A8FF; /* Slightly darker on hover */
-            color: white; /* Keep text white */
-        }
-    </style>
-</head>
-<body class="bg-light">
+{% extends 'Home/base.html' %}
+
+{% block content %}
     <div class="container mt-5">
         <h1 class="text-primary">Carpool List</h1>
 
-        <!-- Logout Button -->
-        <div class="text-right mb-3">
-            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-            <a href="{% url 'notification_list' %}" class="btn btn-info">Notifications</a>
-            <a href="{% url 'home1' %}" class="btn btn-info">home</a>
-        </div>
+       
 
         <!-- Messages Section -->
         {% if messages %}
@@ -81,7 +53,7 @@
                     <td>
                         <a href="{% url 'carpool_detail' carpool.id %}" class="btn btn-info btn-sm">View Details</a>
                         {% if carpool.creator == user %}
-                        <a href="{% url 'carpool_edit' carpool.id %}" class="btn btn-light-blue btn-sm">Modify</a>
+                        <a href="{% url 'carpool_edit' carpool.id %}" class="btn btn-info btn-sm">Modify</a>
                         <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ carpool.id }}">Delete</button>
                         {% endif %}
                     </td>
@@ -120,10 +92,4 @@
         </table>
         <a href="{% url 'carpool_add' %}" class="btn btn-primary">Add Carpool</a>
     </div>
-    
-    <!-- Bootstrap JS and dependencies (optional, for JavaScript components) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+    {% endblock %}

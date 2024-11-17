@@ -1,75 +1,29 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer une Réservation</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        /* Styles globaux */
-        body {
-            background-color: #f4f7fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #495057;
-            padding-top: 50px;
-        }
-        .form-container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
-            transition: box-shadow 0.3s ease-in-out;
-        }
-        .form-title {
-            font-size: 28px;
-            font-weight: 600;
-            color: #007bff;
-            margin-bottom: 30px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        .btn-submit {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 8px;
-            width: 100%;
-            margin-top: 20px;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="form-container">
-            <h1 class="form-title">Créer une Réservation</h1>
-            <form method="POST">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="{{ form.seat_count.id_for_label }}">Nombre de sièges</label>
-                    {{ form.seat_count }}
-                </div>
+{% extends 'Home/base.html' %}
 
-                <div class="form-group">
-                    <label for="{{ form.Baggage.id_for_label }}">Bagages</label>
-                    {{ form.Baggage }}
-                </div>
+{% block content %}
+<div class="container mt-4">
+    <div class="form-container">
+        <h1 class="form-title">Créer une Réservation</h1>
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.seat_count.id_for_label }}">Nombre de sièges</label>
+                {{ form.seat_count }}
+            </div>
 
-                <div class="form-group">
-                    <label for="{{ form.Payment_Method.id_for_label }}">Méthode de paiement</label>
-                    {{ form.Payment_Method }}
-                </div>
+            <div class="form-group">
+                <label for="{{ form.Baggage.id_for_label }}">Bagages</label>
+                {{ form.Baggage }}
+            </div>
 
-                <button type="submit" class="btn-submit">Réserver</button>
-            </form>
-        </div>
+            <div class="form-group">
+                <label for="{{ form.Payment_Method.id_for_label }}">Méthode de paiement</label>
+                {{ form.Payment_Method }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">Réserver</button>
+        </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -15,9 +15,6 @@ from django.contrib import messages
 def index(request):
     return render(request, 'Login/index.html')
 
-    
-    
-
 def registration(request):
     is_admin = False
     is_logged_in = request.user.is_authenticated  # Simplified check for authentication
@@ -57,8 +54,6 @@ def registration(request):
 
     return render(request, 'Login/registration.html', {'is_admin': is_admin})
 
-
-
 def connect(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -76,8 +71,6 @@ def connect(request):
             messages.error(request, "Email ou mot de passe incorrect.")
 
     return render(request, 'Login/index.html')
-
-
 
 def update_password(request):
     if 'user_id' in request.session:
@@ -112,13 +105,9 @@ def update_password(request):
 
     return render(request, 'Login/update_password.html')
 
-
-
 def liste_users(request):
     listeusers = Users.objects.all()
     return render(request, 'Login/liste_user.html', {'listeusers': listeusers})
-
-
 
 def supprimer_utilisateur(request, id_utilisateur):
     try:
@@ -130,18 +119,12 @@ def supprimer_utilisateur(request, id_utilisateur):
 
     return redirect('liste_users')
 
-
-
-
 def continuer(request):
     if request.user.is_authenticated:
         return render(request, 'Home/index.html')
     else:
         messages.error(request, "Vous devez être connecté pour accéder à cette page.")
         return redirect('connect')
-
-
-
 
 def disconnect(request):
     logout(request)

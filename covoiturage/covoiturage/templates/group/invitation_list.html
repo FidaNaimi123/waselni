@@ -1,3 +1,6 @@
+{% extends 'Home/base.html' %}
+
+{% block content %}
 <h1>Your Invitations</h1>
 <ul>
     {% for invitation in invitations %}
@@ -10,3 +13,4 @@
         <li>No invitations found.</li>
     {% endfor %}
 </ul>
+{% endblock %}

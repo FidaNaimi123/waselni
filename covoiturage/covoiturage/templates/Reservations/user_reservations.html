@@ -1,90 +1,12 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes Réservations</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            text-align: center;
-            color: #1e88e5;
-        }
-        .container {
-            margin: 20px auto;
-            max-width: 800px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .greeting {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        .table-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .table-actions a {
-            text-decoration: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            font-size: 0.9em;
-        }
-        .btn-primary {
-            background-color: #1e88e5;
-        }
-        .btn-primary:hover {
-            background-color: #1976d2;
-        }
-        .btn-danger {
-            background-color: #e53935;
-        }
-        .btn-danger:hover {
-            background-color: #d32f2f;
-        }
-        .btn-disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .no-reservations {
-            color: #555;
-            font-size: 1.1em;
-            margin-top: 20px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Mes Réservations</h1>
-        <p class="greeting">Bonjour, {{ user.email }} ! Voici vos réservations :</p>
+{% extends 'Home/base.html' %}
 
-        {% if reservations %}
-        <table>
+{% block content %}
+<div class="container mt-4">
+    <h1>Mes Réservations</h1>
+    <p class="greeting">Bonjour, {{ user.email }} ! Voici vos réservations :</p>
+
+    {% if reservations %}
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Trajet</th>
@@ -93,14 +15,14 @@
                     <th>Bagages</th>
                     <th>Méthode de paiement</th>
                     <th>Modifier</th>
-                  
+                    <th>Supprimer</th>
                 </tr>
             </thead>
             <tbody>
                 {% for reservation in reservations %}
                     {% with today_date=today %}
                         {% if reservation.trip_id.date_depart < today_date %}
-                            <!-- Si la date du trajet est dépassée, on désactive les boutons -->
+                            <!-- Si la date du trajet est dépassée, désactiver les boutons -->
                             <tr>
                                 <td>{{ reservation.trip_id }}</td>
                                 <td>{{ reservation.reservation_date }}</td>
@@ -115,7 +37,7 @@
                                 </td>
                             </tr>
                         {% else %}
-                            <!-- Si la date du trajet est future, les boutons sont activés -->
+                            <!-- Si la date du trajet est future, activer les boutons -->
                             <tr>
                                 <td>{{ reservation.trip_id }}</td>
                                 <td>{{ reservation.reservation_date }}</td>
@@ -123,10 +45,10 @@
                                 <td>{{ reservation.Baggage|yesno:"Oui,Non" }}</td>
                                 <td>{{ reservation.Payment_Method }}</td>
                                 <td class="table-actions">
-                                    <a href="{% url 'update_reservation' reservation.id %}" class="btn-primary">Modifier</a>
+                                    <a href="{% url 'update_reservation' reservation.id %}" class="btn btn-primary">Modifier</a>
                                 </td>
                                 <td class="table-actions">
-                                    <a href="{% url 'delete_reservation' reservation.id %}" class="btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette réservation ?');">Supprimer</a>
+                                    <a href="{% url 'delete_reservation' reservation.id %}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette réservation ?');">Supprimer</a>
                                 </td>
                             </tr>
                         {% endif %}
@@ -134,10 +56,8 @@
                 {% endfor %}
             </tbody>
         </table>
-        
-        {% else %}
-            <p class="no-reservations">Vous n'avez pas encore de réservations.</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+    {% else %}
+        <p class="no-reservations">Vous n'avez pas encore de réservations.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 from .models import Reclamation
-from django.contrib.auth.models import User
+from users.models import Users
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
@@ -18,7 +18,7 @@ class ReclamationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ReclamationForm, self).__init__(*args, **kwargs)
         
-        self.fields['utilisateur'].queryset = User.objects.all()  
+        self.fields['utilisateur'].queryset = Users.objects.all()  
         
         if 'utilisateur' in self.fields:
             self.fields['utilisateur'].initial = kwargs.get('initial', {}).get('utilisateur', None)

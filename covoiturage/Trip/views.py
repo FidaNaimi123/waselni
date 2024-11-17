@@ -3,11 +3,11 @@ from .models import Trajet
 from .forms import TrajetForm
 from django.utils import timezone
 from django.http import JsonResponse
-#import requests
 from django.db.models import Count, Sum
-from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
 
 
+@login_required  # Ensure only authenticated users can access this view
 def creer_trajet(request):
     if request.method == 'POST':
         form = TrajetForm(request.POST)
@@ -21,17 +21,15 @@ def creer_trajet(request):
    
     return render(request, 'Trip/creer_trajet.html', {'form': form})
 
-def liste_trajets(request):
-    # Récupérer les trajets de base
-    trajets = Trajet.objects.all().order_by('date_depart')
-    today = timezone.now().date()  # Date actuelle
 
-    # Récupérer les critères de recherche
+def liste_trajets(request):
+    trajets = Trajet.objects.all().order_by('date_depart')
+    today = timezone.now().date()
+
     point_depart = request.GET.get('point_depart', '').strip()
     point_arrivee = request.GET.get('point_arrivee', '').strip()
     date_depart = request.GET.get('date_depart', '').strip()
 
-    # Appliquer les filtres si des critères sont fournis
     if point_depart:
         trajets = trajets.filter(point_depart__icontains=point_depart)
     if point_arrivee:
@@ -39,13 +37,12 @@ def liste_trajets(request):
     if date_depart:
         trajets = trajets.filter(date_depart=date_depart)
 
-    # Mettre à jour le statut si nécessaire
     for trajet in trajets:
         if trajet.places_disponibles == 0:
-            trajet.statut = 'complet'  # Change le statut à 'complet'
+            trajet.statut = 'complet'
             trajet.save()
         elif trajet.places_disponibles > 0 and trajet.statut not in ['actif', 'annulé']:
-            trajet.statut = 'actif'  # Change le statut à 'actif'
+            trajet.statut = 'actif'
             trajet.save()
 
     return render(request, 'Trip/liste_trajets.html', {
@@ -57,38 +54,35 @@ def liste_trajets(request):
     })
 
 
-
+@login_required  # Only authenticated users can modify trips
 def modifier_trajet(request, trajet_id):
-    trajet = get_object_or_404(Trajet, id=trajet_id)  # Récupère le trajet à modifier
+    trajet = get_object_or_404(Trajet, id=trajet_id)
 
     if request.method == 'POST':
-        form = TrajetForm(request.POST, instance=trajet)  # Lier le formulaire à l'instance du trajet
+        form = TrajetForm(request.POST, instance=trajet)
         if form.is_valid():
-            form.save()  # Enregistre les modifications
-            return redirect('liste_trajets')  # Redirige vers la liste des trajets
+            form.save()
+            return redirect('liste_trajets')
     else:
-        form = TrajetForm(instance=trajet)  # Remplit le formulaire avec les données existantes
+        form = TrajetForm(instance=trajet)
 
     return render(request, 'Trip/modifier_trajet.html', {'form': form, 'trajet': trajet})
 
 
+@login_required  # Only authenticated users can delete trips
 def supprimer_trajet(request, trajet_id):
-    trajet = get_object_or_404(Trajet, id=trajet_id)  # Récupère le trajet à supprimer
-    trajet.delete()  # Supprime le trajet de la base de données
-    return redirect('liste_trajets')  # Redirige vers la liste des trajets
-
+    trajet = get_object_or_404(Trajet, id=trajet_id)
+    trajet.delete()
+    return redirect('liste_trajets')
 
 
 def trajets_disponibles(request):
-    # Par défaut, obtenir tous les trajets actifs avec des places disponibles
     trajets = Trajet.objects.filter(places_disponibles__gt=0, statut='actif')
 
-    # Récupérer les critères de recherche
     point_depart = request.GET.get('point_depart', '').strip()
     point_arrivee = request.GET.get('point_arrivee', '').strip()
     date_depart = request.GET.get('date_depart', '').strip()
 
-    # Appliquer les filtres si des critères sont fournis
     if point_depart or point_arrivee or date_depart:
         if point_depart:
             trajets = trajets.filter(point_depart__icontains=point_depart)
@@ -96,35 +90,31 @@ def trajets_disponibles(request):
             trajets = trajets.filter(point_arrivee__icontains=point_arrivee)
         if date_depart:
             trajets = trajets.filter(date_depart=date_depart)
-    trajets = trajets.order_by('date_depart') 
+            
+    trajets = trajets.order_by('date_depart')
+
     return render(request, 'Trip/trajets_disponibles.html', {
         'trajets': trajets,
         'point_depart': point_depart,
         'point_arrivee': point_arrivee,
         'date_depart': date_depart
     })
-  
 
 
-def afficher_carte(request, id):  # L'argument doit être 'id'
-    trajet = get_object_or_404(Trajet, id=id)  # Utilisez 'id' ici pour récupérer le trajet
+def afficher_carte(request, id):
+    trajet = get_object_or_404(Trajet, id=id)
     start_point = trajet.point_depart
     end_point = trajet.point_arrivee
     return render(request, 'Trip/afficher_carte.html', {'start_point': start_point, 'end_point': end_point})
 
 
-
-
 def statistiques_view(request):
-    # Fetch statistics
     total_trajets = Trajet.objects.count()
     trajets_annules = Trajet.objects.filter(statut='annulé').count()
     revenue_total = Trajet.objects.aggregate(Sum('prix_par_place'))['prix_par_place__sum'] or 0
 
-    # Calculate non-annulés trajets
     trajets_non_annules = total_trajets - trajets_annules
 
-    # Pass all stats as context
     stats = {
         'total_trajets': total_trajets,
         'trajets_annules': trajets_annules,

@@ -11,4 +11,4 @@ class Reclamation(models.Model):
     etat = models.CharField(max_length=50, choices=[('en attente', 'En attente'), ('résolue', 'Résolue')], default='en attente')
 
     def __str__(self):
-        return f"Réclamation de {self.utilisateur.username} sur {self.trajet.destination}"
+        return f"Réclamation de {self.utilisateur.email} sur {self.trajet.destination}"

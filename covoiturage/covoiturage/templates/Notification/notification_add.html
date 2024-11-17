@@ -1,130 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% if notification %}Edit Notification{% else %}Add Notification{% endif %}</title>
-    <style>
-        /* Your existing CSS */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        h1 {
-            color: #333;
-        }
+{% extends 'Home/base.html' %}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #007bff; /* Bootstrap Primary Color */
-            color: white;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1; /* Highlight on hover */
-        }
-
-        form {
-            margin-bottom: 20px;
-        }
-
-        input[type="text"], select, textarea {
-            padding: 10px;
-            margin-right: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px 15px;
-            background-color: #007bff; /* Bootstrap Primary Color */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3; /* Darker shade of blue on hover */
-        }
-
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            padding: 8px 12px;
-            margin: 0 5px;
-            border: 1px solid #007bff;
-            color: #007bff;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .pagination a:hover {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .pagination span {
-            padding: 8px 12px;
-            margin: 0 5px;
-        }
-    </style>
-</head>
-<body>
+{% block content %}
+<div class="container mt-4">
+    <!-- Title Section -->
     <h1>{% if notification %}Edit Notification{% else %}Add Notification{% endif %}</h1>
+
+    <!-- Notification Form -->
     <form method="post">
         {% csrf_token %}
-        <label for="type_notification">Notification Type:</label>
-        <select name="type_notification">
-            <option value="info">Information</option>
-            <option value="warn">Warning</option>
-            <option value="alert">Alert</option>
-            <option value="Invitation">Invitation</option>
-            <option value="Accept">Accept Application</option>
-            <option value="Decline">Decline Application</option>
+        
+        <!-- Notification Type -->
+        <div class="mb-3">
+            <label for="type_notification" class="form-label">Notification Type:</label>
+            <select name="type_notification" class="form-select">
+                <option value="info">Information</option>
+                <option value="warn">Warning</option>
+                <option value="alert">Alert</option>
+                <option value="Invitation">Invitation</option>
+                <option value="Accept">Accept Application</option>
+                <option value="Decline">Decline Application</option>
+                <option value="Application">Application</option>
+            </select>
+        </div>
 
-            <option value="Application"> Application</option>
+        <!-- Message Field -->
+        <div class="mb-3">
+            <label for="message" class="form-label">Message:</label>
+            <textarea name="message" class="form-control" rows="4" required></textarea>
+        </div>
 
-        </select>
-    
-        <label for="message">Message:</label>
-        <textarea name="message" required></textarea>
-    
-        <label for="status_notification">Status:</label>
-        <select name="status_notification">
-            <option value="sent">Sent</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-        </select>
+        <!-- Status -->
+        <div class="mb-3">
+            <label for="status_notification" class="form-label">Status:</label>
+            <select name="status_notification" class="form-select">
+                <option value="sent">Sent</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+            </select>
+        </div>
 
-        <label for="recipient">Recipient:</label>
-        <select name="recipient" required>
-            {% for user in users %}
-                <option value="{{ user.id }}">{{ user.email }}</option>
-            {% endfor %}
-        </select>
-    
-        <button type="submit">Add Notification</button>
+        <!-- Recipient -->
+        <div class="mb-3">
+            <label for="recipient" class="form-label">Recipient:</label>
+            <select name="recipient" class="form-select" required>
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Add Notification</button>
     </form>
-    
 
-    <a href="{% url 'notification_list' %}">Back to Notification List</a>
-</body>
-</html>
+    <!-- Back Link -->
+    <a href="{% url 'notification_list' %}" class="btn btn-link mt-3">Back to Notification List</a>
+</div>
+{% endblock %}
