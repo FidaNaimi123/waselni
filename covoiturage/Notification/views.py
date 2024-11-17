@@ -7,8 +7,7 @@ from .models import Notification
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib import messages  # Import messages framework
-from django.contrib.auth.models import User  # Assuming you are linking to the Django User model
-
+from users.models import Users # Assuming you are linking to the Django Users model
 
 class RecipientNotificationListView(LoginRequiredMixin, ListView):
     model = Notification
@@ -51,7 +50,7 @@ class RecipientNotificationListView(LoginRequiredMixin, ListView):
 
         if unread_notifications.exists():
             # Get the senders of the unread notifications
-            senders = unread_notifications.values_list('user__username', flat=True).distinct()
+            senders = unread_notifications.values_list('user__email', flat=True).distinct()
             senders_list = ', '.join(senders)  # Join senders' names in a comma-separated list
 
             # Add a personalized message with sender information
@@ -120,32 +119,32 @@ class NotificationListView(LoginRequiredMixin, ListView):
             read=False
         )
         if decline_notification.exists():
-            senders_decline = decline_notification.values_list('user__username', flat=True).distinct()
-            # Join the usernames into a comma-separated string
+            senders_decline = decline_notification.values_list('user__email', flat=True).distinct()
+            # Join the emails into a comma-separated string
             senders_dec_list = ', '.join(senders_decline)
             messages.success(self.request, f"{senders_dec_list} declined your invitation.")
 
         if Application_notification.exists():
-            senders_app = accept_notification.values_list('user__username', flat=True).distinct()
-            # Join the usernames into a comma-separated string
+            senders_app = accept_notification.values_list('user__email', flat=True).distinct()
+            # Join the emails into a comma-separated string
             senders_app_list = ', '.join(senders_app)
             messages.success(self.request, f"{senders_app_list} requested to join your carpool")
 
         if accept_notification.exists():
-            senders_accept = accept_notification.values_list('user__username', flat=True).distinct()
-            # Join the usernames into a comma-separated string
+            senders_accept = accept_notification.values_list('user__email', flat=True).distinct()
+            # Join the emails into a comma-separated string
             senders_accept_list = ', '.join(senders_accept)
             messages.success(self.request, f"{senders_accept_list} accepted your invitation.")
 
         if invite_notification.exists():
-            senders_invitation = invite_notification.values_list('user__username', flat=True).distinct()
-            # Join the usernames into a comma-separated string
+            senders_invitation = invite_notification.values_list('user__email', flat=True).distinct()
+            # Join the emails into a comma-separated string
             senders_invitation_list = ', '.join(senders_invitation)
             messages.success(self.request, f"{senders_invitation_list} invited you to join their carpool.")
 
         if unread_notifications.exists():
             # Get the senders of the unread notifications
-            senders = unread_notifications.values_list('user__username', flat=True).distinct()
+            senders = unread_notifications.values_list('user__email', flat=True).distinct()
             senders_list = ', '.join(senders)  # Join senders' names in a comma-separated list
 
             # Add a personalized message with sender information
@@ -166,8 +165,8 @@ def notification_add(request):
         recipient = request.POST.get('recipient')  # Get recipient user ID from the form
 
         try:
-            recipient = User.objects.get(id=recipient)  # Fetch the recipient user instance
-        except User.DoesNotExist:
+            recipient = Users.objects.get(id=recipient)  # Fetch the recipient user instance
+        except Users.DoesNotExist:
             messages.error(request, 'Selected recipient does not exist.')
             return redirect('notification_add')
 
@@ -187,7 +186,7 @@ def notification_add(request):
         return redirect('notification_list')
 
     # List of users excluding the current user
-    users = User.objects.exclude(id=request.user.id)
+    users = Users.objects.exclude(id=request.user.id)
     return render(request, 'Notification/notification_add.html', {'users': users})
 
 @login_required
@@ -202,9 +201,9 @@ def notification_edit(request, pk):
 
         recipient = request.POST.get('recipient')
         try:
-            recipient = User.objects.get(id=recipient)
+            recipient = Users.objects.get(id=recipient)
             notification.recipient = recipient  # Update recipient if needed
-        except User.DoesNotExist:
+        except Users.DoesNotExist:
             messages.error(request, 'Selected recipient does not exist.')
             return redirect('notification_edit', pk=pk)
 
@@ -215,7 +214,7 @@ def notification_edit(request, pk):
 
         return redirect('notification_list')
 
-    users = User.objects.exclude(id=request.user.id)  # List of users excluding the current user
+    users = Users.objects.exclude(id=request.user.id)  # List of users excluding the current user
     return render(request, 'Notification/notification_add.html', {'notification': notification, 'users': users})
 @login_required
 def notification_delete(request, pk):

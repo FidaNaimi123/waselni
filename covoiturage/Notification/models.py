@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User  # Assuming you are linking to the Django User model
+from users.models import Users  # Assuming you are linking to the Django User model
 
 class Notification(models.Model):
     TYPE_CHOICES = [
@@ -26,8 +26,8 @@ class Notification(models.Model):
     message = models.TextField()
     status_notification = models.CharField(max_length=50, choices=STATUS_CHOICES)
     date_sent = models.DateTimeField(auto_now_add=True)  # Auto set date when notification is created
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_sent')  # Sender
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications_received')  # Recipient
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='notifications_sent')  # Sender
+    recipient = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='notifications_received')  # Recipient
     read = models.BooleanField(default=False)  # New field to track whether the notification has been read
 
     def clean(self):

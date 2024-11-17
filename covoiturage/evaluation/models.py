@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User  
+from users.models import Users  # Assuming you are linking to the Django User model
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from Trip.models import Trajet
@@ -10,8 +10,8 @@ def validate_date_evaluation(value):
 
 class Evaluation(models.Model):
     trajet = models.ForeignKey(Trajet, on_delete=models.CASCADE)
-    evaluateur = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_donnees')
-    evale = models.ForeignKey(User, on_delete=models.CASCADE, related_name='evaluations_recues')
+    evaluateur = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='evaluations_donnees')
+    evale = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='evaluations_recues')
     note = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
     date_evaluation = models.DateTimeField(auto_now_add=True, validators=[validate_date_evaluation])
 

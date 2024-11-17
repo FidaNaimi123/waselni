@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import Carpool, GroupRideReservation, RideReservationParticipants
 from django.utils.safestring import mark_safe
 from django.contrib import messages
-from django.contrib.auth.models import User
+from users.models import Users
 class UserInline(admin.TabularInline):
     model = Carpool.members.through  
     extra = 1  
@@ -34,12 +34,12 @@ class CarpoolAdmin(admin.ModelAdmin):
         if 'apply' in request.POST:
             member_id = request.POST.get('member_id')
             try:
-                member = User.objects.get(pk=member_id)
+                member = Users.objects.get(pk=member_id)
                 for carpool in queryset:
                     carpool.members.add(member)
-                self.message_user(request, f"User {member.username} successfully added to selected carpools.", level=messages.SUCCESS)
-            except User.DoesNotExist:
-                self.message_user(request, "User not found.", level=messages.ERROR)
+                self.message_user(request, f"Users {member.username} successfully added to selected carpools.", level=messages.SUCCESS)
+            except Users.DoesNotExist:
+                self.message_user(request, "Users not found.", level=messages.ERROR)
         else:
             # Implement a confirmation page logic here if needed
             pass
@@ -48,12 +48,12 @@ class CarpoolAdmin(admin.ModelAdmin):
         if 'apply' in request.POST:
             member_id = request.POST.get('member_id')
             try:
-                member = User.objects.get(pk=member_id)
+                member = Users.objects.get(pk=member_id)
                 for carpool in queryset:
                     carpool.members.remove(member)
-                self.message_user(request, f"User {member.username} successfully removed from selected carpools.", level=messages.SUCCESS)
-            except User.DoesNotExist:
-                self.message_user(request, "User not found.", level=messages.ERROR)
+                self.message_user(request, f"Users {member.username} successfully removed from selected carpools.", level=messages.SUCCESS)
+            except Users.DoesNotExist:
+                self.message_user(request, "Users not found.", level=messages.ERROR)
         else:
             # Implement a confirmation page logic here if needed
             pass

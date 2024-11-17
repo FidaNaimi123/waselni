@@ -76,7 +76,7 @@
                 {% for carpool in carpools %}
                 <tr>
                     <td>{{ carpool.name }}</td>
-                    <td>{{ carpool.creator.username }}</td>  <!-- Display the creator's username -->
+                    <td><a href="{% url 'user_detail' carpool.creator.id %}">{{ carpool.creator.email }}</a></td>  <!-- Display the creator's email -->
                     
                     <td>
                         <a href="{% url 'carpool_detail' carpool.id %}" class="btn btn-info btn-sm">View Details</a>

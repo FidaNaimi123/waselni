@@ -23,6 +23,8 @@
 <body class="bg-light">
     <div class="container mt-5">
         <h1 class="text-primary">{{ carpool.name }}</h1>
+        <h2>Creator:</h2>
+<p>{{ carpool.creator.email }}</p>
         <h2>Description:</h2>
         <p>{{ carpool.description }}</p>
 
@@ -30,7 +32,7 @@
         <ul class="list-group mb-3">
             {% for member in carpool.members.all %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <a href="{% url 'user_detail' member.id %}">{{ member.username }}</a>
+                    <a href="{% url 'user_detail' member.id %}">{{ member.email }}</a>
                     {% if request.user == carpool.creator %}
                         <form method="post" action="{% url 'remove_member' carpool.id member.id %}" style="display:inline;">
                             {% csrf_token %}
@@ -59,7 +61,7 @@
                     <select name="user" class="form-control" required>
                         <option value="">Select a user to invite</option>
                         {% for user in users %}
-                            <option value="{{ user.id }}">{{ user.username }}</option>
+                            <option value="{{ user.id }}">{{ user.email }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -72,7 +74,7 @@
             <ul class="list-group mb-3">
                 {% for invitation in pending_invitations %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ invitation.user.username }}
+                        {{ invitation.user.email }}
                         <div>
                             <form method="post" action="{% url 'respond_to_invitation' invitation.id 'accept' %}" style="display:inline;">
                                 {% csrf_token %}

@@ -137,7 +137,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'covoiturage' / 'static',
     
 ]
-LOGOUT_REDIRECT_URL = 'login1'
-LOGIN_URL = 'login1'
-#AUTH_USER_MODEL = 'users.Users'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
+AUTH_USER_MODEL = 'users.Users'
 

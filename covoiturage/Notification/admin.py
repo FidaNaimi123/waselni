@@ -9,5 +9,5 @@ class NotificationAdmin(admin.ModelAdmin):
     # Method to display the username in the admin interface
     def user_name(self, obj):
         return obj.user.username
-    user_name.short_description = 'User Name'
+    user_name.short_description = 'Users Name'
 admin.site.register(Notification,NotificationAdmin)

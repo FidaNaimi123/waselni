@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ user.username }} - User Details</title>
+    <title>{{ user.email }} - User Details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         .bg-blue {
@@ -22,11 +22,11 @@
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <h1 class="text-primary">{{ user.username }}</h1>
+        <h1 class="text-primary">{{ user.email }}</h1>
         <h2>Member of the following Carpools:</h2>
         <ul class="list-group">
-            {% for carpool in user.carpools.all %}
-                <li class="list-group-item">
+            {% for carpool in user.carpool_groups.all %}
+            <li class="list-group-item">
                     <a href="{% url 'carpool_detail' carpool.id %}">{{ carpool.name }}</a>
                 </li>
             {% empty %}

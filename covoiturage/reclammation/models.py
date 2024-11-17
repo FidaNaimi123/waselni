@@ -1,9 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import Users  # Assuming you are linking to the Django User model
 from Trip.models import Trajet
 
 class Reclamation(models.Model):
-    utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
+    utilisateur = models.ForeignKey(Users, on_delete=models.CASCADE)
     trajet = models.ForeignKey(Trajet, on_delete=models.CASCADE, related_name='reclamations')
     sujet = models.CharField(max_length=255)
     description = models.TextField()
