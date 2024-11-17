@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Utilisateur</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        // Cette fonction va être appelée lors du chargement de la page pour vérifier si l'utilisateur est admin
+        document.addEventListener("DOMContentLoaded", function() {
+            // Vérification de la variable is_admin pour afficher/masquer les éléments
+            var isAdmin = {{ is_admin|default:"false" }};  // Assurez-vous que 'is_admin' est passé dans votre template context
+
+            // Masquer/afficher les boutons radio et le label 'Rôle'
+            if (!isAdmin) {
+                // Cacher les boutons radio et le label 'Rôle' si l'utilisateur n'est pas admin
+                document.getElementById("admin").style.display = "none";
+                document.getElementById("user").style.display = "none";
+                document.querySelector("label[for='admin']").style.display = "none";
+                document.querySelector("label[for='user']").style.display = "none";
+                document.querySelector("label[for='role']").style.display = "none";
+
+                // Réduire l'espace entre "Numéro de téléphone" et "Mot de passe" en ajustant les marges
+                document.querySelector("div.input-group:nth-child(3)").style.marginBottom = "10px";  // Réduit l'espace entre "Phone" et "Password"
+            } else {
+                // Si l'utilisateur est admin, s'assurer que les boutons radio sont visibles
+                document.getElementById("admin").style.display = "inline-block";
+                document.getElementById("user").style.display = "inline-block";
+                document.querySelector("label[for='admin']").style.display = "inline-block";
+                document.querySelector("label[for='user']").style.display = "inline-block";
+                document.querySelector("label[for='role']").style.display = "inline-block";
+            }
+        });
+    </script>
+</head>
+<body>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-info" onclick="this.remove();">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="registration-container">
+        <div class="form-wrapper">
+            <div class="form-header">
+                <h2>Créer Votre Compte</h2>
+                <p>Rejoignez notre communauté de covoiturage pour un campus plus durable !</p>
+                <!--<p>Role de l'utilisateur: {{ user.role }}</p>
+                <p>Role de l'utilisateur: {{ is_admin }}</p>-->
+            </div>
+            <form action="{% url 'registration' %}" method="POST" class="registration-form">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="fullname">Nom Complet</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="phone">Numéro de Téléphone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+216 -- --- ---" required>
+                </div>
+
+      
+
+                  
+
+                <div class="input-group">
+                    <label for="password">Mot de Passe</label>
+                    <input type="password" id="password" name="password" placeholder="********" required>
+                </div>
+                
+                    <label for="confirm-password">Confirmer le Mot de Passe</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="********" required>
+                </div>
+                <div class="input-group">
+                    <button type="submit" class="btn">S'inscrire</button>
+                </div>
+                <p class="login-link">Vous avez déjà un compte ? <a href="{% url 'index' %}">Connectez-vous ici</a></p>
+            </form>
+        </div>
+        <div class="form-image">
+            <img src="/static/image/pppp.jpg" alt="Description de l'image" />
+        </div>
+    </div>
+</body>
+</html>

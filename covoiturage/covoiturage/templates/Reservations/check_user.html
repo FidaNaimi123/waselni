@@ -1,0 +1,36 @@
+<!-- reservation_user.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Vérification des réservations</title>
+</head>
+<body>
+    <h1>Vérification des réservations</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <label for="user_id">ID de l'utilisateur:</label>
+        <input type="text" id="user_id" name="user_id" required>
+        <button type="submit">Vérifier</button>
+    </form>
+
+    {% if user_exists is not None %}
+    {% if user_exists %}
+        <h2>Réservations de l'utilisateur:</h2>
+        <ul>
+            {% for reservation in reservations %}
+                <li>
+                    {{ reservation }}  <!-- Personnalise selon les attributs de la réservation -->
+                    <a href="{% url 'update_reservation' reservation.id %}">Update</a>
+                    <a href="{% url 'delete_reservation' reservation.id %}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?');">Delete</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>L'utilisateur n'existe pas.</p>
+    {% endif %}
+{% endif %}
+</body>
+</html>
+

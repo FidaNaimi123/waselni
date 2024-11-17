@@ -1,0 +1,427 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;1,500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    height: 100vh;
+    width: 100%;
+    background: white;
+}
+
+.background {
+    background: url('/static/image/vnfd.jpg') no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 25px 13%;
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+/* Styles de la barre de navigation */
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+}
+
+.navbar a {
+    position: relative;
+    font-size: 18px;
+    color: #ffffff;
+    margin-right: 30px;
+    text-decoration: none;
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.navbar a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fafafa; /* Couleur de la ligne sous le texte */
+    bottom: -5px;
+    border-radius: 5px;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.navbar a:hover::after {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.navbar a:hover {
+    color: #f1ce05; /* Couleur du texte au survol */
+}
+
+/* Lien "Administrer" et "Déconnecter" avec effet de survol identique */
+#admin-link, #logout-link {
+    padding: 10px 15px;
+    color: #ffffff; /* Couleur de texte initiale */
+    background-color: transparent; /* Pas de fond */
+    display: inline-block;
+    white-space: nowrap;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 15px;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+#admin-link::after, #logout-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fafafa;
+    bottom: -5px;
+    border-radius: 5px;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#admin-link:hover::after, #logout-link:hover::after {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+#admin-link:hover, #logout-link:hover {
+    color: #f1ce05; /* Couleur du texte au survol */
+    background-color: transparent; /* Pas de fond au survol */
+}
+
+/* Dropdown menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* Masqué par défaut */
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: #333; /* Couleur de fond du sous-menu */
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: white; /* Couleur du texte */
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+    font-size: 16px;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.dropdown-content a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fafafa;
+    bottom: -5px;
+    border-radius: 5px;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Afficher le sous-menu au survol */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Survol des éléments du sous-menu */
+.dropdown-content a:hover {
+    color: #f1ce05; /* Change la couleur du texte au survol */
+    background-color: transparent; /* Pas de fond */
+}
+
+.dropdown-content a:hover::after {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Autres styles de la page */
+.container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 75%;
+    height: 550px;
+    margin-top: 20px;
+    background: url(image/vnfd.jpg) no-repeat;
+    background-position: center;
+    background-size: cover;
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 58%;
+    height: 100%;
+    color: #fff;
+    background: transparent;
+    padding: 80px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    backdrop-filter: blur(10px);
+}
+
+.item .logo {
+    color: #e68506;
+    font-size: 38px;
+}
+
+.text-item h2 {
+    font-size: 40px;
+    line-height: 1;
+}
+
+.text-item p {
+    font-size: 16px;
+    margin: 20px 0;
+}
+
+.social-icon a i {
+    color: #fff;
+    font-size: 24px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: .5s ease;
+}
+
+.social-icon a:hover i {
+    transform: scale(1.2);
+}
+
+/* Section login */
+.container .login-section {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(100% - 58%);
+    height: 100%;
+    color: #fff;
+}
+
+.login-section .form-box {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+}
+
+.login-section .form-box h2 {
+    text-align: center;
+    font-size: 25px;
+}
+
+.form-box .input-box {
+    width: 340px;
+    height: 50px;
+    border-bottom: 2px solid#fff;
+    margin: 30px 0;
+    position: relative;
+}
+
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding-right: 28px;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: 600px;
+    pointer-events: none;
+    transition: .5s ease;
+}
+
+.input-box .icon {
+    position: absolute;
+    top: 13px;
+    right: 0;
+    font-size: 19px;
+}
+
+.input-box input:focus~label,
+.input-box input:valid~label {
+    top: -5px;
+}
+
+.remember-password {
+    font-size: 14px;
+    font-weight: 500;
+    margin: -15px 0 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.remember-password label input {
+    accent-color: #fff;
+    margin-right: 3px;
+}
+
+.remember-password a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.remember-password a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    background: #fff;
+    width: 100%;
+    height: 45px;
+    outline: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f1ce05;
+    font-size: 16px;
+    color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.4);
+}
+
+.create-account {
+    font-size: 14.5px;
+    text-align: center;
+    margin: 25px;
+}
+
+.create-account p a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.create-account p a:hover {
+    text-decoration: underline;
+    color: #e39714;
+}
+
+
+/* Dropdown menu */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+#admin-link {
+    padding: 10px 15px;
+    color: #ffffff;
+    background-color: transparent; /* Fond transparent */
+    display: inline-block;
+    white-space: nowrap;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 15px;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+#logout-link {
+    padding: 10px 15px;
+    color: #ffffff;
+    background-color: transparent;
+    display: inline-block;
+    white-space: nowrap;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 15px;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+#admin-link::after, #logout-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #fafafa;
+
+   
+
+ /* Masquer le sous-menu par défaut */
+.dropdown-content {
+    display: none; /* Masqué par défaut */
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: #333; /* Couleur de fond du sous-menu */
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Lien du sous-menu */
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    color: #f1ce05; /* Change la couleur du texte au survol */
+}
+
+/* Classe pour afficher le sous-menu */
+.dropdown.show .dropdown-content {
+    display: block; /* Affiche le sous-menu quand .show est ajouté */
+}

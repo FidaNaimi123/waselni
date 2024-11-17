@@ -1,0 +1,21 @@
+{% extends 'reclammation/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>{% if reclamation %}Modifier{% else %}Faire{% endif %} une réclamation</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">{% if reclamation %}Modifier{% else %}Faire{% endif %}</button>
+    </form>
+    {% if form.errors %}
+    <div class="alert alert-danger mt-3">
+        <ul>
+            {% for error in form.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

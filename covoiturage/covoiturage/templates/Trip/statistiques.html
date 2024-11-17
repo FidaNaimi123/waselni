@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques des Trajets</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #1d3557;
+            color: #1d3557;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .statistiques-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 200px;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #1e88e5;
+        }
+
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .chart-container {
+            width: 70%;
+            max-width: 600px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Statistiques des Trajets</h1>
+
+    <div class="statistiques-container">
+        <div class="stat-card">
+            <div class="icon">📊</div>
+            <div class="value">{{ stats.total_trajets }}</div>
+            <div class="label">Total des Trajets</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">❌</div>
+            <div class="value">{{ stats.trajets_annules }} ({{ stats.pourcentage_annules }}%)</div>
+            <div class="label">Trajets Annulés</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">✅</div>
+            <div class="value">{{ stats.trajets_non_annules }} ({{ stats.pourcentage_effectues }}%)</div>
+            <div class="label">Trajets Effectués</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">💰</div>
+            <div class="value">{{ stats.revenue_total }} DT</div>
+            <div class="label">Revenu Total</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon">📈</div>
+            <div class="value">{{ stats.revenu_moyen }} DT</div>
+            <div class="label">Revenu Moyen</div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="statsChart"></canvas>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('statsChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Trajets Effectués', 'Trajets Annulés'],
+                    datasets: [{
+                        label: 'Statistiques des Trajets',
+                        data: [{{ stats.pourcentage_effectues }}, {{ stats.pourcentage_annules }}],
+                        backgroundColor: ['#A8DADC', '#FFB6B9'],
+                        borderWidth: 2,
+                        hoverOffset: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#fff',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) label += ': ';
+                                    label += context.raw + '%';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

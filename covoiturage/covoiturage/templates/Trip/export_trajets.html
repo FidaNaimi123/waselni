@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export des Trajets</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<h1>Liste des Trajets</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Point de Départ</th>
+            <th>Point d'Arrivée</th>
+            <th>Date de Départ</th>
+            <th>Heure de Départ</th>
+            <th>Prix par Place</th>
+            <th>Places Disponibles</th>
+            <th>Statut</th>
+            <th>Conducteur</th>
+            <th>Contact</th>
+            <th>Matricule</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trajet in trajets %}
+        <tr>
+            <td>{{ trajet.point_depart }}</td>
+            <td>{{ trajet.point_arrivee }}</td>
+            <td>{{ trajet.date_depart }}</td>
+            <td>{{ trajet.heure_depart }}</td>
+            <td>{{ trajet.prix_par_place }} DT</td>
+            <td>{{ trajet.places_disponibles }}</td>
+            <td>{{ trajet.statut }}</td>
+            <td>{{ trajet.conducteur_nom_complet }}</td>
+            <td>{{ trajet.conducteur_contact }}</td>
+            <td>{{ trajet.matricule }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Générer le contenu du PDF à partir de la table
+    const table = document.querySelector('table');
+    doc.autoTable({ html: table });
+
+    // Télécharger le PDF
+    doc.save('trajets_export.pdf');
+</script>
+
+</body>
+</html>
