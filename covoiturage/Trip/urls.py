@@ -9,8 +9,9 @@ urlpatterns = [
     path('modifier_trajet/<int:trajet_id>/', modifier_trajet, name='modifier_trajet'),  # URL pour modifier un trajet
     path('supprimer_trajet/<int:trajet_id>/', supprimer_trajet, name='supprimer_trajet'),  # URL pour supprimer un trajet
     path('trajets_disponibles/', views.trajets_disponibles, name='trajets_disponibles'),  # URL pour les trajets disponibles
-   path('trajet/<int:id>/carte/', views.afficher_carte, name='afficher_carte'),  # 'id' utilisé ici
+   path('carte/', afficher_carte, name='afficher_carte'),
    path('statistiques/', views.statistiques_view, name='statistiques'),
+   path('export_trajets/', views.export_trajets, name='export_trajets'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
