@@ -1,0 +1,30 @@
+{% extends 'Home/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Historique des Réservations</h1>
+
+    {% if historique_reservations %}
+        <div class="row">
+            {% for reservation in historique_reservations %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Trajet : {{ reservation.trajet }}</h5>
+                            <p class="card-text">
+                                <strong>Utilisateur :</strong> {{ reservation.user.username }} <br>
+                                <strong>Date de Réservation :</strong> {{ reservation.date_reservation|date:"d/m/Y H:i" }} <br>
+                                <strong>Date d'Archivage :</strong> {{ reservation.date_annulation|date:"d/m/Y H:i" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <p>Aucun historique de réservation trouvé.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

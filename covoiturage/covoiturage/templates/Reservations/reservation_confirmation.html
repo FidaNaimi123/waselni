@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Réservation</title>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; }
+        .container { max-width: 600px; margin: auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h2 { color: #007BFF; }
+        p { line-height: 1.6; }
+        .button { background-color: #28a745; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Confirmation de votre réservation</h2>
+        <p>Bonjour,</p>
+        <p>Votre réservation pour le trajet de <strong>{{ departure_point }}</strong> à <strong>{{ arrival_point }}</strong> a bien été confirmée !</p>
+        
+        <h3>Détails de la réservation :</h3>
+        <ul>
+            <li><strong>Date de départ :</strong> {{ departure_date }}</li>
+            <li><strong>Heure de départ :</strong> {{ departure_time }}</li>
+            <li><strong>Nombre de sièges réservés :</strong> {{ seat_count }}</li>
+            <li><strong>Bagages :</strong> {{ has_baggage }}</li>
+        </ul>
+
+        <p>Merci pour votre réservation ! Nous vous souhaitons un agréable voyage.</p>
+
+        <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+
+        <p><a href="#" class="button">Voir votre réservation</a></p>
+
+        <p>À bientôt,<br>Votre équipe de réservation</p>
+    </div>
+</body>
+</html>

@@ -141,3 +141,10 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 AUTH_USER_MODEL = 'users.Users'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Utilisez le serveur SMTP de votre choix
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fida.Naimi@esprit.tn'  # Remplacez par votre e-mail
+EMAIL_HOST_PASSWORD = 'nuct hwju awcy bhcr'  # Remplacez par votre mot de passe
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

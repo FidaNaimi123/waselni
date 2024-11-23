@@ -3,6 +3,32 @@
 {% block content %}
 <div class="container mt-4">
     <h1>Mes Réservations</h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="get" action="{% url 'user_reservations' %}">
+        <div class="form-row">
+            <div class="col">
+                <input type="text" name="search" class="form-control" placeholder="Rechercher par trajet" value="{{ request.GET.search }}">
+            </div>
+            <div class="col">
+                <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
+            </div>
+            <div class="col">
+                <input type="time" name="hour" class="form-control" value="{{ request.GET.hour }}">
+            </div>
+             <!-- Bouton Rechercher avec une icône de recherche et un espacement à droite -->
+             <button type="submit" class="btn btn-primary mr-2">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+    
+            <!-- Bouton Trier avec une icône de tri décroissant et un espacement à gauche -->
+            <button type="submit" class="btn btn-secondary" name="sort" value="desc">
+                <i class="fas fa-sort-amount-down"></i> Trier
+            </button>
+        </div>
+    </form>
+
+    <a href="{% url 'historique_reservations' %}">Historique</a>
     <p class="greeting">Bonjour, {{ user.email }} ! Voici vos réservations :</p>
 
     {% if reservations %}
@@ -22,7 +48,6 @@
                 {% for reservation in reservations %}
                     {% with today_date=today %}
                         {% if reservation.trip_id.date_depart < today_date %}
-                            <!-- Si la date du trajet est dépassée, désactiver les boutons -->
                             <tr>
                                 <td>{{ reservation.trip_id }}</td>
                                 <td>{{ reservation.reservation_date }}</td>
@@ -37,7 +62,6 @@
                                 </td>
                             </tr>
                         {% else %}
-                            <!-- Si la date du trajet est future, activer les boutons -->
                             <tr>
                                 <td>{{ reservation.trip_id }}</td>
                                 <td>{{ reservation.reservation_date }}</td>
@@ -61,3 +85,5 @@
     {% endif %}
 </div>
 {% endblock %}
+
+

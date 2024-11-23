@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liste des Réservations</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Trajet</th>
+                <th>Date de Réservation</th>
+                <th>Nombre de Places</th>
+                <th>Bagage</th>
+                <th>Méthode de Paiement</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reservation in reservations %}
+            <tr>
+                <td>{{ reservation.user_id }}</td>
+                <td>{{ reservation.trip_id }}</td>
+                <td>{{ reservation.reservation_date }}</td>
+                <td>{{ reservation.seat_count }}</td>
+                <td>{{ reservation.Baggage|yesno:"Oui,Non" }}</td>
+                <td>{{ reservation.Payment_Method }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

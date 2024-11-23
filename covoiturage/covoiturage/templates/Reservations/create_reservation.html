@@ -1,29 +1,40 @@
 {% extends 'Home/base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="form-container">
-        <h1 class="form-title">Créer une Réservation</h1>
-        <form method="POST">
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <label for="{{ form.seat_count.id_for_label }}">Nombre de sièges</label>
-                {{ form.seat_count }}
-            </div>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+            <h2 class="mb-0">Créer une Réservation</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" novalidate>
+                {% csrf_token %}
 
-            <div class="form-group">
-                <label for="{{ form.Baggage.id_for_label }}">Bagages</label>
-                {{ form.Baggage }}
-            </div>
+                <!-- Nombre de sièges -->
+                <div class="mb-3">
+                    <label for="{{ form.seat_count.id_for_label }}" class="form-label">Nombre de sièges</label>
+                    <input type="number" name="{{ form.seat_count.name }}" id="{{ form.seat_count.id_for_label }}" class="form-control" value="{{ form.seat_count.value }}" required>
+                </div>
 
-            <div class="form-group">
-                <label for="{{ form.Payment_Method.id_for_label }}">Méthode de paiement</label>
-                {{ form.Payment_Method }}
-            </div>
+<!-- Bagages -->
+<div class="mb-3 form-check">
+    <input type="checkbox" name="{{ form.Baggage.name }}" id="{{ form.Baggage.id_for_label }}" class="form-check-input" {% if form.Baggage.value %}checked{% endif %}>
+    <label for="{{ form.Baggage.id_for_label }}" class="form-check-label">Avez-vous un bagage ?</label>
+</div>
 
-            <button type="submit" class="btn btn-primary btn-submit">Réserver</button>
-        </form>
+
+                <!-- Méthode de paiement -->
+                <div class="form-group">
+                    <label for="{{ form.Payment_Method.id_for_label }}">Méthode de paiement</label>
+                    {{ form.Payment_Method }}
+                </div>
+
+                <!-- Bouton de soumission -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">Réserver</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
