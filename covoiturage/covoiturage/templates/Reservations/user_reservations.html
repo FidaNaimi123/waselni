@@ -1,39 +1,126 @@
+<style>
+    /* Style pour la classe greeting */
+    .greeting {
+        font-size: 1.5em; /* Taille du texte légèrement plus grande */
+        color: #0d1352; /* Vert doux */
+        font-family: 'Arial', sans-serif; /* Police plus moderne */
+        font-weight: 600; /* Gras mais pas trop */
+        text-align: center; /* Centrage du texte */
+        margin: 20px 0; /* Espacement autour du texte */
+        text-transform: uppercase; /* Texte en majuscules pour un effet plus formel */
+    }
+       /* Amélioration du design de la table */
+       .table {
+        border-radius: 10px; /* Bordures arrondies pour la table */
+        box-shadow: 0 4px 8px  rgba(1, 1, 1, 0.834) /* Ombre douce autour de la table */
+    }
+    
+    .table th, .table td {
+        padding: 12px; /* Espacement plus grand pour plus d'aération */
+        text-align: center; /* Centrer le texte dans chaque cellule */
+    }
+    
+    /* Alternance de couleurs pour les lignes de la table */
+    .table tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #fff;
+    }
+
+    /* Style pour les lignes survolées */
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+        cursor: pointer;
+    }
+
+    /* Style pour les boutons dans la table */
+    .table-actions a {
+        transition: all 0.3s ease;
+    }
+
+    .table-actions a:hover {
+        transform: scale(1.1); /* Légère agrandissement lors du survol */
+    }
+
+    /* Style pour les boutons dans le formulaire */
+    .btn {
+        border-radius: 30px; /* Bordures arrondies pour les boutons */
+        padding: 8px 16px; /* Espacement interne pour un meilleur effet visuel */
+    }
+
+    /* Boutons de recherche et tri */
+    .btn-primary, .btn-secondary, .btn-warning {
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover, .btn-secondary:hover, .btn-warning:hover {
+        transform: scale(1.1); /* Agrandir légèrement les boutons au survol */
+        background-color: #0056b3; /* Changement de couleur sur survol pour une meilleure interaction */
+    }
+
+    /* Style pour les messages de notification */
+    .no-reservations {
+        text-align: center;
+        color: #0d1352;
+        font-size: 1.2em;
+        font-weight: 500;
+    }
+</style>
+
 {% extends 'Home/base.html' %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Mes Réservations</h1>
-
-    <!-- Formulaire de recherche -->
+    <h1 class="greeting">Bonjour ! Voici vos réservations :</h1>
     <form method="get" action="{% url 'user_reservations' %}">
-        <div class="form-row">
-            <div class="col">
+        <div class="row g-2 align-items-center">
+            <!-- Barre de recherche -->
+            <div class="col-sm-4 col-md-3">
                 <input type="text" name="search" class="form-control" placeholder="Rechercher par trajet" value="{{ request.GET.search }}">
             </div>
-            <div class="col">
+    
+            <!-- Filtre par date -->
+            <div class="col-sm-3 col-md-2">
                 <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
             </div>
-            <div class="col">
+    
+            <!-- Filtre par heure -->
+            <div class="col-sm-3 col-md-2">
                 <input type="time" name="hour" class="form-control" value="{{ request.GET.hour }}">
             </div>
-             <!-- Bouton Rechercher avec une icône de recherche et un espacement à droite -->
-             <button type="submit" class="btn btn-primary mr-2">
-                <i class="fas fa-search"></i> Rechercher
-            </button>
     
-            <!-- Bouton Trier avec une icône de tri décroissant et un espacement à gauche -->
-            <button type="submit" class="btn btn-secondary" name="sort" value="desc">
-                <i class="fas fa-sort-amount-down"></i> Trier
-            </button>
+            <!-- Bouton de recherche -->
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary" title="Rechercher">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+    
+            <!-- Boutons de tri -->
+            <div class="col-auto">
+                <button type="submit" class="btn btn-secondary" name="sort" value="asc" title="Trier par ordre croissant">
+                    <i class="fas fa-sort-amount-up"></i>
+                </button>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-secondary" name="sort" value="desc" title="Trier par ordre décroissant">
+                    <i class="fas fa-sort-amount-down"></i>
+                </button>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'historique_reservations' %}" class="btn btn-warning" title="Voir l'historique">
+                    <i class="fas fa-history"></i>
+                </a>
+            </div>
+      
         </div>
     </form>
 
-    <a href="{% url 'historique_reservations' %}">Historique</a>
-    <p class="greeting">Bonjour, {{ user.email }} ! Voici vos réservations :</p>
-
     {% if reservations %}
         <table class="table table-bordered table-striped">
-            <thead>
+            <thead class="thead-dark">
                 <tr>
                     <th>Trajet</th>
                     <th>Date de réservation</th>
@@ -85,5 +172,3 @@
     {% endif %}
 </div>
 {% endblock %}
-
-

@@ -20,7 +20,7 @@ class Reservation(models.Model):
         ('cash_payment', 'cash_payment'),
        
     ]
-
+    
     Payment_Method=models.CharField(max_length=20,choices=Payment_Method_list)
 
     class Meta:

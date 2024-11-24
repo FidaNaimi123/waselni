@@ -79,7 +79,20 @@ def create_reservation(request, trip_id):
             reservation = form.save(commit=False)
             reservation.trip_id = trip
             reservation.user_id = user
+
+            # Validation du nombre de places
+            if reservation.seat_count > trip.places_disponibles:
+                return render(request, 'Reservations/create_reservation.html', {
+                    'form': form,
+                    'trip': trip,
+                    'error': f"Il n'y a pas assez de places disponibles. Places restantes : {trip.places_disponibles}",
+                })
+
             try:
+                # Décrémenter les places disponibles
+                trip.places_disponibles -= reservation.seat_count
+                trip.save()
+
                 reservation.save()
                 send_reservation_email(reservation)
                 return redirect('home1')  # Redirection après une réservation réussie
@@ -89,7 +102,6 @@ def create_reservation(request, trip_id):
                     'trip': trip,
                     'error': 'Une erreur s\'est produite lors de la réservation.',
                 })
-            
     else:
         form = ReservationForm()
 
@@ -97,6 +109,7 @@ def create_reservation(request, trip_id):
         'form': form,
         'trip': trip,
     })
+
 
 def check_user(request):
     user_exists = None
@@ -114,16 +127,39 @@ def check_user(request):
 @login_required
 def update_reservation(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
+    trip = reservation.trip_id  # Trajet associé à la réservation
+    old_seat_count = reservation.seat_count  # Ancien nombre de places réservées
 
     if request.method == 'POST':
         form = ReservationForm(request.POST, instance=reservation)
         if form.is_valid():
-            form.save()
-            return redirect('home1')
+            updated_reservation = form.save(commit=False)
+            new_seat_count = updated_reservation.seat_count  # Nouvelle valeur des places
+
+            # Calcul des places disponibles après ajustement
+            available_seats = trip.places_disponibles + old_seat_count  # Restaurer les anciennes places dans le calcul
+            if new_seat_count > available_seats:
+                return render(request, 'Reservations/update_reservation.html', {
+                    'form': form,
+                    'reservation': reservation,
+                    'error': f"Nombre de places insuffisant. Places disponibles : {trip.places_disponibles}.",
+                })
+
+            # Mise à jour des places disponibles
+            trip.places_disponibles += old_seat_count  # Restaurer les anciennes places
+            trip.places_disponibles -= new_seat_count  # Déduire les nouvelles places
+            trip.save()
+
+            updated_reservation.save()  # Sauvegarder la réservation mise à jour
+            return redirect('home1')  # Redirection après mise à jour réussie
     else:
         form = ReservationForm(instance=reservation)
 
-    return render(request, 'Reservations/update_reservation.html', {'form': form, 'reservation': reservation})
+    return render(request, 'Reservations/update_reservation.html', {
+        'form': form,
+        'reservation': reservation,
+    })
+
 @login_required
 def delete_reservation(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)  # Récupérez la réservation par son ID
@@ -154,40 +190,47 @@ def user_reservations(request):
     today = timezone.now()
 
     # Récupérer les paramètres de recherche
-    search = request.GET.get('search', '')
     date_filter = request.GET.get('date', '')
     hour_filter = request.GET.get('hour', '')
-
-    # Filtrer les réservations valides : celles qui sont encore à venir ou aujourd'hui avec une heure dans le futur
+    search_filter = request.GET.get('search', '')  # Un seul champ pour la recherche (départ ou arrivée)
+    sort_order = request.GET.get('sort', '')  # Ajout pour récupérer l'ordre de tri
+    # Filtrer les réservations valides
     reservations = Reservation.objects.filter(user_id=user)
-    
-    if search:
-        reservations = reservations.filter(trip_id__name__icontains=search)
-    
+
+    # Filtrage par date
     if date_filter:
         reservations = reservations.filter(trip_id__date_depart=date_filter)
-    
+
+    # Filtrage par heure
     if hour_filter:
         reservations = reservations.filter(trip_id__heure_depart__gte=hour_filter)
 
-    # Ajouter le filtrage de date pour les réservations futures ou à venir
+
+   # Appliquer le tri par date et heure
+    if sort_order == 'asc':
+        reservations = reservations.order_by('trip_id__date_depart', 'trip_id__heure_depart')
+    elif sort_order == 'desc':
+        reservations = reservations.order_by('-trip_id__date_depart', '-trip_id__heure_depart')
+    # Filtrage par points de départ ou d'arrivée
+    if search_filter:
+        reservations = reservations.filter(
+            Q(trip_id__point_depart__icontains=search_filter) | 
+            Q(trip_id__point_arrivee__icontains=search_filter)
+        )
+
+    # Filtrage des réservations à venir
     reservations = reservations.filter(
-        trip_id__date_depart__gte=today.date()
-    ) | reservations.filter(
-        trip_id__date_depart=today.date(),
-        trip_id__heure_depart__gte=today.time()
+        Q(trip_id__date_depart__gt=today.date()) |
+        Q(trip_id__date_depart=today.date(), trip_id__heure_depart__gte=today.time())
     )
 
-    # Filtrer les réservations expirées : trajets dont la date et l'heure sont passées
-    expired_reservations = Reservation.objects.filter(user_id=user)
-    expired_reservations = expired_reservations.filter(
-        trip_id__date_depart__lt=today.date()
-    ) | expired_reservations.filter(
-        trip_id__date_depart=today.date(),
-        trip_id__heure_depart__lt=today.time()
+    # Gestion des réservations expirées
+    expired_reservations = Reservation.objects.filter(user_id=user).filter(
+        Q(trip_id__date_depart__lt=today.date()) |
+        Q(trip_id__date_depart=today.date(), trip_id__heure_depart__lt=today.time())
     )
 
-    # Enregistrer les réservations expirées dans l'historique et les supprimer
+    # Archiver les réservations expirées
     for reservation in expired_reservations:
         Reservation_Historique.objects.create(
             user=reservation.user_id,
