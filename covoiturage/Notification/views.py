@@ -9,6 +9,15 @@ from django.core.paginator import Paginator
 from django.contrib import messages  # Import messages framework
 from users.models import Users # Assuming you are linking to the Django Users model
 
+from django.db.models import Q
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Notification
+from django.utils import timezone
+from datetime import datetime
+
+from datetime import timedelta
+from Reservations.models import Reservation
 class RecipientNotificationListView(LoginRequiredMixin, ListView):
     model = Notification
     template_name = 'Notification/recipient_notification_list.html'  # Ensure the correct template path
@@ -42,24 +51,67 @@ class RecipientNotificationListView(LoginRequiredMixin, ListView):
         context['status_filter'] = self.request.GET.get('status_filter', '')
         context['type_filter'] = self.request.GET.get('type_filter', '')
 
-        # Check for unread notifications specifically for the logged-in user as the recipient
+        # Check if there are any unread notifications for the logged-in user
         unread_notifications = Notification.objects.filter(
             recipient=self.request.user,
             read=False
         )
+        invite_notification = Notification.objects.filter(
+            recipient=self.request.user,
+            type_notification="Invitation",
+            read=False
+        )
+        accept_notification = Notification.objects.filter(
+            recipient=self.request.user,
+            type_notification="Accept",
+            read=False
+        )
+        decline_notification = Notification.objects.filter(
+            recipient=self.request.user,
+            type_notification="Decline",
+            read=False
+        )
+        application_notification = Notification.objects.filter(
+            recipient=self.request.user,
+            type_notification="Application",
+            read=False
+        )
+
+        if decline_notification.exists():
+            senders_decline = decline_notification.values_list('user__email', flat=True).distinct()
+            senders_dec_list = ', '.join(senders_decline)
+            messages.success(self.request, f"{senders_dec_list} declined your invitation.")
+
+        if application_notification.exists():
+            senders_app = accept_notification.values_list('user__email', flat=True).distinct()
+            senders_app_list = ', '.join(senders_app)
+            messages.success(self.request, f"{senders_app_list} requested to join your carpool.")
+
+        if accept_notification.exists():
+            senders_accept = accept_notification.values_list('user__email', flat=True).distinct()
+            senders_accept_list = ', '.join(senders_accept)
+            messages.success(self.request, f"{senders_accept_list} accepted your invitation.")
+
+        if invite_notification.exists():
+            senders_invitation = invite_notification.values_list('user__email', flat=True).distinct()
+            senders_invitation_list = ', '.join(senders_invitation)
+            messages.success(self.request, f"{senders_invitation_list} invited you to join their carpool.")
 
         if unread_notifications.exists():
-            # Get the senders of the unread notifications
             senders = unread_notifications.values_list('user__email', flat=True).distinct()
-            senders_list = ', '.join(senders)  # Join senders' names in a comma-separated list
-
-            # Add a personalized message with sender information
+            senders_list = ', '.join(senders)
             messages.success(self.request, f"You have {unread_notifications.count()} new notification(s) from {senders_list}.")
-
-            # Optionally mark all unread notifications as read
             unread_notifications.update(read=True)
 
+        
         return context
+
+
+
+
+
+
+
 class NotificationListView(LoginRequiredMixin, ListView):
     model = Notification
     template_name = 'Notification/notification_list.html'  # Ensure the correct template path

@@ -76,7 +76,7 @@
                 {% endif %}
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'notification_list' %}">Notifications</a>
+                <a class="nav-link" href="{% url 'recipient_notifications' %}">Notifications</a>
               </li>
               <li class="nav-item">
                 {% if request.user.is_authenticated %}
@@ -99,6 +99,14 @@
       </div>
     </header>
    <!-- slider section -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Hey!</strong> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
 <section class="slider_section ">
   <div id="customCarousel1" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
