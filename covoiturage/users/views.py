@@ -5,7 +5,9 @@ from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 import os
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.hashers import make_password  # Ensure this import is at the top of the file
-
+from django.core.mail import send_mail
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from users.models import  Users
 from django.contrib.auth import authenticate, login, logout
 from registration.models import   Comptes
@@ -73,6 +75,7 @@ def connect(request):
     return render(request, 'Login/index.html')
 
 def update_password(request):
+    # Supprimer 'user_id' de la session uniquement si elle existe
     if 'user_id' in request.session:
         del request.session['user_id']
         messages.success(request, "Déconnexion réussie.")
@@ -83,50 +86,67 @@ def update_password(request):
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
 
-        # Validate password match
+        # Vérification des mots de passe
         if new_password != confirm_password:
             messages.error(request, "Les mots de passe ne correspondent pas.")
             return redirect('update_password')
 
+        # Validation de l'email
         try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Email invalide.")
+            return redirect('update_password')
+
+        try:
+            # Récupérer l'utilisateur et vérifier les informations
             user = Users.objects.get(email=email)
             compte = Comptes.objects.get(user=user, phone=phone)
 
-            # Update password
+            # Mise à jour du mot de passe
             user.password = make_password(new_password)
             user.save()
 
             messages.success(request, "Mot de passe mis à jour avec succès.")
+
+            # Envoi de l'email de notification
+            try:
+                send_mail(
+                    subject='Initialisation de mot de passe réussie',
+                    message=(
+                        "Votre mot de passe a été réinitialisé avec succès.\n\n"
+                        "Si vous n'avez pas demandé cette modification, veuillez contacter le support immédiatement."
+                    ),
+                    from_email='mohamedihsen81@gmail.com',
+                    recipient_list=[email],
+                )
+                messages.success(request, "E-mail de notification envoyé avec succès.")
+            except Exception as e:
+                messages.error(request, f"Erreur lors de l'envoi de l'e-mail : {str(e)}")
+
             return redirect('index')
 
-        except (Users.DoesNotExist, Comptes.DoesNotExist):
-            messages.error(request, "Email ou téléphone incorrect.")
-            return redirect('update_password')
+        except Users.DoesNotExist:
+            messages.error(request, "Aucun utilisateur trouvé avec cet email.")
+        except Comptes.DoesNotExist:
+            messages.error(request, "Numéro de téléphone incorrect.")
+        except Exception as e:
+            messages.error(request, f"Une erreur inattendue est survenue : {str(e)}")
+
+        return redirect('update_password')
 
     return render(request, 'Login/update_password.html')
 
-def liste_users(request):
-    listeusers = Users.objects.all()
-    return render(request, 'Login/liste_user.html', {'listeusers': listeusers})
 
-def supprimer_utilisateur(request, id_utilisateur):
-    try:
-        user = Users.objects.get(id=id_utilisateur)
-        user.delete()
-        messages.success(request, "Utilisateur supprimé avec succès.")
-    except Users.DoesNotExist:
-        messages.error(request, "Utilisateur introuvable!")
-
-    return redirect('liste_users')
-
-def continuer(request):
-    if request.user.is_authenticated:
-        return render(request, 'Home/index.html')
-    else:
-        messages.error(request, "Vous devez être connecté pour accéder à cette page.")
-        return redirect('connect')
 
 def disconnect(request):
     logout(request)
     messages.success(request, "Déconnexion réussie.")
     return redirect('login')
+
+def send_email(subject, message, from_email, recipient_list):
+    # Envoi de l'email
+    try:
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    except Exception as e:
+        raise e

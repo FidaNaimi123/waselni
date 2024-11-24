@@ -12,20 +12,17 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <title>wassalni</title>
     
-    <style>
-        .disabled {
-            pointer-events: none;
-            color: grey;
-        }
-    </style>
+    
 </head>
 <body>
     <!--<p>Utilisateur connecté : {{ is_logged_in }}</p> -->
-    {% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-info" onclick="this.remove();">{{ message }}</div>
+    {% for message in messages%}
+                <script>
+                    window.onload = function()  {
+                        alert ("{{message}}")
+                    }
+                </script>
     {% endfor %}
-    {% endif %}
 
     <header class="header">
         <nav class="navbar">
@@ -103,50 +100,7 @@
             </form>
             
         </div>
-
-
-
-        <script>
-            // Attendez que le document soit entièrement chargé
-            document.addEventListener('DOMContentLoaded', function() {
-                // Sélectionnez le lien "Administrer" et le sous-menu
-                const adminLink = document.getElementById('admin-link');
-                const dropdownContent = adminLink.nextElementSibling; // Le div .dropdown-content qui est juste après <a>Administrer
-        
-                // Fonction pour basculer l'affichage du sous-menu
-                adminLink.addEventListener('click', function(event) {
-                    // Empêche le comportement par défaut du lien (évite le changement de page)
-                    event.preventDefault();
-        
-                    // Basculez la visibilité du sous-menu
-                    if (dropdownContent.style.display === 'block') {
-                        dropdownContent.style.display = 'none';
-                    } else {
-                        dropdownContent.style.display = 'block';
-                    }
-                });
-        
-                // Optionnel : Fermer le sous-menu si on clique ailleurs sur la page
-                document.addEventListener('click', function(event) {
-                    if (!adminLink.contains(event.target) && !dropdownContent.contains(event.target)) {
-                        dropdownContent.style.display = 'none';
-                    }
-                });
-            });
-        </script>
-        
-
-
-        <script>
-            function handleLogin(event) {
-                event.preventDefault(); // Empêche l'envoi du formulaire par défaut
-                // Simule la connexion réussie (dans un vrai scénario, tu ferais une requête AJAX ou similaire)
-                const adminLink = document.getElementById('admin-link');
-                adminLink.classList.remove('disabled');
-                adminLink.href = '/path/to/admin'; // Remplace ceci par l'URL appropriée
-                alert('Connexion réussie !'); // Message de succès (pour démonstration)
-            }
-        </script>        
+      
 
 </body>
 
