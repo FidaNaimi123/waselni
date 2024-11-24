@@ -1,143 +1,331 @@
-{% extends 'Home/base.html' %}
-{% load static %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'image/trs.png' %}" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <!-- Container for the page background -->
-    <div class="page-container" style="background-image: url('{% static 'cov.png' %}'); background-size: cover; background-position: center;">
+  <title>Trajets</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+
+  <!-- Owl carousel stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+
+  <!-- font awesome style -->
+  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <!-- responsive style -->
+  <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+
+  
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Style pour le conteneur des boutons */
+        .button-container {
+            display: flex; /* Flexbox pour mettre les boutons côte à côte */
+            justify-content: center; /* Centrer les boutons */
+            gap: 20px; /* Espace entre les boutons */
+            margin-top: 20px; /* Espace au-dessus des boutons */
+            margin-bottom: 30px; /* Espace sous les boutons */
+        }
+
+        /* Style des boutons */
+        .button-container button {
+            padding: 12px 30px;
+            background-color: #1e88e5; /* Bleu pour le bouton */
+            color: white;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .button-container button:hover {
+            background-color: #1976d2; /* Bleu plus foncé au survol */
+            transform: translateY(-2px);
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            margin: 0 auto;
+        }
+   
         
-        <!-- Main content area -->
-        <div class="container my-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8 p-4 rounded shadow-sm" style="background-color: rgba(255, 255, 255, 0.8);">
-                    <!-- Button container -->
-                    <div class="button-container mb-4 text-center">
-                        <a href="{% url 'creer_trajet' %}" class="btn btn-primary mr-2 px-4 py-2 rounded">Créer un Trajet</a>
-                        <a href="{% url 'trajets_disponibles' %}" class="btn btn-secondary px-4 py-2 rounded">Nos Trajets</a>
-                    </div>
 
-                    <h1 class="mb-4 text-center">Modifier un Trajet</h1>
+        h1 {
+            text-align: center;
+            color: #1e88e5; /* Bleu pour le titre */
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
 
-                    <!-- Start of Form -->
-                    <form method="post" class="form-custom">
-                        {% csrf_token %}
-                        
-                        <!-- Departure Information -->
-                        <div class="form-group row">
-                            <label for="id_point_depart" class="col-sm-3 col-form-label">Point de départ :</label>
-                            <div class="col-sm-9">
-                                {{ form.point_depart }}
-                                {% if form.point_depart.errors %}
-                                    <div class="error text-danger mt-1">{{ form.point_depart.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #444;
+        }
 
-                        <div class="form-group row">
-                            <label for="id_point_arrivee" class="col-sm-3 col-form-label">Point d'arrivée :</label>
-                            <div class="col-sm-9">
-                                {{ form.point_arrivee }}
-                                {% if form.point_arrivee.errors %}
-                                    <div class="error text-danger mt-1">{{ form.point_arrivee.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
 
-                        <!-- Date and Time Information -->
-                        <div class="form-group row">
-                            <label for="id_date_depart" class="col-sm-3 col-form-label">Date de départ :</label>
-                            <div class="col-sm-9">
-                                <input type="date" name="date_depart" id="id_date_depart" value="{{ trajet.date_depart|date:'Y-m-d' }}" required>
-                                {% if form.date_depart.errors %}
-                                    <div class="error text-danger mt-1">{{ form.date_depart.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            color: #fff;
+            background-color: #1e88e5; /* Bleu pour le bouton */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-                        <div class="form-group row">
-                            <label for="id_heure_depart" class="col-sm-3 col-form-label">Heure de départ :</label>
-                            <div class="col-sm-9">
-                                {{ form.heure_depart }}
-                                {% if form.heure_depart.errors %}
-                                    <div class="error text-danger mt-1">{{ form.heure_depart.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        button:hover {
+            background-color: #1976d2; /* Bleu plus foncé au survol */
+            transform: translateY(-2px);
+        }
 
-                        <!-- Price and Availability -->
-                        <div class="form-group row">
-                            <label for="id_prix_par_place" class="col-sm-3 col-form-label">Prix par place :</label>
-                            <div class="col-sm-9">
-                                {{ form.prix_par_place }}
-                                {% if form.prix_par_place.errors %}
-                                    <div class="error text-danger mt-1">{{ form.prix_par_place.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        .back-link {
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            color: #1e88e5; /* Bleu pour le lien retour */
+            font-weight: bold;
+            text-decoration: none;
+        }
 
-                        <div class="form-group row">
-                            <label for="id_places_disponibles" class="col-sm-3 col-form-label">Places disponibles :</label>
-                            <div class="col-sm-9">
-                                {{ form.places_disponibles }}
-                                {% if form.places_disponibles.errors %}
-                                    <div class="error text-danger mt-1">{{ form.places_disponibles.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+        .back-link:hover {
+            color: #1976d2; /* Bleu plus foncé au survol */
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s;
+        }
+        .pagination-arrow {
+          position: fixed; /* Positionné de façon fixe */
+          bottom: 20px; /* À 20px du bas */
+          right: 20px; /* À 20px du bord droit */
+          background-color: #1e88e5;
+          color: white;
+          padding: 15px;
+          border-radius: 50%;
+          text-decoration: none;
+          font-size: 24px;
+          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
 
-                        <!-- Driver Information -->
-                        <div class="form-group row">
-                            <label for="id_statut" class="col-sm-3 col-form-label">Statut :</label>
-                            <div class="col-sm-9">
-                                {{ form.statut }}
-                                {% if form.statut.errors %}
-                                    <div class="error text-danger mt-1">{{ form.statut.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+      .pagination-arrow:hover {
+          background-color: #1976d2;
+      }
 
-                        <div class="form-group row">
-                            <label for="id_conducteur_nom_complet" class="col-sm-3 col-form-label">Nom et prénom du conducteur :</label>
-                            <div class="col-sm-9">
-                                {{ form.conducteur_nom_complet }}
-                                {% if form.conducteur_nom_complet.errors %}
-                                    <div class="error text-danger mt-1">{{ form.conducteur_nom_complet.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+    </style>
 
-                        <div class="form-group row">
-                            <label for="id_conducteur_contact" class="col-sm-3 col-form-label">Contact du conducteur :</label>
-                            <div class="col-sm-9">
-                                {{ form.conducteur_contact }}
-                                {% if form.conducteur_contact.errors %}
-                                    <div class="error text-danger mt-1">{{ form.conducteur_contact.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+</head>
 
-                        <div class="form-group row">
-                            <label for="id_matricule" class="col-sm-3 col-form-label">Matricule :</label>
-                            <div class="col-sm-9">
-                                {{ form.matricule }}
-                                {% if form.matricule.errors %}
-                                    <div class="error text-danger mt-1">{{ form.matricule.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+<body class="sub_page">
 
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-success mt-3 w-100 py-2 rounded">Modifier</button>
-                    </form>
 
-                    <!-- Link to go back to the trip list -->
-                    <a href="{% url 'liste_trajets' %}" class="btn btn-link mt-4 d-block text-center">Retour à la liste des trajets</a>
-                </div>
-            </div>
+    <div class="hero_area">
+        <div class="hero_bg_box">
+          <div class="bg_img_box">
+            <img src="{% static 'image/hero-bg.png' %}" alt="">
+          </div>
         </div>
+    
+        <!-- header section starts -->
+        <header class="header_section">
+          <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg custom_nav-container">
+              <a class="navbar-brand" href="index.html">
+                <span>Waselni</span>
+              </a>
+      
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class=""> </span>
+              </button>
+      
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home1' %}">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'trajets_disponibles' %}">Trajects</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_reservations' %}">Réservations</a>
+                  </li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                      <a class="nav-link" href="{% url 'carpool_list' %}">Groups</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'login1' %}">Groups</a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'notification_list' %}">Notifications</a>
+                  </li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                      <a class="nav-link" href="{% url 'disconnect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Logout</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'connect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reclamation_create' %}">Reclamation</a>
+                  </li>
+                  <form class="form-inline">
+                    <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
+                      <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </header>
+        <!-- end header section -->
+        
+      </div>
+      
+      
+
+
+  <section class="about_section layout_padding">
+   
+    <div class="container">
+        <div class="heading_container heading_center"> 
+        <h2>Modify <span>Trips</span></h2>
+       
     </div>
 
-    <script>
-        document.getElementById('id_date_depart').setAttribute('min', new Date().toISOString().split('T')[0]);
-    </script>
+    <div class="form-container">
+   
+       
+    
+            <form method="post">
+                {% csrf_token %}
+    
+                <!-- Point de départ -->
+                <label for="id_point_depart">Point de départ :</label>
+                {{ form.point_depart }}
+                {% if form.point_depart.errors %}
+                    <div class="error">{{ form.point_depart.errors }}</div>
+                {% endif %}
+    
+                <!-- Point d'arrivée -->
+                <label for="id_point_arrivee">Point d'arrivée :</label>
+                {{ form.point_arrivee }}
+                {% if form.point_arrivee.errors %}
+                    <div class="error">{{ form.point_arrivee.errors }}</div>
+                {% endif %}
+    
+                <!-- Date de départ -->
+                <label for="id_date_depart">Date de départ :</label>
+                <input type="date" name="date_depart" id="id_date_depart" value="{{ trajet.date_depart|date:'Y-m-d' }}" required>
+                {% if form.date_depart.errors %}
+                    <div class="error">{{ form.date_depart.errors }}</div>
+                {% endif %}
+    
+                <!-- Heure de départ -->
+                <label for="id_heure_depart">Heure de départ :</label>
+                {{ form.heure_depart }}
+                {% if form.heure_depart.errors %}
+                    <div class="error">{{ form.heure_depart.errors }}</div>
+                {% endif %}
+    
+                <!-- Prix par place -->
+                <label for="id_prix_par_place">Prix par place :</label>
+                {{ form.prix_par_place }}
+                {% if form.prix_par_place.errors %}
+                    <div class="error">{{ form.prix_par_place.errors }}</div>
+                {% endif %}
+    
+                <!-- Places disponibles -->
+                <label for="id_places_disponibles">Places disponibles :</label>
+                {{ form.places_disponibles }}
+                {% if form.places_disponibles.errors %}
+                    <div class="error">{{ form.places_disponibles.errors }}</div>
+                {% endif %}
+    
+                <!-- Statut -->
+                <label for="id_statut">Statut :</label>
+                {{ form.statut }}
+                {% if form.statut.errors %}
+                    <div class="error">{{ form.statut.errors }}</div>
+                {% endif %}
+    
+                <!-- Nom et prénom du conducteur -->
+                <label for="id_conducteur_nom_complet">Nom et prénom du conducteur :</label>
+                {{ form.conducteur_nom_complet }}
+                {% if form.conducteur_nom_complet.errors %}
+                    <div class="error">{{ form.conducteur_nom_complet.errors }}</div>
+                {% endif %}
+    
+                <!-- Contact du conducteur -->
+                <label for="id_conducteur_contact">Contact du conducteur :</label>
+                {{ form.conducteur_contact }}
+                {% if form.conducteur_contact.errors %}
+                    <div class="error">{{ form.conducteur_contact.errors }}</div>
+                {% endif %}
+    
+                <!-- Matricule -->
+                <label for="id_matricule">Matricule :</label>
+                {{ form.matricule }}
+                {% if form.matricule.errors %}
+                    <div class="error">{{ form.matricule.errors }}</div>
+                {% endif %}
+    
+                <button type="submit">Modifier</button>
+            </form>
+            <a href="{% url 'liste_trajets' %}" class="back-link">Retour à la liste des trajets</a>
+        </div>
+        <script>
+            // Validation JavaScript pour interdire la sélection d'une date antérieure à aujourd'hui
+            document.getElementById('id_date_depart').setAttribute('min', new Date().toISOString().split('T')[0]);
+        </script>
+    </body>
+    <a href="{% url 'liste_trajets' %}" class="pagination-arrow">
+        <i class="fas fa-arrow-right"></i>
+    </a>
 
-{% endblock %}
+    </div>
+  </section>
+</body>
+</html>

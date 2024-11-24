@@ -1,98 +1,496 @@
-{% extends 'Home/base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'image/trs.png' %}" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-{% block content %}
-    <!-- Background Section -->
-    <div class="page-container" style="background-image: url('{% static 'cov.png' %}'); background-size: cover; background-position: center;">
-        
-        <!-- Content Section with Transparent Background -->
-        <div class="container my-5 p-4 rounded shadow-sm" style="background-color: rgba(255, 255, 255, 0.8);">
-            
-            <!-- Top Section with Button -->
-            <div class="top-section mb-4 text-center">
-                <a href="{% url 'creer_trajet' %}" class="btn btn-primary px-4 py-2 rounded">Ajouter un nouveau trajet</a>
-            </div>
+  <title>Trajets</title>
 
-            <h1 class="mb-4 text-center">Liste des Trajets</h1>
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
 
-            <!-- Search Form -->
-            <form method="GET" class="mb-4 p-4 bg-light rounded shadow-sm d-flex align-items-center">
-                <div class="form-group mr-3">
-                    <label for="point_depart" class="sr-only">Ville de Départ :</label>
-                    <input type="text" id="point_depart" name="point_depart" class="form-control" placeholder="Ville de départ" value="{{ point_depart }}">
-                </div>
-            
-                <div class="form-group mr-3">
-                    <label for="point_arrivee" class="sr-only">Ville d'Arrivée :</label>
-                    <input type="text" id="point_arrivee" name="point_arrivee" class="form-control" placeholder="Ville d'arrivée" value="{{ point_arrivee }}">
-                </div>
-            
-                <div class="form-group mr-3">
-                    <label for="date_depart" class="sr-only">Date de Départ :</label>
-                    <input type="date" id="date_depart" name="date_depart" class="form-control" value="{{ date_depart }}">
-                </div>
-            
-                <button type="submit" class="btn btn-primary">Rechercher</button>
-            </form>
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
 
-            <!-- Traject Table -->
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Point de Départ</th>
-                        <th>Point d'Arrivée</th>
-                        <th>Date de Départ</th>
-                        <th>Heure de Départ</th>
-                        <th>Prix par Place</th>
-                        <th>Places Disponibles</th>
-                        <th>Statut</th>
-                        <th>Conducteur</th>
-                        <th>Contact</th>
-                        <th>Matricule</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for trajet in trajets %}
-                        <tr class="{% if trajet.statut == 'annulé' %}annule{% endif %}">
-                            <td>{{ trajet.point_depart }}</td>
-                            <td>{{ trajet.point_arrivee }}</td>
-                            <td>{{ trajet.date_depart }}</td>
-                            <td>{{ trajet.heure_depart }}</td>
-                            <td>{{ trajet.prix_par_place }} DT</td>
-                            <td>{{ trajet.places_disponibles }}</td>
-                            <td>
-                                {% if trajet.places_disponibles == 0 %}
-                                    <span class="complet">Complet</span>
-                                {% else %}
-                                    {{ trajet.statut }}
-                                {% endif %}
-                            </td>
-                            <td>{{ trajet.conducteur_nom_complet }}</td>
-                            <td>{{ trajet.conducteur_contact }}</td>
-                            <td>{{ trajet.matricule }}</td>
-                            <td class="actions">
-                                {% if trajet.date_depart >= today %}
-                                    <a href="{% url 'modifier_trajet' trajet.id %}" class="btn btn-warning btn-sm">Modifier</a>
-                                    <a href="{% url 'supprimer_trajet' trajet.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Supprimer</a>
-                                {% else %}
-                                    <span>Non modifiable</span>
-                                    <a href="{% url 'supprimer_trajet' trajet.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Supprimer</a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="11" class="empty-message text-center">Aucun trajet disponible.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+  <!-- Owl carousel stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
 
-            <!-- Pagination Link -->
-            <a href="{% url 'creer_trajet' %}" class="btn btn-link text-center d-block mt-4">
-                Ajouter un nouveau trajet <i class="fas fa-arrow-right"></i>
-            </a>
+  <!-- font awesome style -->
+  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <!-- responsive style -->
+  <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+<style>
+  /* Style général */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9; /* Fond léger pour la page */
+    margin: 0 auto;
+    padding: 0;
+    
+}
+
+h1 {
+    text-align: center;
+    color: #1E90FF;
+    font-size: 2.5em;
+    margin-top: 20px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.button {
+    padding: 10px 15px;
+    background-color: #1E90FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+.button:hover {
+    background-color: #4682B4;
+}
+
+.top-section {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+/* Table */
+/* Centre la table horizontalement */
+table {
+    width: 80%;                  /* La largeur de la table (ajustez selon vos besoins) */
+    margin: 30px auto;           /* Cette propriété permet de centrer la table avec un espacement vertical */
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparence pour la table */
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;           /* Limiter la largeur maximale de la table */
+    overflow-x: auto;            /* Permet de faire défiler horizontalement si la table dépasse */
+}
+
+/* Pour la section parent, pour s'assurer que la table est centrée dans son conteneur */
+.container {
+    display: flex;
+    justify-content: center;    /* Centre le contenu horizontalement */
+    align-items: center;        /* Centre le contenu verticalement */
+}
+
+
+/* Th et Td */
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+/* En-têtes de la table */
+th {
+    background-color: #1E90FF;
+    color: white;
+    font-weight: bold;
+}
+
+/* Lignes impaires */
+tr:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.7); /* Couleur de fond pour les lignes paires */
+}
+
+/* Survol des lignes */
+tr:hover {
+    background-color: rgba(225, 245, 254, 0.5); /* Fond en survol légèrement transparent */
+}
+
+/* Statut spécifique */
+.annule {
+    background-color: rgba(244, 67, 54, 0.8); /* Rouge transparent pour les trajets annulés */
+    color: white;
+    font-weight: bold;
+}
+
+.complet {
+    background-color: rgba(255, 182, 193, 0.6); /* Rose doux transparent pour "Complet" */
+    color: black;
+    font-weight: bold;
+}
+
+/* Liens */
+a {
+    color: #1E90FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Message d'absence de données */
+.empty-message {
+    text-align: center;
+    font-size: 1.2em;
+    color: #1E90FF;
+    font-weight: bold;
+}
+
+/* Formulaire de recherche */
+.form-section {
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.form-section h2 {
+    color: #1e88e5;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* Recherche */
+.search-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.search-container input {
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 250px;
+}
+
+.search-container button {
+    padding: 12px 20px;
+    border-radius: 5px;
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-container button:hover {
+    background-color: #1976d2;
+}
+
+/* Bouton Créer un Trajet */
+.create-trip-button {
+    position: absolute;
+    top: 100px;
+    right: 30px;
+    z-index: 999;
+}
+
+.create-trip-button a {
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.create-trip-button a:hover {
+    background-color: #1976d2;
+}
+
+/* Flèche de pagination */
+.pagination-arrow {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1e88e5;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 24px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-arrow:hover {
+    background-color: #1976d2;
+}
+</style>
+</head>
+
+<body class="sub_page">
+
+
+    <div class="hero_area">
+        <div class="hero_bg_box">
+          <div class="bg_img_box">
+            <img src="{% static 'image/hero-bg.png' %}" alt="">
+          </div>
         </div>
+    
+        <!-- header section starts -->
+        <header class="header_section">
+          <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg custom_nav-container">
+              <a class="navbar-brand" href="index.html">
+                <span>Waselni</span>
+              </a>
+      
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class=""> </span>
+              </button>
+      
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home1' %}">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'trajets_disponibles' %}">Trajects</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_reservations' %}">Réservations</a>
+                  </li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                      <a class="nav-link" href="{% url 'carpool_list' %}">Groups</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'login1' %}">Groups</a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'notification_list' %}">Notifications</a>
+                  </li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                      <a class="nav-link" href="{% url 'disconnect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Logout</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'connect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reclamation_create' %}">Reclamation</a>
+                  </li>
+                  <form class="form-inline">
+                    <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
+                      <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </header>
+        <!-- end header section -->
+        
+      </div>
+      
+      
+
+
+  <section class="about_section layout_padding">
+   
+    <div class="container">
+        
+      <div class="heading_container heading_center"> 
+        
+        <h2>Our <span>Trips</span></h2>
+        <p>"Your perfect ride is just a tap away—join our carpooling app and make every journey a shared adventure!"</p>
+        
+      <br>
+      <div class="create-trip-button">
+        <a href="{% url 'creer_trajet' %}">Create Trip</a>
+        <a href="{% url 'statistiques' %}">Statistics</a>
+        <a href="{% url 'export_trajets' %}">Export PDF</a>
     </div>
-{% endblock %}
+      <!-- Formulaire de recherche -->
+      <form method="GET">
+        <div class="search-container">
+            
+                <div class="search-container">
+                    <input type="text" id="point_depart" name="point_depart" placeholder="Departure Point" value="{{ point_depart }}">
+                    <input type="text" id="point_arrivee" name="point_arrivee" placeholder="Arrival Point" value="{{ point_arrivee }}">
+                    <input type="date" id="date_depart" name="date_depart" value="{{ date_depart }}">
+                    <button type="submit">Search</button>
+                </div> 
+        </div>
+      </form>
+     <br>
+      
+      <table>
+        <thead>
+            <tr>
+                <th>Point de Départ</th>
+                <th>Point d'Arrivée</th>
+                <th>Date de Départ</th>
+                <th>Heure de Départ</th>
+                <th>Prix par Place</th>
+                <th>Places Disponibles</th>
+                <th>Statut</th>
+                <th>Conducteur</th>
+                <th>Contact</th>
+                <th>Matricule</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for trajet in trajets %}
+                <tr class="{% if trajet.statut == 'annulé' %}annule{% endif %}">
+                    <td>{{ trajet.point_depart }}</td>
+                    <td>{{ trajet.point_arrivee }}</td>
+                    <td>{{ trajet.date_depart }}</td>
+                    <td>{{ trajet.heure_depart }}</td>
+                    <td>{{ trajet.prix_par_place }} DT</td>
+                    <td>{{ trajet.places_disponibles }}</td>
+                    <td>
+                        {% if trajet.places_disponibles == 0 %}
+                            <span class="complet">Complet</span>
+                        {% else %}
+                            {{ trajet.statut }}
+                        {% endif %}
+                    </td>
+                    <td>{{ trajet.conducteur_nom_complet }}</td>
+                    <td>{{ trajet.conducteur_contact }}</td>
+                    <td>{{ trajet.matricule }}</td>
+                    <td class="actions">
+                        {% if trajet.date_depart >= today %}
+                            <a href="{% url 'modifier_trajet' trajet.id %}" class="button">Modify</a>
+                            <a href="{% url 'supprimer_trajet' trajet.id %}" class="button" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Delete</a>
+                           
+                        {% else %}
+                            <span>Non-editable</span>
+                            <a href="{% url 'supprimer_trajet' trajet.id %}" class="button" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="11" class="empty-message">Aucun trajet disponible.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'creer_trajet' %}" class="pagination-arrow">
+        <i class="fas fa-arrow-right"></i>
+    </a>
+
+    </div>
+  </section>
+
+  
+    <!-- info section -->
+    <section class="info_section layout_padding2">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-lg-3 info_col">
+            <div class="info_contact">
+              <h4>Address</h4>
+              <div class="contact_link_box">
+                <a href="#">
+                  <i class="fa fa-map-marker" aria-hidden="true"></i>
+                  <span>Esprit Main Building, Ghazela</span>
+                </a>
+                <a href="#">
+                  <i class="fa fa-phone" aria-hidden="true"></i>
+                  <span>Call +216 97 468 457</span>
+                </a>
+                <a href="#">
+                  <i class="fa fa-envelope" aria-hidden="true"></i>
+                  <span>Waselni@gmail.com</span>
+                </a>
+              </div>
+            </div>
+            <div class="info_social">
+              <a href="#">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+              </a>
+              <a href="#">
+                <i class="fa fa-twitter" aria-hidden="true"></i>
+              </a>
+              <a href="#">
+                <i class="fa fa-linkedin" aria-hidden="true"></i>
+              </a>
+              <a href="#">
+                <i class="fa fa-instagram" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 info_col">
+            <div class="info_detail">
+              <h4>Info</h4>
+              <p>Waselni provides a safe and convenient carpooling service for students, offering easy ride-sharing options and helping reduce transportation costs.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-2 mx-auto info_col">
+            <div class="info_link_box">
+              <h4>Links</h4>
+              <div class="info_links">
+                <a class="active" href="{% url 'index' %}">Home</a>
+                <a href="">About</a>
+                <a href="">Services</a>
+                <a href="">Why Us</a>
+                <a href="">Team</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 info_col">
+            <h4>Subscribe</h4>
+            <form action="#">
+              <input type="email" placeholder="Enter email" required />
+              <button type="submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- end info section -->
+
+   
+
+  <script>
+    document.getElementById('export-pdf').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Récupérer la table
+        const table = document.querySelector('table');
+
+        // Générer le contenu du PDF à partir de la table
+        doc.autoTable({ html: table });
+
+        // Télécharger le PDF
+        doc.save('trajets.pdf');
+    });
+</script>
+
+</body>
+</html>
