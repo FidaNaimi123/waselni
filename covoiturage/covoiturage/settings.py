@@ -79,6 +79,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'covoiturage.wsgi.application'
 
 
+# # Configuration des emails dans settings.py
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+# EMAIL_HOST_USER = 'mohamedihsen81@gmail.com'  # Adresse Gmail
+# EMAIL_HOST_PASSWORD = 'xaxg rogo dzzq qdoz'  # Utiliser un mot de passe d'application
+# DEFAULT_FROM_EMAIL = 'mohamedihsen81@gmail.com'
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -149,7 +159,6 @@ EMAIL_HOST_USER = 'fida.Naimi@esprit.tn'  # Remplacez par votre e-mail
 EMAIL_HOST_PASSWORD = 'nuct hwju awcy bhcr'  # Remplacez par votre mot de passe
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# settings.py
+#settings.py
 STRIPE_TEST_PUBLIC_KEY = 'pk_test_51QOSc5F0b4cBpO0sUSGLX2sZtcMuwdIB4MBs2V5ivPn4Q57EQ1Y5WOYhp12Y2fice9Mdpw3TfVIlPRg8USdHbDqV00vHMQbcHi'
 STRIPE_TEST_SECRET_KEY = 'sk_test_51QOSc5F0b4cBpO0s0f5iN0eRPKJ4IeX3i1fZ9wOu6QvbkUAfx7VjI5IuNME36gLLajPGuZKucPpmBNhWJEPBmIA90040xPiLbb'
-

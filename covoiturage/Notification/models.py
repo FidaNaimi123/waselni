@@ -32,8 +32,6 @@ class Notification(models.Model):
 
     def clean(self):
         # Custom validation logic
-        if self.user == self.recipient:
-            raise ValidationError("The sender and recipient cannot be the same user.")
 
         if not self.message or len(self.message.strip()) == 0:
             raise ValidationError("The message field cannot be empty.")

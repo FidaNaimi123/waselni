@@ -1,469 +1,77 @@
-@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap);
-@import url(https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap);
-
-
-* {
-    /*font-family: 'poppins', sans-serif;*/
-    font-family: 'Montserrat';
-}
-
-html {
-    scroll-behavior: smooth;
-
-}
-
 body {
-    margin: auto;
-    overflow-x: hidden;
-	overflow-y: hidden;
-    /*overflow: auto;*/
-    
-}
-
-
-
-
-
-
-/********************* debut page creation compte  **********************/
-
-.page-registration
-{
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #05073a, #1c77c3);
     color: #fff;
     display: flex;
-    height: 100vh;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg,#05073a,#dc0606ca);
-    padding: 10px;
-}
-
-.conteneur
-{
-    max-width: 700px;
-    width: 100%;
-    padding: 25px 30px;
-    border-radius: 25px;
-    background: linear-gradient(135deg,#dc0606ca,#05073a);
-}
-.conteneur .heading
-{
-    font-size: 25px;
-    font-weight: 500;
-    position: relative;
-    text-align: center;
-    padding: 0 0 20px 0;
-
-}
-.conteneur .heading::before
-{
-    content: '';
-    position: absolute;
-    height: 3px;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background: linear-gradient(135deg,#71b7c6,#9b5b);
-}
-
-.conteneur form .card-details
-{
-    margin-top: 25px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-form .card-details .card-box
-{
-    width: calc(100% / 2 - 20px);
-    margin-bottom: 15px;
-}
-
-.card-details .card-box .details
-{
-    display: block;
-    font-weight: 500;
-    margin-bottom: 5px;
-}
-
-.card-details .card-box input
-{
-    height: 45px;
-    width: 100%;
-    outline: none;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding-left: 15px;
-    font-size: 16px;
-    border-bottom-width: 2px ;
-    transition: all 0.3s ease;
-}
-
-.card-details .card-box input:focus,
-.card-details .card-box input:valid
-{
-    border-color: #9b59b6;
-}
-
-form .circuit-form .circuit-title
-{
-    font-size: 20px;
-    font-weight: 500;
-    border-bottom: 2px solid;
-}
-
-form .circuit-form .categorie
-{
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-form .button
-{
-    text-align: center;
-}
-
-form .button input
-{
-    padding: 10px 0;
-    margin-top: 10px;
-    height: 100%;
-    width: 50%;
-    outline: none;
-    color: #fff;
-    border: none;
-    font-size: 18px;
-    font-weight: 500;
-    border-radius: 5px;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg,#05073a,#dc0606ca);
-
-}
-
-form .button input:hover
-{
-    background: linear-gradient(135deg,#05073a,#dc0606ca); 
-}
-@media(max-width:584px)
-{
-    .conteneur
-    {
-        max-width: 100%;
-    }
-    form .card-details .card-box
-    {
-        margin-bottom: 15px;
-        width: 100%;
-    }
-    form .circuit-form .categorie
-    {
-        width: 100%;
-    }
-    .conteneur form .card-details
-    {
-        max-height: 300px;
-        overflow: scroll;
-    }
-    .card-details::_webkit-scrollbar
-    {
-        width: 0;
-    }
-}
-
-/********************* fin page creation compten  **********************/
-
-
-
-/********************* debut page login  **********************/
-
-.login-compte
-{
-    display: grid;
     height: 100vh;
-    place-items: center;
-    /*background: #be2edd;*/
-    background: linear-gradient(135deg,#05073a,#dc0606ca);
-}
-.main-div
-{
-    width: 365px;
-    background: #fff;
-    padding: 30px;
-    border-radius: 5px;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.15);
-}
-.main-div .title-login
-{
-    text-align: center;
-    font-size: 30px;
-    font-weight: 600;
-}
-.main-div .social-icons
-{
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
-.social-icons a
-{
-    display: block;
-    height: 45px;
-    width: 100%;
-    line-height: 45px;
-    text-align: center;
-    border-radius: 5px;
-    font-size: 20px;
-    color: #fff;
-    text-decoration: none;
-    transition: all 0.3s linear;
-}
-.social-icons span
-{
-    margin-left: 5px;
-    font-size: 18px;
-}
-.social-icons a:first-child
-{
-    margin-right: 5px;
-    background: #4267b2;
-}
-.social-icons a:first-child:hover
-{
-    background: #375695;
-}
-.social-icons a:last-child
-{
-    margin-left: 5px;
-    background: #1da1f2;
-
-}
-.social-icons a:last-child:hover
-{
-    background: #0d8bd9;
-}
-form
-{
-    margin-top: 25px;
-}
-form .input-box
-{
-    height: 50px;
-    width: 88%;
-    position: relative;
-    margin-top: 15px;
-    background: red;
-}
-.input-box input
-{
-    height: 100%;
-    width: 100%;
-    outline: none;
-    font-size: 17px;
-    padding-left: 45px;
-    border-radius: 5px;
-    border: 1px solid lightgrey;
-    transition: all 0.3s ease;
-
-}
-.input-box input:focus
-{
-    border-color: #be2edd;
-}
-.input-box .icon
-{
-    position: absolute;
-    top: 50%;
-    left: 20px;
-    color: grey;
-    transform: translateY(-50%);
-}
- 
-
- /************************/
- form .button
-{
-    text-align: center;
-}
-
-form .button input
-{
-    padding: 10px 0;
-    margin-top: 10px;
-    height: 100%;
-    width: 50%;
-    outline: none;
-    color: #fff;
-    border: none;
-    font-size: 18px;
-    font-weight: 500;
-    border-radius: 5px;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg,#05073a,#dc0606ca);
-
-}
-
-form .button input:hover
-{
-    background: linear-gradient(135deg,#05073a,#dc0606ca); 
-}                
-/*************************************/
-
-
-
-form .option-div
-{
-    margin-top: 5px;
-    display: flex;
-    justify-content: space-between;
-}
-.option-div .check-box
-{
-    display: flex;
-    align-items: center;
-}
-.option-div span
-{
-    margin-left: 5px;
-    font-size: 16px;
-    color: #333;
-}
-.option-div .forget-div
-{
-    font-size: 16px;
-    color: #be2edd;
-}
-.button input
-{
-    color: #fff;
-    font-size: 20px;
-    font-weight: 500;
-    border: none;
-    padding-left: 0;
-    background: #be2edd;
-    cursor: pointer;
-    transition: all 0.3s linear;
-}
-.button input:hover
-{
-    background: #a720c5;
-}
-form .sign-up
-{
-    text-align: center;
-    margin-top: 25px;
-}
-.sign-up a
-{
-    color: #be2edd;
-}
-form a
-{
-    text-decoration: none;
-}
-form a:hover
-{
-    text-decoration: underline;
-}
-
-
-/********************* fin page login  **********************/
-
-/***************************** forget pass et create account dans compte ***********************/
-
-/* Style de la section Créer un compte */
-.create-account {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.create-account p {
-    font-size: 14px;
-    color: #555;
-}
-
-.create-account a {
-    color: #3498db;
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.create-account a:hover {
-    color: #2980b9;
-    text-decoration: underline;
-}
-
-/* Style de la section Mot de passe oublié */
-.forgot-password {
-    margin-top: 15px;
-    text-align: center;
-}
-
-.forgot-password p {
-    font-size: 14px;
-    color: #888;
-}
-
-.forgot-password a {
-    color: #e74c3c;
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.forgot-password a:hover {
-    color: #c0392b;
-    text-decoration: underline;
-}
-
-
-/********************************** forget password ***********************/
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
 }
 
 .form-container {
     width: 100%;
     max-width: 400px;
-    margin: 50px auto;
     padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background: linear-gradient(135deg, #1c77c3, #05073a);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    text-align: center;
+}
+
+h2.form-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px;
 }
 
 .form-group {
     margin-bottom: 15px;
+    text-align: left;
 }
 
 label {
-    display: block;
-    margin-bottom: 5px;
     font-weight: bold;
+    font-size: 0.9em;
+    color: #d1e8ff;
 }
 
 input {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #e8f0fe;
+    font-size: 1em;
+    color: #333;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+}
+
+input:focus {
+    border: 1px solid #1c77c3;
+    box-shadow: 0 0 5px rgba(28, 119, 195, 0.5);
 }
 
 button {
     width: 100%;
     padding: 10px;
-    background-color: #28a745;
-    color: white;
+    background: linear-gradient(135deg, #05073a, #1c77c3);
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
     cursor: pointer;
+    transition: background 0.3s;
 }
 
 button:hover {
-    background-color: #218838;
+    background: linear-gradient(135deg, #1c77c3, #05073a);
 }
 
-
+button:active {
+    transform: scale(0.98);
+    background: linear-gradient(135deg, #003366, #1c77c3);
+}
