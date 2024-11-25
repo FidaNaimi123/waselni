@@ -1,0 +1,35 @@
+{% extends 'Home/base.html' %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
+
+    <div class="container mt-5">
+        <h2 class="carpool-title mb-4">My Reservation Invitations</h2>
+
+        {% if invitations %}
+            <div class="list-group">
+                {% for reservation in invitations %}
+                    <div class="list-group-item group-card d-flex justify-content-between align-items-center p-4">
+                        <div>
+                            <span class="carpool-title">Trip: </span> 
+                            <strong>{{ reservation.trip.point_arrivee }}</strong> 
+                            - Status: <span class="text-warning">Pending</span>
+                        </div>
+                        <div class="btn-group">
+                            <a href="{% url 'confirm_group_reservation' reservation.id %}" class="btn btn-custom btn-sm">Confirm</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="list-group-item bg-light-grey text-center p-4">
+                You have no pending reservation invitations.
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{% url 'carpool_list' %}" class="btn btn-custom">Back to Carpool List</a>
+        </div>
+    </div>
+{% endblock %}

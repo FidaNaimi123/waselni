@@ -301,6 +301,11 @@
                         <input type="hidden" name="selected_trip" value="{{ trajet.id }}">
                         <button type="submit" class="button">Reserve</button>
                     </form>
+                    <form method="POST" action="{% url 'select_trip2' %}" class="d-inline-block">
+                      {% csrf_token %}
+                      <input type="hidden" name="select_trip2" value="{{ trajet.id }}">
+                      <button type="submit" class="button">Reserve as Group</button>
+                  </form>
                     <form method="POST" action="{% url 'select_trip1' %}">
                         {% csrf_token %}
                         <input type="hidden" name="selected_trip1" value="{{ trajet.id }}">
