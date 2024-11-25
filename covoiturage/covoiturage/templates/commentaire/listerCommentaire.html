@@ -1,0 +1,14 @@
+{% for commentaire in commentaires %}
+    <div class="commentaire" id="commentaire-{{ commentaire.id }}">
+        <p class="commentaire-texte">{{ commentaire.texte }}</p>
+        <p class="commentaire-meta">
+            Le {{ commentaire.date_commentaire|date:"d/m/Y à H:i" }}
+        </p>
+        {% if user.is_authenticated %}  {# Adaptez cette condition selon votre logique d'autorisation #}
+            <button class="btn-supprimer-commentaire" 
+                    data-commentaire-id="{{ commentaire.id }}">
+                Supprimer
+            </button>
+        {% endif %}
+    </div>
+{% endfor %}

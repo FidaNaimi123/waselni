@@ -1,0 +1,59 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'penalites/css/dashboard.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    {% include 'penalites/includes/_sidebar.html' %}
+    
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Tableau de bord des pénalités</h1>
+        </header>
+
+        {% include 'penalites/includes/_stats_cards.html' %}
+
+        <div class="dashboard-grid">
+            <!-- Graphique des tendances -->
+            <div class="card">
+                <h2>Tendances des pénalités</h2>
+                <canvas id="trendsChart"></canvas>
+            </div>
+
+            <!-- Liste des dernières pénalités -->
+            <div class="card">
+                <h2>Dernières pénalités</h2>
+                <div class="penalties-list">
+                    {% for penalite in penalites|slice:":5" %}
+                    <div class="penalty-item">
+                        <div class="penalty-icon">
+                            {% if penalite.type_penalite == 'annulation_tardive' %}
+                                <i class="fas fa-clock text-warning"></i>
+                            {% elif penalite.type_penalite == 'harcelement' %}
+                                <i class="fas fa-exclamation-triangle text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-exclamation-circle text-info"></i>
+                            {% endif %}
+                        </div>
+                        <div class="penalty-details">
+                            <h4>{{ penalite.get_type_penalite_display }}</h4>
+                            <p>{{ penalite.description }}</p>
+                            <small>{{ penalite.date_penalite|date:"d/m/Y H:i" }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="{% static 'penalites/js/dashboard.js' %}"></script>
+{% endblock %}

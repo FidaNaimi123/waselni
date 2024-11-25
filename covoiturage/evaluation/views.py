@@ -2,10 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
-from .models import Evaluation, Trajet
+from .models import Evaluation
+from Trip.models import Trajet
+from users.models import Users
 from .forms import EvaluationForm
 from django.utils import timezone
 from datetime import timedelta
+from django.shortcuts import render
 
 @login_required
 def select_trip1(request):
@@ -21,24 +24,23 @@ def create_evaluation(request, trajet_id):
         if form.is_valid():
             evaluation = form.save(commit=False)
             evaluation.trajet = trajet
-            evaluation.evaluateur.email = request.user.email
+            evaluation.evaluateur = request.user  # Associe l'utilisateur connecté comme évaluateur
 
-            # Ensure `evale` is set, for example:
-            # Assuming `evale` is a field representing the driver or another user
-            evaluation.evale = trajet.conducteur_nom_complet  # Replace with the correct field for the user being evaluated
+            # Récupérer l'utilisateur à évaluer (exemple : conducteur)
+            # Remplacez 'trajet.conducteur_user_id' par le champ qui correspond à l'ID ou à la clé étrangère vers le modèle `Users`
+            evaluation.evale = get_object_or_404(Users, id=trajet.id)
 
-            # Check date constraints
-            if trajet.date_depart < timezone.now().date():
-                form.add_error(None, "Vous ne pouvez pas évaluer un trajet déjà passé.")
-                return render(request, 'evaluation/evaluation_form.html', {'form': form})
-
-            evaluation.save()
-            return redirect('trajets_disponibles', trajet_id=trajet.id)
+            
     else:
         form = EvaluationForm()
 
     return render(request, 'evaluation/evaluation_form.html', {'form': form})
 
+
+
+def confirmation_view(request):
+    # Logique supplémentaire si nécessaire
+    return render(request, 'evaluation/confirmation.html')  # Afficher un template
 
 @login_required
 def update_evaluation(request, evaluation_id):

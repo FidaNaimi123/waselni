@@ -1,0 +1,18 @@
+<div class="sidebar">
+    <div class="user-info">
+        <div class="user-avatar">
+            <i class="fas fa-user-circle fa-3x"></i>
+        </div>
+        <div class="user-details">
+            <h3>{{ user.username }}</h3>
+            <span class="status {{ statut_compte|lower }}">{{ statut_compte }}</span>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="{% url 'penalites:dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+        
+    </nav>
+</div>

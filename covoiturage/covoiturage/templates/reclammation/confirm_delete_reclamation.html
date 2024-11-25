@@ -1,4 +1,5 @@
-{% extends 'Home/base.html' %}
+{% extends 'reclamation/base.html' %}
+
 {% block content %}
 <div class="container mt-5 p-4 bg-light rounded shadow-sm">
     <div class="text-center mb-4">
@@ -14,7 +15,7 @@
 
     <div class="d-flex justify-content-center">
         <form method="POST" class="me-2">
-            {% csrf_token %}
+            
             <button type="submit" class="btn btn-danger px-4">Supprimer</button>
         </form>
         <a href="{% url 'trajet_detail' trajet_id=reclamation.trajet.id %}" class="btn btn-secondary px-4">Annuler</a>

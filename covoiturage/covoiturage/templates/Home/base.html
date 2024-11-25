@@ -96,6 +96,9 @@
                   <li class="nav-item {% if request.path == '/reclamation_create/' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'reclamation_create' %}">Reclamation</a>
                   </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'penalites:dashboard' %}">Penality</a>
+                  </li>
                   <li class="nav-item {% if request.path == '/connect/' %}active{% endif %}">
                     {% if request.user.is_authenticated %}
                       <a class="nav-link" href="{% url 'disconnect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Logout</a>

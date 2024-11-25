@@ -1,0 +1,26 @@
+/* Styles généraux */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Étoiles */
+.stars {
+    display: flex;
+    direction: row;
+}
+
+.star {
+    width: 30px;
+    height: 30px;
+    background: url('https://image.shutterstock.com/image-vector/star-icon-260nw-1241795205.jpg') no-repeat center center;
+    background-size: contain;
+    cursor: pointer;
+}
+
+input[type="radio"]:checked ~ .stars .star {
+    background: url('https://image.shutterstock.com/image-vector/star-icon-filled-260nw-1241795205.jpg') no-repeat center center;
+}
+
+input[type="radio"] {
+    display: none;
+}

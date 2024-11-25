@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Reclamation, Trajet
+from .models import Reclamation
 from django.utils.html import format_html
 
 class ReclamationEtatFilter(admin.SimpleListFilter):
@@ -19,18 +19,21 @@ class ReclamationEtatFilter(admin.SimpleListFilter):
             return queryset.filter(etat='résolue')
         return queryset
 
+
 class ReclamationAdmin(admin.ModelAdmin):
-    list_display = ('utilisateur', 'trajet', 'sujet', 'etat', 'date_reclamation', 'action_link')
-    search_fields = ('utilisateur__username', 'sujet', 'trajet__destination')
+    list_display = ('utilisateur', 'sujet', 'point_depart', 'point_arrive', 
+                     'temps', 'matricule_voiture', 'etat', 'date_reclamation', 'action_link')
+    search_fields = ('utilisateur__username', 'sujet', 'matricule_voiture', 'lieu')
     list_filter = ('etat', 'date_reclamation', ReclamationEtatFilter)
     ordering = ('-date_reclamation',)
     readonly_fields = ('date_reclamation',)
     fieldsets = (
-        ('Information de l\'utilisateur', {
-            'fields': ('utilisateur', 'trajet')
+        ('Informations de l\'utilisateur', {
+            'fields': ('utilisateur',)
         }),
         ('Détails de la réclamation', {
-            'fields': ('sujet', 'description', 'etat')
+            'fields': ('sujet', 'description', 'point_depart', 'point_arrive', 
+                        'temps', 'matricule_voiture', 'etat')
         }),
         ('Date', {
             'fields': ('date_reclamation',)
@@ -38,8 +41,8 @@ class ReclamationAdmin(admin.ModelAdmin):
     )
     
     def action_link(self, obj):
-        # Creates a clickable link for quick actions
-        return format_html('<a href="/admin/app_name/reclamation/{}/change/">Voir détails</a>', obj.id)
+        # Crée un lien cliquable pour les actions rapides
+        return format_html('<a href="/admin/reclammation/reclamation/{}/change/">Voir détails</a>', obj.id)
     action_link.short_description = 'Action'
 
 admin.site.register(Reclamation, ReclamationAdmin)

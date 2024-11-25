@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('evaluation/', include('evaluation.urls')),
+    path('penalites/', include('penality.urls')),
     path('commentaire/', include('commentaire.urls')),
     path('reclammation/', include('reclammation.urls')),
     path('reservation/', include('Reservations.urls')),  # Routes pour Reservation

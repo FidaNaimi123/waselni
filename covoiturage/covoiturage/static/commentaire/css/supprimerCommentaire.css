@@ -1,0 +1,31 @@
+
+.commentaire {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.commentaire-texte {
+    margin-bottom: 10px;
+}
+
+.commentaire-meta {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.btn-supprimer-commentaire {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-supprimer-commentaire:hover {
+    background-color: #c82333;
+}

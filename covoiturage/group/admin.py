@@ -73,7 +73,7 @@ class GroupReservationAdmin(admin.ModelAdmin):
     """Admin for Group Reservations"""
     list_display = ['carpool', 'trip', 'creator', 'reservation_date', 'reservation_deadline', 'is_expired']
     list_filter = ['reservation_date', 'reservation_deadline']
-    search_fields = ['carpool__name', 'trip__name', 'creator__username']
+    search_fields = ['carpool__name', 'trip__name', 'creator__email']
     inlines = [GroupReservationParticipantsInline]
 
     def is_expired(self, obj):
@@ -88,7 +88,7 @@ class GroupReservationParticipantsAdmin(admin.ModelAdmin):
     """Admin for managing Group Reservation Participants"""
     list_display = ['group_reservation', 'user', 'status']
     list_filter = ['status']
-    search_fields = ['user__username', 'group_reservation__carpool__name']
+    search_fields = ['user__email', 'group_reservation__carpool__name']
 
 
 @admin.register(MembershipInvitation)
@@ -96,4 +96,4 @@ class MembershipInvitationAdmin(admin.ModelAdmin):
     """Admin for managing Membership Invitations"""
     list_display = ['carpool', 'user', 'status', 'created_at']
     list_filter = ['status']
-    search_fields = ['user__username', 'carpool__name']
+    search_fields = ['user__email', 'carpool__name']

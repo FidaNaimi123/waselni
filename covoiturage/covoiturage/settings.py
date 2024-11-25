@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'registration',
     'group',
     'Notification',
+    'penality',
 ]
 
 MIDDLEWARE = [

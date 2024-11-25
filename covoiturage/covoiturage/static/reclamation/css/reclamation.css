@@ -1,0 +1,48 @@
+/* Basic Page Styling */
+body {
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+}
+
+/* Container for form */
+.container {
+    max-width: 800px;
+    margin-top: 30px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Submit button styling */
+button.btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+}
+
+/* Form Error Styling */
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Custom Modal Styling */
+.modal-header {
+    background-color: #f44336;
+    color: white;
+}
+.modal-footer .btn-danger {
+    background-color: #f44336;
+}
+.modal-footer .btn-secondary {
+    background-color: #ccc;
+}
