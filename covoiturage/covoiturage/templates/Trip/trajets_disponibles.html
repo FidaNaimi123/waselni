@@ -48,7 +48,7 @@
         background-color: rgba(255, 255, 255, 0.8);
         border-radius: 10px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        width: 250px;
+        width: 300px;
         flex-shrink: 0; /* Empêche la carte de se réduire */
         transition: transform 0.3s, box-shadow 0.3s;
     }
@@ -92,7 +92,7 @@
     .button-container {
         display: flex;
         justify-content: space-between;
-        gap: 10px;
+        gap: 1px;
         padding: 10px;
     }
 
@@ -299,7 +299,7 @@
                     <form method="POST" action="{% url 'select_trip' %}">
                         {% csrf_token %}
                         <input type="hidden" name="selected_trip" value="{{ trajet.id }}">
-                        <button type="submit" class="button">Reserve</button>
+                        <button type="submit" class="button">Reserve for One</button>
                     </form>
                     <form method="POST" action="{% url 'select_trip2' %}" class="d-inline-block">
                       {% csrf_token %}
@@ -309,7 +309,7 @@
                     <form method="POST" action="{% url 'select_trip1' %}">
                         {% csrf_token %}
                         <input type="hidden" name="selected_trip1" value="{{ trajet.id }}">
-                        <button type="submit" class="button">Rate</button>
+                        <button type="submit" class="button">Rate ****</button>
                     </form>
                 </div>
             </div>
