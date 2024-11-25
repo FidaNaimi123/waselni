@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home,create_reservation,check_user,delete_reservation,update_reservation,select_trip,user_reservations,afficher_historique,test_email
+from .views import home,create_reservation,check_user,delete_reservation,update_reservation,select_trip,user_reservations,afficher_historique,test_email,payment_success,payment_cancel,stripe_webhook
 
 urlpatterns = [
     path('', home, name='home'),  # Route pour la page d'accueil
@@ -11,7 +11,9 @@ urlpatterns = [
     path('update_reservation/<int:reservation_id>/', update_reservation, name='update_reservation'), 
     path('user/reservations/', user_reservations, name='user_reservations'),
     path('user/reservations/historique', afficher_historique, name='historique_reservations'),
-      path('test-email/', test_email, name='test_email'),
-
+    path('test-email/', test_email, name='test_email'),
+    path('payment-success/<int:reservation_id>/', payment_success, name='payment_success'),
+    path('payment-cancel/<int:reservation_id>/', payment_cancel, name='payment_cancel'),
+    path('webhooks/stripe/', stripe_webhook, name='stripe_webhook'),
     
 ]

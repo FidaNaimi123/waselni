@@ -16,12 +16,22 @@ class Reservation(models.Model):
         help_text="Le nombre minimal de places doit être 1."
     )
     Payment_Method_list = [
-        (' online_payment', ' online_payment'),
+        ('online_payment', 'online_payment'),
         ('cash_payment', 'cash_payment'),
        
     ]
-    
-    Payment_Method=models.CharField(max_length=20,choices=Payment_Method_list)
+    PAYMENT_STATUS = [
+        ('pending', 'En attente'),
+        ('paid', 'Payé'),
+        ('failed', 'Échoué'),
+    ]
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    Payment_Method = models.CharField(
+    max_length=20,
+    choices=Payment_Method_list,
+    default='cash_payment'  # Valeur par défaut
+)
+
 
     class Meta:
         unique_together = ('user_id', 'trip_id')  # Contrainte unique
