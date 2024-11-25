@@ -11,6 +11,8 @@ class Notification(models.Model):
         ('Accept', 'Accept'),
         ('Decline', 'Decline'),
         ('Application', 'Application'),
+        ('Reservation', 'Reservation'),
+        ('Reminder', 'Reminder'),
         # Add more types as needed
     ]
 

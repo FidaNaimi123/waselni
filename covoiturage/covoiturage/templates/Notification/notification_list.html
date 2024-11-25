@@ -37,6 +37,12 @@
                 <option value="info" {% if type_filter == 'info' %}selected{% endif %}>Information</option>
                 <option value="warn" {% if type_filter == 'warn' %}selected{% endif %}>Warning</option>
                 <option value="alert" {% if type_filter == 'alert' %}selected{% endif %}>Alert</option>
+                <option value="Invitation" {% if type_filter == 'Invitation' %}selected{% endif %}>Invitation</option>
+                <option value="Accept" {% if type_filter == 'Accept' %}selected{% endif %}>Accept</option>
+                <option value="Decline" {% if type_filter == 'Decline' %}selected{% endif %}>Decline</option>
+                <option value="Application" {% if type_filter == 'Application' %}selected{% endif %}>Application</option>
+                <option value="Reservation" {% if type_filter == 'Reservation' %}selected{% endif %}>Reservation</option>
+                
             </select>
             <button type="submit" class="btn btn-success">Filter</button>
         </div>

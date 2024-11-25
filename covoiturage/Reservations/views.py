@@ -16,7 +16,12 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from Notification.models import Notification
+from datetime import timedelta , datetime
+from django.utils.timezone import make_aware
 
+from django.utils.timezone import now
+from django.db import transaction  # Ensures atomicity for reservation and notifications
 stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
 @csrf_exempt  # Pour ignorer la protection CSRF pour ce webhook spécifique
 def stripe_webhook(request):
@@ -56,7 +61,10 @@ def stripe_webhook(request):
     # Répondez avec un 200 pour indiquer que tout s'est bien passé
     return JsonResponse({'status': 'success'}, status=200)
 @login_required
-def create_reservation(request, trip_id):
+
+
+@login_required
+def create_reservation(request, trip_id): 
     trip = get_object_or_404(Trajet, id=trip_id)
     user = request.user
 
@@ -71,64 +79,89 @@ def create_reservation(request, trip_id):
     if request.method == 'POST':
         form = ReservationForm(request.POST)
         if form.is_valid():
-            reservation = form.save(commit=False)
-            reservation.trip_id = trip
-            reservation.user_id = user
+            with transaction.atomic():  # Ensure reservation and notifications are created together
+                reservation = form.save(commit=False)
+                reservation.trip_id = trip
+                reservation.user_id = user
 
-            # Validation du nombre de places
-            if reservation.seat_count > trip.places_disponibles:
-                messages.error(request, f"Il n'y a pas assez de places disponibles. Places restantes : {trip.places_disponibles}")
-                return render(request, 'Reservations/create_reservation.html', {
-                    'form': form,
-                    'trip': trip,
-                })
+                # Validation du nombre de places
+                if reservation.seat_count > trip.places_disponibles:
+                    messages.error(request, f"Il n'y a pas assez de places disponibles. Places restantes : {trip.places_disponibles}")
+                    return render(request, 'Reservations/create_reservation.html', {
+                        'form': form,
+                        'trip': trip,
+                    })
 
-            # Enregistrer la réservation sans la valider immédiatement
-            reservation.save()
+                # Enregistrer la réservation sans la valider immédiatement
+                reservation.save()
 
-            # Si paiement en ligne, créer une session Stripe et rediriger vers la page de paiement
-            if reservation.Payment_Method == 'online_payment':
-                YOUR_DOMAIN = "http://127.0.0.1:8000/"
+                # Si paiement en ligne, créer une session Stripe et rediriger vers la page de paiement
+                if reservation.Payment_Method == 'online_payment':
+                    YOUR_DOMAIN = "http://127.0.0.1:8000/"
+                    try:
+                        checkout_session = stripe.checkout.Session.create(
+                            payment_method_types=['card'],
+                            line_items=[{
+                                'price_data': {
+                                    'currency': 'usd',
+                                    'product_data': {'name': f'Reservation for trip {trip.id}'},
+                                    'unit_amount': int(trip.prix_par_place * reservation.seat_count * 100),  # En cents
+                                },
+                                'quantity': 1,
+                            }],
+                            mode='payment',
+                            success_url=YOUR_DOMAIN + f'Reservations/payment-success/{reservation.id}/',
+                            cancel_url=YOUR_DOMAIN + f'Reservations/payment-cancel/{reservation.id}/',
+                            metadata={'reservation_id': reservation.id},  # Ajouter l'ID de la réservation aux métadonnées
+                        )
+
+                        # Retourner la redirection vers Stripe pour le paiement
+                        return redirect(checkout_session.url, code=303)
+
+                    except stripe.error.StripeError as e:
+                        messages.error(request, f"Erreur lors de la création de la session de paiement : {str(e)}")
+                        return redirect('create_reservation', trip_id=trip.id)
+
+                # Si paiement hors ligne, mettre à jour les places disponibles et confirmer la réservation
                 try:
-                    checkout_session = stripe.checkout.Session.create(
-                        payment_method_types=['card'],
-                        line_items=[{
-                            'price_data': {
-                                'currency': 'usd',
-                                'product_data': {'name': f'Reservation for trip {trip.id}'},
-                                'unit_amount': int(trip.prix_par_place * reservation.seat_count * 100),  # En cents
-                            },
-                            'quantity': 1,
-                        }],
-                        mode='payment',
-                        success_url=YOUR_DOMAIN + f'Reservations/payment-success/{reservation.id}/',
-                        cancel_url=YOUR_DOMAIN + f'Reservations/payment-cancel/{reservation.id}/',
-                        metadata={'reservation_id': reservation.id},  # Ajouter l'ID de la réservation aux métadonnées
+                    # Décrémenter les places disponibles
+                    trip.places_disponibles -= reservation.seat_count
+                    trip.save()
+
+                    reservation.save()  # Sauvegarder définitivement
+                    send_reservation_email(reservation)
+
+                    # Ajouter une notification de réservation
+                    Notification.objects.create(
+                        type_notification='Reservation',
+                        message=f"Votre réservation pour le trajet le {trip.date_depart} à {trip.heure_depart} a été confirmée.",
+                        status_notification='sent',
+                        user=user,  # L'utilisateur qui a fait la réservation
+                        recipient=user,  # L'utilisateur recevant la notification
+                        read=False  # La notification est non lue par défaut
                     )
 
-                    # Retourner la redirection vers Stripe pour le paiement
-                    return redirect(checkout_session.url, code=303)
+                    # Planifier une notification de rappel
+                    reminder_time_naive = datetime.combine(trip.date_depart, trip.heure_depart)
+                    reminder_time = make_aware(reminder_time_naive) - timedelta(minutes=10)          
+                    if reminder_time > now():
+                        Notification.objects.create(
+                            type_notification='Reminder',
+                            message=f"Rappel : Votre trajet commence bientôt, le {trip.date_depart} à {trip.heure_depart}.",
+                            status_notification='pending',
+                            user=user,  # L'utilisateur qui a fait la réservation
+                            recipient=user,  # L'utilisateur recevant la notification
+                            read=False  # La notification est non lue par défaut
+                        )
 
-                except stripe.error.StripeError as e:
-                    messages.error(request, f"Erreur lors de la création de la session de paiement : {str(e)}")
-                    return redirect('create_reservation', trip_id=trip.id)
-
-            # Si paiement hors ligne, mettre à jour les places disponibles et confirmer la réservation
-            try:
-                # Décrémenter les places disponibles
-                trip.places_disponibles -= reservation.seat_count
-                trip.save()
-
-                reservation.save()  # Sauvegarder définitivement
-                send_reservation_email(reservation)
-                messages.success(request, 'Votre réservation a été effectuée avec succès !')
-                return redirect('home1')  # Redirection après une réservation réussie
-            except IntegrityError:
-                messages.error(request, 'Une erreur s\'est produite lors de la réservation.')
-                return render(request, 'Reservations/create_reservation.html', {
-                    'form': form,
-                    'trip': trip,
-                })
+                    messages.success(request, 'Votre réservation a été effectuée avec succès !')
+                    return redirect('home1')  # Redirection après une réservation réussie
+                except IntegrityError:
+                    messages.error(request, 'Une erreur s\'est produite lors de la réservation.')
+                    return render(request, 'Reservations/create_reservation.html', {
+                        'form': form,
+                        'trip': trip,
+                    })
         else:
             messages.error(request, 'Il y a une erreur dans votre formulaire. Veuillez corriger les champs.')
     else:
@@ -138,7 +171,6 @@ def create_reservation(request, trip_id):
         'form': form,
         'trip': trip,
     })
-
 
 @login_required
 def payment_success(request, reservation_id):

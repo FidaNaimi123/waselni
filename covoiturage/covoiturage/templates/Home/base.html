@@ -91,7 +91,7 @@
                     {% endif %}
                   </li>
                   <li class="nav-item {% if request.path == '/notification_list/' %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'notification_list' %}">Notifications</a>
+                    <a class="nav-link" href="{% url 'recipient_notifications' %}">Notifications</a>
                   </li>
                   <li class="nav-item {% if request.path == '/reclamation_create/' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'reclamation_create' %}">Reclamation</a>
