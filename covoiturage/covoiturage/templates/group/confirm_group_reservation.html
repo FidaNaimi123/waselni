@@ -1,0 +1,25 @@
+{% extends 'Home/base.html' %}
+
+{% block content %}
+{% load static %}
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
+
+    <div class="container mt-5">
+        <h1 class="carpool-title mb-4">Confirm Reservation for {{ group_reservation.trip.name }}</h1>
+
+        <p class="text-muted mb-4">You have been invited to join this reservation. Do you accept?</p>
+
+        <form method="post" class="bg-light-grey p-5 rounded shadow-sm">
+            {% csrf_token %}
+            
+            <div class="text-center">
+                <button type="submit" name="action" value="accept" class="btn btn-purple btn-lg mx-2">
+                    Accept
+                </button>
+                <button type="submit" name="action" value="decline" class="btn btn-danger btn-lg mx-2">
+                    Decline
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

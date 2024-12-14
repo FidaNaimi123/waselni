@@ -3,97 +3,147 @@
 {% block title %}{{ carpool.name }} - Carpool Details{% endblock %}
 
 {% block content %}
-
+{% load static %}
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
 <div class="container mt-5">
-    <div class="card shadow-sm p-4 mb-5 bg-white rounded">
-        <h1 class="text-primary">{{ carpool.name }}</h1>
+    <div class="row">
+        <!-- Left Column (Details) -->
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-5 bg-white rounded group-card">
+                <h1 class="carpool-title">{{ carpool.name }}</h1>
 
-        <div class="mb-4">
-            <h4 class="font-weight-bold">Creator:</h4>
-            <p class="text-muted">{{ carpool.creator.email }}</p>
-        </div>
+                <!-- Creator Information -->
+                <div class="mb-4">
+                    <h4 class="font-weight-bold">Creator:</h4>
+                    <p class="text-muted">{{ carpool.creator.email }}</p>
+                </div>
 
-        <div class="mb-4">
-            <h4 class="font-weight-bold">Description:</h4>
-            <p>{{ carpool.description }}</p>
-        </div>
+                <!-- Description (Purple Container) -->
+                <div class="mb-4 p-3 bg-light-purple rounded">
+                    <h4 class="font-weight-bold">Description:</h4>
+                    <p>{{ carpool.description }}</p>
+                </div>
 
-        <div class="mb-4">
-            <h4 class="font-weight-bold">Members:</h4>
-            <ul class="list-group mb-3">
-                {% for member in carpool.members.all %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <a href="{% url 'user_detail' member.id %}" class="text-decoration-none">{{ member.email }}</a>
-                        {% if request.user == carpool.creator %}
-                            <form method="post" action="{% url 'remove_member' carpool.id member.id %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                            </form>
-                        {% endif %}
-                    </li>
-                {% empty %}
-                    <li class="list-group-item text-center">No members in this carpool.</li>
-                {% endfor %}
-            </ul>
-        </div>
+                <!-- Members List -->
+                <div class="mb-4">
+                    <h4 class="font-weight-bold">Members:</h4>
+                    <ul class="list-group mb-3">
+                        {% for member in carpool.members.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{% url 'user_detail' member.id %}" class="text-decoration-none">{{ member.email }}</a>
+                                {% if request.user == carpool.creator %}
+                                    <form method="post" action="{% url 'remove_member' carpool.id member.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                {% endif %}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-center">No members in this carpool.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-        {% if request.user != carpool.creator %}
-            <div class="mb-4">
-                <h4 class="font-weight-bold">Apply to Join:</h4>
-                <form method="post" action="{% url 'apply_to_join' carpool.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary btn-block">Apply to Join</button>
-                </form>
-            </div>
-        {% endif %}
-
-        {% if request.user == carpool.creator %}
-            <div class="mb-4">
-                <h4 class="font-weight-bold">Add Member:</h4>
-                <form method="post" action="{% url 'invite_member' carpool.id %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <select name="user" class="form-control" required>
-                            <option value="">Select a user to invite</option>
-                            {% for user in users %}
-                                <option value="{{ user.id }}">{{ user.email }}</option>
-                            {% endfor %}
-                        </select>
+                <!-- Apply to Join Button (Centered) -->
+                {% if request.user != carpool.creator %}
+                    <div class="mb-4">
+                        <h4 class="font-weight-bold">Apply to Join:</h4>
+                        <form method="post" action="{% url 'apply_to_join' carpool.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-purple btn-sm mx-auto">Apply to Join</button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Send Invitation</button>
-                </form>
-            </div>
+                {% endif %}
 
-            <div class="mb-4">
-                <h4 class="font-weight-bold">Pending Applications:</h4>
-                <ul class="list-group mb-3">
-                    {% for invitation in pending_invitations %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ invitation.user.email }}
-                            <div>
-                                <form method="post" action="{% url 'respond_to_invitation' invitation.id 'accept' %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
-                                </form>
-                                <form method="post" action="{% url 'respond_to_invitation' invitation.id 'decline' %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Decline</button>
-                                </form>
+                <!-- Add Member Button (Centered) -->
+                {% if request.user == carpool.creator %}
+                    <div class="mb-4">
+                        <h4 class="font-weight-bold">Add Member:</h4>
+                        <form method="post" action="{% url 'invite_member' carpool.id %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <select name="user" class="form-control" required>
+                                    <option value="">Select a user to invite</option>
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}">{{ user.email }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
-                        </li>
-                    {% empty %}
-                        <li class="list-group-item text-center">No pending applications.</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+                            <button type="submit" class="btn btn-purple btn-sm mx-auto">Send Invitation</button>
+                        </form>
+                    </div>
+                {% endif %}
 
-        <div class="mb-4">
-            <h4 class="font-weight-bold">Carpool Rules:</h4>
-            <p>{{ carpool.rules }}</p> <!-- Display the rules from the carpool model -->
+                <!-- Pending Applications -->
+                {% if request.user == carpool.creator %}
+                    <div class="mb-4">
+                        <h4 class="font-weight-bold">Pending Applications:</h4>
+                        <ul class="list-group mb-3">
+                            {% for invitation in pending_invitations %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ invitation.user.email }}
+                                    <div>
+                                        <form method="post" action="{% url 'respond_to_invitation' invitation.id 'accept' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                        </form>
+                                        <form method="post" action="{% url 'respond_to_invitation' invitation.id 'decline' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item text-center">No pending applications.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Rules (Separate Container) -->
+                <div class="mb-4 p-3 bg-light-grey rounded">
+                    <h4 class="font-weight-bold">Carpool Rules:</h4>
+                    <p>{{ carpool.rules }}</p>
+                </div>
+
+                <a href="{% url 'carpool_list' %}" class="btn btn-secondary mt-3">Back to Carpool List</a>
+            </div>
         </div>
 
-        <a href="{% url 'carpool_list' %}" class="btn btn-secondary mt-3">Back to Carpool List</a>
+        <!-- Right Column (Reserved for Calendar and Most Frequent Destination) -->
+        <div class="col-md-4">
+            <!-- Calendar Placeholder (Reserve Space for Future Content) -->
+            <div class="card shadow-sm p-4 mb-4 bg-white rounded">
+                <h4 class="font-weight-bold">Calendar of Previous Reservations</h4>
+                <div id="calendar" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; background-color: #7c4dff; padding: 20px; border-radius: 8px;">
+                    {% if previous_reservations %}
+                        {% for reservation in previous_reservations %}
+                        <div style="width: 120px; height: 120px; background-color: white; color: #333; text-align: center; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; justify-content: center;">
+                            <div style="font-size: 1.2em; font-weight: bold;">{{ reservation.reservation_date|date:"d" }}</div>
+                            <div style="font-size: 0.9em;">{{ reservation.reservation_date|date:"M Y" }}</div>
+                            <div style="font-size: 0.8em; margin-top: 5px; color: #555;">{{ reservation.trip.point_arrivee }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-white">No previous reservations found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Most Frequent Reservation Destination Placeholder -->
+            <div class="card shadow-sm p-4 mb-4 bg-white rounded">
+                <h4 class="font-weight-bold">Most Frequent Destination</h4>
+                <p class="text-muted">
+                    {% if most_frequent_destination %}
+                        The most frequent destination is <strong>{{ most_frequent_destination.0 }}</strong> with {{ most_frequent_destination.1 }} reservations.
+                    {% else %}
+                        No destination data available.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
     </div>
 </div>
+
 {% endblock %}

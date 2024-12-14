@@ -1,8 +1,10 @@
 {% extends 'Home/base.html' %}
 
 {% block content %}
+{% load static %}
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
     <div class="container mt-5">
-        <h1 class="text-primary">{{ user.email }}</h1>
+        <h1 class="carpool-title">{{ user.email }}</h1>
         <h2>Member of the following Carpools:</h2>
         <ul class="list-group">
             {% for carpool in user.carpool_groups.all %}

@@ -1,0 +1,100 @@
+/* Default style for the card */
+.group-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* On hover: Add distinction (background, shadow, border color, etc.) */
+.group-card:hover {
+    background-color: #f9f9f9; /* Slightly lighter background */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+    border: 1px solid #007bff; /* Change border color to blue */
+    cursor: pointer; /* Add pointer cursor to show it's clickable */
+}
+
+/* Buttons visibility (already working) */
+.group-card .hover-buttons {
+    display: none;
+}
+.group-card:hover .hover-buttons {
+    display: flex !important;
+}
+
+/* Optional: Add slight scaling effect on hover */
+.group-card:hover {
+    transform: scale(1.02); /* Slight enlargement */
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #4747ae; /* Subtle light purple hover background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for a hover effect */
+    border: 2px solid #7a42f4;
+}
+.btn-custom {
+    background-color: #231a6f; /* Set the background color */
+    color: #fff; /* White text for contrast */
+    border: none; /* Remove border */
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: scale(1.02); 
+    background-color: #1b1454; /* Darker shade on hover */
+    color: #fff; /* Ensure text remains white */
+}
+.carpool-title {
+    color: #231a6f; /* Set the desired color */
+    font-weight: bold; /* Optional: Make the text bold */
+}
+/* Purple background for description container */
+.bg-light-purple {
+    background-color: #f2e6ff; /* Light purple */
+}
+
+/* Grey background for rules container */
+.bg-light-grey {
+    background-color: #f5f5f5; /* Light grey */
+}
+
+/* Button Customizations */
+.btn-purple {
+    background-color: #7a42f4; /* Purple color */
+    border-color: #7a42f4;
+}
+
+.btn-purple:hover {
+    background-color: #5b2db2; /* Darker purple on hover */
+    border-color: #5b2db2;
+}
+
+/* Styling for Card Components */
+.card {
+    border-radius: 10px;
+}
+
+.card h4 {
+    color: #333;
+}
+
+.card p {
+    color: #666;
+}
+/* Custom Styling for Form Fields */
+.form-group1 label {
+    font-size: 1.1rem;
+    color: #4a4a4a;
+}
+
+.form-control1 {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    box-shadow: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #7a42f4; /* Purple border on focus */
+    box-shadow: 0 0 5px rgba(122, 66, 244, 0.3);
+}

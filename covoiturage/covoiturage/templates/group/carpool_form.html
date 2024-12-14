@@ -1,20 +1,58 @@
 {% extends 'Home/base.html' %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2 class="text-primary">{{ form.instance.pk|yesno:"Edit Carpool,Add Carpool" }}</h2>
-        <div class="card">
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
-                <br>
-                <a href="{% url 'carpool_list' %}" class="btn btn-secondary">Back to list</a>
+{% load static %}
+{% load form_filters %}
+
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
+
+<div class="container mt-5">
+    <h2 class="text-primary">{{ form.instance.pk|yesno:"Edit Carpool,Add Carpool" }}</h2>
+    <div class="row">
+        <!-- Left Column (Form) -->
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4 mb-5 bg-white rounded">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Name Field -->
+                        <div class="form-group1 mb-4">
+                            <label for="{{ form.name.id_for_label }}" class="font-weight-bold">Carpool Name</label>
+                            {{ form.name|add_class:"form-control1" }}
+                        </div>
+                        
+                        <!-- Description Field -->
+                        <div class="form-group1 mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="font-weight-bold">Description</label>
+                            {{ form.description|add_class:"form-control1" }}
+                        </div>
+                        
+                        <!-- Rules Field -->
+                        <div class="form-group1 mb-4">
+                            <label for="{{ form.rules.id_for_label }}" class="font-weight-bold">Rules</label>
+                            {{ form.rules|add_class:"form-control1" }}
+                        </div>
+                        
+                        <!-- Save Button -->
+                        <button type="submit" class="btn btn-purple btn-sm">Save</button>
+                    </form>
+                    <br>
+                    <a href="{% url 'carpool_list' %}" class="btn btn-secondary mt-3">Back to list</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column (Reserved for Additional Info or Sidebar) -->
+        <div class="col-md-4">
+            <!-- Placeholder for Additional Content (e.g., calendar, tips, etc.) -->
+            <div class="card shadow-sm p-4 mb-4 bg-white rounded">
+                <h4 class="font-weight-bold">Helpful Tips</h4>
+                <p class="text-muted">If not appropriete words found in name your group may be banned.</p>
+                <p class="text-muted">Try to correctly descripe the purpose of your group and try to introduce yourselves.</p>
+                <p class="text-muted">give the rules enough time to think as it well prevent you many problems and lay the fondation.</p>
             </div>
         </div>
     </div>
-    
-    {% endblock %}
-
+</div>
+{% endblock %}

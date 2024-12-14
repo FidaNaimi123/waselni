@@ -1,20 +1,226 @@
 {% extends 'Home/base.html' %}
-{% block content %}
-<div class="container mt-5">
-    <h2>{% if reclamation %}Modifier{% else %}Faire{% endif %} une réclamation</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary mt-3">{% if reclamation %}Modifier{% else %}Faire{% endif %}</button>
-    </form>
-    {% if form.errors %}
-    <div class="alert alert-danger mt-3">
-        <ul>
-            {% for error in form.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faire une Réclamation</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Styling -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #74ebd5, #9face6); /* Dégradé de couleur */
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        /* Amélioration de l'apparence des champs de saisie */
+        input[type="text"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px; /* Augmenter l'espace de padding */
+            border: 1px solid #ccc;
+            border-radius: 10px; /* Bordure arrondie */
+            font-size: 16px; /* Taille du texte ajustée */
+            background-color: #f9f9f9; /* Fond plus clair */
+            transition: border-color 0.3s, background-color 0.3s; /* Animation fluide */
+        }
+
+        /* Effet de focus sur les champs de saisie */
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #74ebd5; /* Couleur de la bordure lors du focus */
+            background-color: #fff; /* Changement de fond */
+        }
+
+        textarea {
+            resize: vertical; /* Permet de redimensionner la hauteur */
+            min-height: 150px; /* Hauteur minimale de la zone de texte */
+        }
+
+        /* Mise en page de la ligne de formulaire en flex pour une meilleure organisation */
+        .form-group-inline {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-group-inline .form-group {
+            flex: 1;
+        }
+
+        /* Styles pour les boutons */
+        .button-group {
+            text-align: center;
+        }
+
+        button {
+            padding: 14px 30px; /* Augmenter la taille des boutons */
+            background-color: #74ebd5;
+            color: #fff;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #9face6;
+            transform: translateY(-2px); /* Légère animation lors du survol */
+        }
+
+        button:active {
+            transform: translateY(0); /* Effet d'activation des boutons */
+        }
+
+        /* Message de succès et d'erreur */
+        .success-message,
+        .error-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 600px) {
+            .form-group-inline {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Faire une Réclamation</h1>
+
+        <!-- Affichage des messages de succès ou d'erreur -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="{{ message.tags }}-message">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Utilisateur -->
+            <div class="form-group">
+                {{ form.utilisateur.label_tag }}
+                {{ form.utilisateur }}
+                {{ form.utilisateur.errors }}
+            </div>
+
+            <!-- Sujet -->
+            <div class="form-group">
+                {{ form.sujet.label_tag }}
+                {{ form.sujet }}
+                {{ form.sujet.errors }}
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                {{ form.description.label_tag }}
+                <div class="description-field">
+                    {{ form.description }}
+                </div>
+                {{ form.description.errors }}
+            </div>
+
+            <!-- Point de Départ -->
+            <div class="form-group">
+                {{ form.point_depart.label_tag }}
+                {{ form.point_depart }}
+                {{ form.point_depart.errors }}
+            </div>
+
+            <!-- Point d'Arrivée -->
+            <div class="form-group">
+                {{ form.point_arrive.label_tag }}
+                {{ form.point_arrive }}
+                {{ form.point_arrive.errors }}
+            </div>
+
+            <!-- Temps -->
+            <div class="form-group">
+                {{ form.temps.label_tag }}
+                {{ form.temps }}
+                {{ form.temps.errors }}
+            </div>
+
+            <!-- Matricule de la Voiture -->
+            <div class="form-group">
+                {{ form.matricule_voiture.label_tag }}
+                {{ form.matricule_voiture }}
+                {{ form.matricule_voiture.errors }}
+            </div>
+
+            <!-- Boutons -->
+            <div class="button-group">
+                <button type="submit">Soumettre</button>
+                <button type="reset">Réinitialiser</button>
+            </div>
+        </form>
     </div>
-    {% endif %}
-</div>
-{% endblock %}
+</body>
+
+</html>

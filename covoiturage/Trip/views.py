@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Trajet
-from .forms import TrajetForm
+from .forms import TrajetForm,WeatherForm
 from django.utils import timezone
 from django.http import JsonResponse
 #import requests
@@ -15,7 +15,80 @@ from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 
 from reportlab.lib import colors
+import requests
 
+import requests
+
+def get_weather_with_region(region):
+    """
+    Appelle l'API WeatherAPI pour obtenir les conditions météorologiques actuelles avec une région spécifique.
+    Associe les conditions météo à des icônes correspondantes.
+    """
+    import requests  # Import nécessaire pour exécuter les requêtes
+    country = "Tunisia"  # Pays constant
+    api_key = "c619229cc9dc4f308e8173048240812"  # Remplacez par votre clé API valide
+    url = f"http://api.weatherapi.com/v1/current.json?key={api_key}&q={region},{country}"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        weather_data = response.json()
+
+        # Extraire les informations principales
+        temperature = weather_data["current"]["temp_c"]
+        condition = weather_data["current"]["condition"]["text"]
+
+        # Associer condition à une icône
+        if "rain" in condition.lower():
+            icon = "🌧️"  # Pluie
+        elif "cloud" in condition.lower():
+            icon = "🌥️"  # Nuages dispersés (nouvelle icône)
+        elif "clear" in condition.lower() or "sunny" in condition.lower():
+            icon = "☀️"  # Ensoleillé
+        elif "snow" in condition.lower():
+            icon = "❄️"  # Neige
+        elif "storm" in condition.lower():
+            icon = "⛈️"  # Orage
+        else:
+            icon = "🌤️"  # Temps par défaut (partiellement nuageux)
+
+        # Retourner les données sous forme de dictionnaire
+        return {
+            "region": region,
+            "country": country,
+            "temp": temperature,
+            "condition": condition,
+            "icon": icon,  # Ajouter l'icône correspondante
+        }
+    except requests.exceptions.RequestException as e:
+        return {
+            "error": f"Erreur lors de la récupération des données météo : {e}"
+        }
+
+
+def confirmation_weather(request):
+    if request.method == 'POST':
+        form = WeatherForm(request.POST)
+        if form.is_valid():
+            point_depart = form.cleaned_data['point_depart']
+            point_arrivee = form.cleaned_data['point_arrivee']
+            
+            # Appel de la fonction pour récupérer les données météo
+            weather_depart = get_weather_with_region(point_depart)
+            weather_arrivee = get_weather_with_region(point_arrivee)
+            
+            context = {
+                'weather_depart': weather_depart,
+                'weather_arrivee': weather_arrivee,
+                'form': form,
+            }
+            return render(request, 'Trip/confirmation_weather.html', context)
+        else:
+            print("Form invalid:", form.errors)  # Affiche les erreurs du formulaire dans la console
+    else:
+        form = WeatherForm()  # Crée un nouveau formulaire vide
+
+    return render(request, 'Trip/weather.html', {'form': form})
 def creer_trajet(request):
     if request.method == 'POST':
         form = TrajetForm(request.POST)

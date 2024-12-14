@@ -27,3 +27,9 @@ class TrajetForm(forms.ModelForm):
         if date_depart and date_depart < datetime.date.today():
             raise forms.ValidationError("La date de départ doit être égale ou supérieure à la date d'aujourd'hui.")
         return date_depart
+
+
+
+class WeatherForm(forms.Form):
+    point_depart = forms.CharField(label='Point de départ', max_length=100, required=True)
+    point_arrivee = forms.CharField(label='Point d\'arrivée', max_length=100, required=True)

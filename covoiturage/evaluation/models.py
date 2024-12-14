@@ -10,7 +10,7 @@ def validate_date_evaluation(value):
 
 class Evaluation(models.Model):
     trajet = models.ForeignKey(Trajet, on_delete=models.CASCADE)
-    evaluateur = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='evaluations_donnees')
+    evaluateur = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='evaluations_donnees',default=1)
     evale = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='evaluations_recues')
     note = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
     date_evaluation = models.DateTimeField(auto_now_add=True, validators=[validate_date_evaluation])

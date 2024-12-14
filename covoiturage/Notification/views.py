@@ -9,7 +9,6 @@ from django.core.paginator import Paginator
 from django.contrib import messages  # Import messages framework
 from users.models import Users # Assuming you are linking to the Django Users model
 
-from django.db.models import Q
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Notification
@@ -76,6 +75,15 @@ class RecipientNotificationListView(LoginRequiredMixin, ListView):
             type_notification="Application",
             read=False
         )
+        reminder_notification = Notification.objects.filter(
+            recipient=self.request.user,
+            type_notification="Reminder",
+            read=False
+        )
+        if reminder_notification.exists():
+            senders_rem = decline_notification.values_list('user__email', flat=True).distinct()
+            senders_rem_list = ', '.join(senders_rem)
+            messages.success(self.request, f"{senders_rem_list} your Trip starts in 10 Minutes")
 
         if decline_notification.exists():
             senders_decline = decline_notification.values_list('user__email', flat=True).distinct()

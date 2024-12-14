@@ -1,94 +1,111 @@
 {% extends 'Home/base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between mb-4">
-       
-        <a href="{% url 'recipient_notifications' %}">
-            <button class="btn btn-info">Notification Received</button>
+{% load static %}
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
+
+<div class="container mt-5">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="carpool-title">Notification Management</h1>
+        <a href="{% url 'recipient_notifications' %}" class="btn btn-info">
+            Notifications Received
         </a>
     </div>
 
+    <!-- Display Messages -->
     {% if messages %}
         {% for message in messages %}
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Hey!</strong> {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Notice:</strong> {{ message }}
+                <button type="button" class="btn-purple" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
-    <h1>Your Created Notifications</h1>
-
-
-    <form method="GET" class="mb-4">
-        <div class="input-group mb-3">
-            <input type="text" name="search" class="form-control" placeholder="Search by message..." value="{{ search }}">
-        </div>
-        <div class="input-group mb-3">
-            <select name="status_filter" class="form-select me-2">
-                <option value="">All Statuses</option>
-                <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>Sent</option>
-                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
-                <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
-            </select>
-            <select name="type_filter" class="form-select me-2">
-                <option value="">All Types</option>
-                <option value="info" {% if type_filter == 'info' %}selected{% endif %}>Information</option>
-                <option value="warn" {% if type_filter == 'warn' %}selected{% endif %}>Warning</option>
-                <option value="alert" {% if type_filter == 'alert' %}selected{% endif %}>Alert</option>
-            </select>
-            <button type="submit" class="btn btn-success">Filter</button>
+    <!-- Filter Form -->
+    <form method="GET" class="bg-light p-4 rounded shadow-sm mb-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" placeholder="Search by message..." value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <select name="status_filter" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>Sent</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="type_filter" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="info" {% if type_filter == 'info' %}selected{% endif %}>Information</option>
+                    <option value="warn" {% if type_filter == 'warn' %}selected{% endif %}>Warning</option>
+                    <option value="alert" {% if type_filter == 'alert' %}selected{% endif %}>Alert</option>
+                    <option value="Invitation" {% if type_filter == 'Invitation' %}selected{% endif %}>Invitation</option>
+                    <option value="Accept" {% if type_filter == 'Accept' %}selected{% endif %}>Accept</option>
+                    <option value="Decline" {% if type_filter == 'Decline' %}selected{% endif %}>Decline</option>
+                    <option value="Application" {% if type_filter == 'Application' %}selected{% endif %}>Application</option>
+                    <option value="Reservation" {% if type_filter == 'Reservation' %}selected{% endif %}>Reservation</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">Filter</button>
+            </div>
         </div>
     </form>
 
+    <!-- Notifications Table -->
     {% if notifications %}
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Message</th>
-                <th>Status</th>
-                <th>Recipient</th>
-                <th>Sent On</th>
-                <th>Read</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for notification in notifications %}
-            <tr>
-                <td>{{ notification.type_notification }}</td>
-                <td>{{ notification.message|truncatechars:50 }}</td>
-                <td>{{ notification.status_notification }}</td>
-                <td>{{ notification.recipient.email }}</td>
-                <td>{{ notification.date_sent }}</td>
-                <td>{{ notification.read }}</td>
-                <td>
-                    <a href="{% url 'notification_edit' notification.id_notification %}" class="btn btn-info btn-sm">Edit</a>
-                    <a href="{% url 'notification_delete' notification.id_notification %}" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="d-flex justify-content-between mt-4">
-        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        <div>
-            {% if page_obj.has_previous %}
-                <a href="?page=1&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-link">First</a>
-                <a href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-link">Previous</a>
-            {% endif %}
-            <span> | </span>
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-link">Next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-link">Last</a>
-            {% endif %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Type</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Recipient</th>
+                        <th>Sent On</th>
+                        <th>Read</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notification in notifications %}
+                        <tr>
+                            <td>{{ notification.type_notification }}</td>
+                            <td>{{ notification.message|truncatechars:50 }}</td>
+                            <td>{{ notification.status_notification }}</td>
+                            <td>{{ notification.recipient.email }}</td>
+                            <td>{{ notification.date_sent }}</td>
+                            <td>{{ notification.read }}</td>
+                            <td>
+                                <a href="{% url 'notification_edit' notification.id_notification %}" class="btn btn-sm btn-info">Edit</a>
+                                <a href="{% url 'notification_delete' notification.id_notification %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <span class="text-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <div>
+                {% if page_obj.has_previous %}
+                    <a href="?page=1&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-outline-secondary btn-sm">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-outline-secondary btn-sm">Previous</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-outline-secondary btn-sm">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&status_filter={{ status_filter }}&type_filter={{ type_filter }}" class="btn btn-outline-secondary btn-sm">Last</a>
+                {% endif %}
+            </div>
+        </div>
     {% else %}
-        <p>You have no notifications.</p>
+        <div class="alert alert-info mt-4">You have no notifications.</div>
     {% endif %}
 </div>
 {% endblock %}

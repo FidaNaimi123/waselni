@@ -1,0 +1,39 @@
+{% load static %}
+<link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
+{% for carpool in carpools %}
+<div class="col-md-12 mb-3">
+    <div 
+        class="card p-3 d-flex flex-row align-items-center justify-content-between shadow-sm group-card" 
+        style="background-color: #f9f9f9; border-radius: 12px; cursor: pointer;"
+        onclick="window.location.href='{% url 'carpool_detail' carpool.id %}'"
+    >
+        <!-- Left Section: Carpool Icon -->
+        <div class="d-flex align-items-center">
+            <div class="icon-wrapper rounded-circle d-flex justify-content-center align-items-center" style="background-color: #eef2f6; width: 60px; height: 60px; margin-right: 20px;">
+                <span style="font-size: 24px; color: #555;">🚗</span> <!-- Replace with an actual icon -->
+            </div>
+            <!-- Carpool Info -->
+            <div>
+                <h5 class="m-0 font-weight-bold">{{ carpool.name }}</h5>
+                <p class="text-muted mb-1">
+                    <strong>Creator:</strong> 
+                    <a href="{% url 'user_detail' carpool.creator.id %}" style="text-decoration: none; color: #007bff;">
+                        {{ carpool.creator.email }}
+                    </a>
+                </p>
+            </div>
+        </div>
+        <!-- Hover Section: Buttons -->
+        {% if carpool.creator == user %}
+            <div class="hover-buttons text-right d-none">
+                <a href="{% url 'carpool_edit' carpool.id %}" class="btn btn-outline-warning btn-sm">Modify</a>
+                <button class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ carpool.id }}">Delete</button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="col-12">
+    <p class="text-center">No carpools available.</p>
+</div>
+{% endfor %}
