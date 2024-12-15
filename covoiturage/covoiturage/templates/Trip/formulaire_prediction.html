@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction de prix</title>
+    <style>
+        /* Réinitialisation des marges et des paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #007BFF;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #007BFF;
+            outline: none;
+            background-color: #f0f8ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ajouter des espacements et améliorer la lisibilité */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .form-group input, .form-group select {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Prédiction de prix</h1>
+
+    <form id="prediction-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="lieu_depart">Lieu de départ :</label>
+            <input type="text" id="lieu_depart" name="lieu_depart" required>
+        </div>
+
+        <div class="form-group">
+            <label for="lieu_arrivee">Lieu d'arrivée :</label>
+            <input type="text" id="lieu_arrivee" name="lieu_arrivee" required>
+        </div>
+
+        <div class="form-group">
+            <label for="distance">Distance (km) :</label>
+            <input type="number" id="distance" name="distance" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="duree">Durée (minutes) :</label>
+            <input type="number" id="duree" name="duree" required>
+        </div>
+
+        <div class="form-group">
+            <label for="type_trajet">Type de trajet :</label>
+            <select id="type_trajet" name="type_trajet" required>
+                <option value="Standard">Standard</option>
+                <option value="Confort">Confort</option>
+                <option value="Premium">Premium</option>
+            </select>
+        </div>
+
+        <button type="submit">Prédire</button>
+    </form>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(e) {
+            e.preventDefault();  // Empêche le formulaire de se soumettre normalement
+
+            const formData = new FormData(this);
+
+            // Envoie de la requête AJAX
+            fetch("{% url 'prediction_prix' %}", {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                const prix = data.prix_pred;
+                // Affiche le prix dans un prompt
+                alert("Le prix prédit est : " + prix + " DT");
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -14,6 +14,8 @@ urlpatterns = [
    path('carte/', afficher_carte, name='afficher_carte'),
    path('statistiques/', views.statistiques_view, name='statistiques'),
    path('export_trajets/', views.export_trajets, name='export_trajets'),
+    path('reconnaissance-emotionnelle/', views.emotion_from_camera, name='reconnaissance_emotionnelle'),
+   path('prediction/', views.prediction_prix, name='prediction_prix'),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 

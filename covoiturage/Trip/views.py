@@ -14,6 +14,17 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 
+
+
+from reportlab.lib import colors
+
+from django.shortcuts import render
+from deepface import DeepFace
+import base64
+import cv2
+import numpy as np
+from django.http import JsonResponse
+
 from reportlab.lib import colors
 import requests
 
@@ -342,3 +353,115 @@ def export_trajets(request):
     p.save()
 
     return response
+from django.http import JsonResponse
+from django.shortcuts import render
+from deepface import DeepFace
+import cv2
+import numpy as np
+
+# Points attribués par émotion
+POINTS_PAR_EMOTION = {
+    "happy": 10,
+    "sad": -8,
+    "angry": -10,
+    "surprise": -2,
+    "neutral": 8,
+    "fear": -5,
+    "disgust": -1
+}
+
+# Seuils pour les badges
+BADGES = {
+    50: " Bronze",
+    100: " Argent",
+    200: " Or"
+}
+
+def emotion_from_camera(request):
+    if request.method == "POST" and request.FILES.get('image'):
+        image_data = request.FILES['image']
+        
+        # Lire l'image dans OpenCV
+        img_array = np.frombuffer(image_data.read(), np.uint8)
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        
+        if img is None:
+            return JsonResponse({'error': 'Erreur de décodage de l\'image'}, status=400)
+        
+        # Analyser les émotions avec DeepFace
+        try:
+            result = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False)
+            
+            if not result:
+                return JsonResponse({'error': 'Aucune émotion détectée'}, status=400)
+            
+            # Récupérer l'émotion dominante
+            dominant_emotion = result[0]['dominant_emotion']
+            score = POINTS_PAR_EMOTION.get(dominant_emotion, 0)
+
+            # Calcul du score total et attribution du badge
+            total_score = request.session.get('total_score', 0) + score
+            request.session['total_score'] = total_score
+
+            badge = None
+            for threshold, badge_name in sorted(BADGES.items()):
+                if total_score >= threshold:
+                    badge = badge_name
+
+            return JsonResponse({
+                'emotion': dominant_emotion,
+                'score': score,
+                'total_score': total_score,
+                'badge': badge
+            })
+        
+        except Exception as e:
+            return JsonResponse({'error': f"Erreur d'analyse : {str(e)}"}, status=500)
+    
+    return render(request, 'Trip/reconnaissance_emotionnelle.html')
+
+
+import joblib
+import os
+from django.conf import settings
+import pandas as pd
+
+# Charger le modèle
+MODEL_PATH = os.path.join(settings.BASE_DIR, 'Trip', 'ml_models', 'ride_price_model_full.pkl')
+model = joblib.load(MODEL_PATH)
+
+# Charger les colonnes d'origine
+model_columns = model.feature_names_in_
+
+def prediction_prix(request):
+    if request.method == "POST":
+        # Récupérer les données du formulaire
+        lieu_depart = request.POST.get("lieu_depart")
+        lieu_arrivee = request.POST.get("lieu_arrivee")
+        distance = float(request.POST.get("distance"))
+        duree = float(request.POST.get("duree"))
+        type_trajet = request.POST.get("type_trajet")
+
+        # Encoder les données
+        input_data = pd.DataFrame([{
+            "distance": distance,
+            "duree": duree,
+            "type_trajet_Confort": 1 if type_trajet == "Confort" else 0,
+            "type_trajet_Premium": 1 if type_trajet == "Premium" else 0,
+            # Assurez-vous de traiter les valeurs de lieu_arrivee ici
+        }])
+
+        # Ajouter les colonnes manquantes (par exemple, les lieux d'arrivée)
+        for col in model_columns:
+            if col not in input_data.columns:
+                input_data[col] = 0  # Ajoutez des colonnes avec des valeurs par défaut (par exemple, 0)
+
+        # Réorganiser les colonnes pour correspondre à celles du modèle
+        input_data = input_data[model_columns]
+
+        # Prédire le prix
+        prix_pred = model.predict(input_data)[0]
+
+        return JsonResponse({"prix_pred": round(prix_pred, 2)})
+
+    return render(request, "Trip/formulaire_prediction.html")
