@@ -175,3 +175,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 CSRF_MIDDLEWARE_ENABLED = True  # Non recommandé pour la production
+
+# settings.py
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # Sessions dans la base de données
+SESSION_COOKIE_AGE = 3600  # Durée de vie de la session (en secondes)

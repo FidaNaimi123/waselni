@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -40,6 +39,8 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
+            display: flex;
+            flex-direction: column;
         }
 
         label {
@@ -65,8 +66,8 @@
             outline: none;
         }
 
-        button {
-            width: 100%;
+        button, .price-button {
+            width: 48%;
             padding: 15px;
             background-color: #007BFF;
             border: none;
@@ -75,10 +76,17 @@
             font-size: 18px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            text-align: center;
+            margin: 5px;
         }
 
-        button:hover {
+        button:hover, .price-button:hover {
             background-color: #0056b3;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
         }
 
         .results {
@@ -104,7 +112,11 @@
         <input type="text" id="startPoint" name="startPoint" placeholder="Ex: ESPRIT, ARIANA" required>
         <label for="endPoint">Point d'arrivée :</label>
         <input type="text" id="endPoint" name="endPoint" placeholder="Ex: L'aéroport Tunis-Carthage, Tunis" required>
-        <button type="submit">Calculer l'itinéraire</button>
+
+        <div class="button-container">
+            <button type="submit">Calculer l'itinéraire</button>
+            <a href="{% url 'prediction_prix' %}" class="price-button">PRIX</a>
+        </div>
     </form>
 
     <div class="results">
