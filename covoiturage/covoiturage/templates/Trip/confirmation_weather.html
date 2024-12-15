@@ -298,62 +298,59 @@
         
       </div>
       
-      
-
-
-  <section class="about_section layout_padding">
+      <section class="about_section layout_padding">
    
-    <div class="container">
-        
-      <div class="heading_container heading_center"> 
-        
-        <h2>Our <span>Trips</span></h2>
-        <p>"Your perfect ride is just a tap away—join our carpooling app and make every journey a shared adventure!"</p>
-        
-      <br>
-      <div class="create-trip-button">
-        <a href="{% url 'creer_trajet' %}">Create Trip</a>
-        <a href="{% url 'afficher_carte' %}" class="button">Details</a>
-
-
-    </div>
-   
-      </form>
-     
-      <!-- Conteneur des trajets -->
-      <div class="trajets-container">
-         
-            <div class="trajet-card">
-                <img src="{% static 'saison.jpg' %}" alt="Image de trajet">
-
-            <h2 style="color: #000; font-weight: bold;">{{ weather_depart.region }}</h2>
-
-
-            <div class="weather-icon">{{ weather_depart.icon }}</div> 
-
-            <div class="temperature">{{ weather_depart.temp }}°C</div> 
-
-            <div class="condition"> {{ weather_depart.condition }}</div> 
-
-        </div> 
-
- 
-
-        <!-- Météo du point d'arrivée --> 
-
-  
-
-        <div class="trajet-card">
-
-            <img src="{% static 'saison.jpg' %}" alt="Image de trajet">
-            <h2 style="color: #000; font-weight: bold;">{{ weather_arrivee.region }}</h2> 
-
-            <div class="weather-icon">{{ weather_arrivee.icon }}</div> 
-
-            <div class="temperature">{{ weather_arrivee.temp }}°C</div> 
-
-            <div class="condition">Conditions : {{ weather_arrivee.condition }}</div> 
-  </section>
+        <div class="container">
+            
+          <div class="heading_container heading_center"> 
+            <h2>Your Perfect Ride with Real-Time Weather Updates</h2>
+    
+            <br>
+            <div class="create-trip-button">
+              <a href="{% url 'creer_trajet' %}">Create Trip</a>
+              <a href="{% url 'afficher_carte' %}" class="button">Details</a>
+              <a href="{% url 'trajets_disponibles' %}" class="button">Trajects</a>
+            </div>
+    
+          </form>
+    
+          <!-- Audio de présentation météo -->
+          <audio id="audio_meteo" controls autoplay>
+              <source src="{% static 'sounds/weather intro.mp3' %}" type="audio/mpeg">
+              Your browser does not support the audio element.
+          </audio>
+    
+          <!-- Conteneur des trajets -->
+          <div class="trajets-container">
+             
+                <div class="trajet-card">
+                    <img src="{% static 'saison.jpg' %}" alt="Image de trajet">
+    
+                    <h2 style="color: #000; font-weight: bold;">{{ weather_depart.region }}</h2>
+    
+                    <div class="weather-icon">{{ weather_depart.icon }}</div> 
+    
+                    <div class="temperature">{{ weather_depart.temp }}°C</div> 
+    
+                    <div class="condition"> {{ weather_depart.condition }}</div> 
+                </div> 
+    
+                <!-- Météo du point d'arrivée --> 
+    
+                <div class="trajet-card">
+                    <img src="{% static 'saison.jpg' %}" alt="Image de trajet">
+                    <h2 style="color: #000; font-weight: bold;">{{ weather_arrivee.region }}</h2> 
+    
+                    <div class="weather-icon">{{ weather_arrivee.icon }}</div> 
+    
+                    <div class="temperature">{{ weather_arrivee.temp }}°C</div> 
+    
+                    <div class="condition">Conditions : {{ weather_arrivee.condition }}</div> 
+                </div> 
+            </div>
+        </div>
+    </section>
+    
 
   
     <!-- info section -->

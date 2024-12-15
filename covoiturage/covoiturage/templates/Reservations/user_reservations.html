@@ -1,175 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'image/trs.png' %}" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <title>Trajets</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+
+  <!-- Owl carousel stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+
+  <!-- font awesome style -->
+  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <!-- responsive style -->
+  <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
 <style>
-    /* Style pour la classe greeting */
-    .greeting {
-        font-size: 1.5em; /* Taille du texte légèrement plus grande */
-        color: #0d1352; /* Vert doux */
-        font-family: 'Arial', sans-serif; /* Police plus moderne */
-        font-weight: 600; /* Gras mais pas trop */
-        text-align: center; /* Centrage du texte */
-        margin: 20px 0; /* Espacement autour du texte */
-        text-transform: uppercase; /* Texte en majuscules pour un effet plus formel */
-    }
-       /* Amélioration du design de la table */
-       .table {
-        border-radius: 10px; /* Bordures arrondies pour la table */
-        box-shadow: 0 4px 8px  rgba(1, 1, 1, 0.834) /* Ombre douce autour de la table */
-    }
+  /* Style général */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #00204a; /* Fond léger pour la page */
+    margin: 0 auto;
+    padding: 0;
     
-    .table th, .table td {
-        padding: 12px; /* Espacement plus grand pour plus d'aération */
-        text-align: center; /* Centrer le texte dans chaque cellule */
-    }
-    
-    /* Alternance de couleurs pour les lignes de la table */
-    .table tbody tr:nth-child(odd) {
-        background-color: #f9f9f9;
-    }
+}
 
-    .table tbody tr:nth-child(even) {
-        background-color: #fff;
-    }
+h1 {
+    text-align: center;
+    color: #0b2d50;
+    font-size: 2.5em;
+    margin-top: 20px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
 
-    /* Style pour les lignes survolées */
-    .table tbody tr:hover {
-        background-color: #f1f1f1;
-        cursor: pointer;
-    }
+.button {
+    padding: 10px 15px;
+    background-color: #1E90FF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    margin-top: 20px;
+}
 
-    /* Style pour les boutons dans la table */
-    .table-actions a {
-        transition: all 0.3s ease;
-    }
+.button:hover {
+    background-color: #4682B4;
+}
 
-    .table-actions a:hover {
-        transform: scale(1.1); /* Légère agrandissement lors du survol */
-    }
+.top-section {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
 
-    /* Style pour les boutons dans le formulaire */
-    .btn {
-        border-radius: 30px; /* Bordures arrondies pour les boutons */
-        padding: 8px 16px; /* Espacement interne pour un meilleur effet visuel */
-    }
+/* Table */
+/* Centre la table horizontalement */
+table {
+    width: 80%;                  /* La largeur de la table (ajustez selon vos besoins) */
+    margin: 30px auto;           /* Cette propriété permet de centrer la table avec un espacement vertical */
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.993); /* Transparence pour la table */
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;           /* Limiter la largeur maximale de la table */
+    overflow-x: auto;            /* Permet de faire défiler horizontalement si la table dépasse */
+    /* Ajout des styles de la bordure */
+    border: 2px solid black;  /* Bordure noire et en gras */
+}
 
-    /* Boutons de recherche et tri */
-    .btn-primary, .btn-secondary, .btn-warning {
-        transition: all 0.3s ease;
-    }
+/* Pour la section parent, pour s'assurer que la table est centrée dans son conteneur */
+.container {
+    display: flex;
+    justify-content: center;    /* Centre le contenu horizontalement */
+    align-items: center;        /* Centre le contenu verticalement */
+}
 
-    .btn-primary:hover, .btn-secondary:hover, .btn-warning:hover {
-        transform: scale(1.1); /* Agrandir légèrement les boutons au survol */
-        background-color: #0056b3; /* Changement de couleur sur survol pour une meilleure interaction */
-    }
 
-    /* Style pour les messages de notification */
-    .no-reservations {
-        text-align: center;
-        color: #0d1352;
-        font-size: 1.2em;
-        font-weight: 500;
-    }
+/* Th et Td */
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid black;  /* Bordure noire */
+    color: #333;
+}
+
+/* En-têtes de la table */
+th {
+    background-color: #094f96;
+    color: white;
+    font-weight: bold;
+}
+
+
+/* Lignes impaires */
+tr:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.897); /* Couleur de fond pour les lignes paires */
+}
+
+/* Survol des lignes */
+tr:hover {
+    background-color: rgba(225, 245, 254, 0.5); /* Fond en survol légèrement transparent */
+}
+
+/* Statut spécifique */
+.annule {
+    background-color: rgba(245, 16, 0, 0.8); /* Rouge transparent pour les trajets annulés */
+    color: white;
+    font-weight: bold;
+}
+
+.complet {
+    background-color: rgba(255, 182, 193, 0.6); /* Rose doux transparent pour "Complet" */
+    color: black;
+    font-weight: bold;
+}
+
+/* Liens */
+a {
+    color: #1E90FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Message d'absence de données */
+.empty-message {
+    text-align: center;
+    font-size: 1.2em;
+    color: #1E90FF;
+    font-weight: bold;
+}
+
+/* Formulaire de recherche */
+.form-section {
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.form-section h2 {
+    color: #1e88e5;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* Recherche */
+.search-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.search-container input {
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 250px;
+}
+
+.search-container button {
+    padding: 12px 20px;
+    border-radius: 5px;
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-container button:hover {
+    background-color: #1976d2;
+}
+
+/* Bouton Créer un Trajet */
+.create-trip-button {
+    position: absolute;
+    top: 100px;
+    right: 30px;
+    z-index: 999;
+}
+
+.create-trip-button a {
+    background-color: #1e88e5;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.create-trip-button a:hover {
+    background-color: #1976d2;
+}
+
+/* Flèche de pagination */
+.pagination-arrow {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1e88e5;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 24px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-arrow:hover {
+    background-color: #1976d2;
+}
 </style>
+</head>
 
-{% extends 'Home/base.html' %}
+<body class="sub_page">
 
-{% block content %}
-<div class="container mt-4">
-    <h1 class="greeting">Bonjour ! Voici vos réservations :</h1>
-    <form method="get" action="{% url 'user_reservations' %}">
-        <div class="row g-2 align-items-center">
-            <!-- Barre de recherche -->
-            <div class="col-sm-4 col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="Rechercher par trajet" value="{{ request.GET.search }}">
-            </div>
-    
-            <!-- Filtre par date -->
-            <div class="col-sm-3 col-md-2">
-                <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
-            </div>
-    
-            <!-- Filtre par heure -->
-            <div class="col-sm-3 col-md-2">
-                <input type="time" name="hour" class="form-control" value="{{ request.GET.hour }}">
-            </div>
-    
-            <!-- Bouton de recherche -->
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary" title="Rechercher">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-    
-            <!-- Boutons de tri -->
-            <div class="col-auto">
-                <button type="submit" class="btn btn-secondary" name="sort" value="asc" title="Trier par ordre croissant">
-                    <i class="fas fa-sort-amount-up"></i>
-                </button>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-secondary" name="sort" value="desc" title="Trier par ordre décroissant">
-                    <i class="fas fa-sort-amount-down"></i>
-                </button>
-            </div>
-            <div class="col-auto">
-                <a href="{% url 'historique_reservations' %}" class="btn btn-warning" title="Voir l'historique">
-                    <i class="fas fa-history"></i>
-                </a>
-            </div>
-      
+
+    <div class="hero_area">
+        <div class="hero_bg_box">
+          <div class="bg_img_box">
+            <img src="{% static 'image/hero-bg.png' %}" alt="">
+          </div>
         </div>
-    </form>
+    
+        <!-- header section starts -->
+        <header class="header_section">
+          <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg custom_nav-container">
+              <a class="navbar-brand" href="index.html">
+                <span>Waselni</span>
+              </a>
+      
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class=""> </span>
+              </button>
+      
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'home1' %}">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'trajets_disponibles' %}">Trajects</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_reservations' %}">Réservations</a>
+                  </li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                      <a class="nav-link" href="{% url 'carpool_list' %}">Groups</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'login1' %}">Groups</a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'notification_list' %}">Notifications</a>
+                  </li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                      <a class="nav-link" href="{% url 'disconnect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Logout</a>
+                    {% else %}
+                      <a class="nav-link" href="{% url 'connect' %}"> <i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    {% endif %}
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reclamation_create' %}">Reclamation</a>
+                  </li>
+                  <form class="form-inline">
+                    <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
+                      <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </header>
+        <!-- end header section -->
+        
+      </div>
+      
+      
 
-    {% if reservations %}
-        <table class="table table-bordered table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Trajet</th>
-                    <th>Date de réservation</th>
-                    <th>Nombre de sièges</th>
-                    <th>Bagages</th>
-                    <th>Méthode de paiement</th>
-                    <th>Modifier</th>
-                    <th>Supprimer</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reservation in reservations %}
-                    {% with today_date=today %}
-                        {% if reservation.trip_id.date_depart < today_date %}
-                            <tr>
-                                <td>{{ reservation.trip_id }}</td>
-                                <td>{{ reservation.reservation_date }}</td>
-                                <td>{{ reservation.seat_count }}</td>
-                                <td>{{ reservation.Baggage|yesno:"Oui,Non" }}</td>
-                                <td>{{ reservation.Payment_Method }}</td>
-                                <td class="table-actions">
-                                    <span class="btn-disabled">Modifier</span>
-                                </td>
-                                <td class="table-actions">
-                                    <span class="btn-disabled">Supprimer</span>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td>{{ reservation.trip_id }}</td>
-                                <td>{{ reservation.reservation_date }}</td>
-                                <td>{{ reservation.seat_count }}</td>
-                                <td>{{ reservation.Baggage|yesno:"Oui,Non" }}</td>
-                                <td>{{ reservation.Payment_Method }}</td>
-                                <td class="table-actions">
-                                    <a href="{% url 'update_reservation' reservation.id %}" class="btn btn-primary">Modifier</a>
-                                </td>
-                                <td class="table-actions">
-                                    <a href="{% url 'delete_reservation' reservation.id %}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette réservation ?');">Supprimer</a>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endwith %}
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="no-reservations">Vous n'avez pas encore de réservations.</p>
-    {% endif %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<section class="about_section layout_padding"> 
+
+    
+
+  <div class="container"> 
+
+       
+
+    <div class="heading_container heading_center">  
+
+       
+
+      <h2>Our <span>Reservations</span></h2> 
+
+      <p>"Every reservation is a step towards a more connected and sustainable journey—join us and make every ride memorable!"</p> 
+
+       
+
+    <br> 
+
+  
+
+<!-- Formulaire de recherche -->
+<form method="GET" class="p-3 border rounded bg-light">
+  <div class="row align-items-center gx-2">
+      
+      <!-- Champ de recherche -->
+      <div class="col-sm-6 col-md-4">
+          <input type="text" name="search" class="form-control" placeholder="Search by reservation" value="{{ request.GET.search }}">
+      </div>
+
+      <!-- Filtre par date -->
+      <div class="col-sm-3 col-md-2">
+          <input type="date" name="date" class="form-control" value="{{ request.GET.date }}">
+      </div>
+
+      <!-- Filtre par heure -->
+      <div class="col-sm-3 col-md-2">
+          <input type="time" name="hour" class="form-control" value="{{ request.GET.hour }}">
+      </div>
+
+      <!-- Bouton de recherche -->
+      <div class="col-auto">
+          <button type="submit" class="btn btn-primary" title="Rechercher">
+              <i class="fas fa-search fa-sm"></i>
+          </button>
+      </div>
+
+      <!-- Boutons de tri -->
+      <div class="col-auto">
+          <button type="submit" class="btn btn-secondary" name="sort" value="asc" title="Trier par ordre croissant">
+              <i class="fas fa-sort-amount-up fa-sm"></i>
+          </button>
+      </div>
+      <div class="col-auto">
+          <button type="submit" class="btn btn-secondary" name="sort" value="desc" title="Trier par ordre décroissant">
+              <i class="fas fa-sort-amount-down fa-sm"></i>
+          </button>
+      </div>
+
+      <!-- Historique -->
+      <div class="col-auto">
+          <a href="{% url 'historique_reservations' %}" class="btn btn-warning" title="Voir l'historique">
+              <i class="fas fa-history fa-sm"></i>
+          </a>
+      </div>
+
+  </div>
+</form>
+
+
+        {% if reservations %}
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th>Trip</th>
+                      <th>Reservation Date</th>
+                      <th>Seats</th>
+                      <th>Baggage</th>
+                      <th>Payment Method</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        {% with today_date=today %}
+                            {% if reservation.trip_id.date_depart < today_date %}
+                                <tr>
+                                    <td>{{ reservation.trip_id }}</td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.seat_count }}</td>
+                                    <td>{{ reservation.Baggage|yesno:"Oui,Non" }}</td>
+                                    <td>{{ reservation.Payment_Method }}</td>
+                                    <td class="table-actions">
+                                        <span class="btn-disabled">Modifier</span>
+                                    </td>
+                                    <td class="table-actions">
+                                        <span class="btn-disabled">Supprimer</span>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td>{{ reservation.trip_id }}</td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.seat_count }}</td>
+                                    <td>{{ reservation.Baggage|yesno:"Oui,Non" }}</td>
+                                    <td>{{ reservation.Payment_Method }}</td>
+                                    <td class="table-actions">
+                                        <a href="{% url 'update_reservation' reservation.id %}" class="btn btn-primary">Update</a>
+                                    </td>
+                                    <td class="table-actions">
+                                        <a href="{% url 'delete_reservation' reservation.id %}" class="btn btn-danger" onclick="return confirm('Do you really want to delete this reservation? ?');">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-reservations">You have no reservations yet!</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -376,4 +655,3 @@
     });
   </script>
     
-{% endblock %}

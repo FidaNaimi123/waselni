@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
     path('creer_trajet/',creer_trajet, name='creer_trajet'),
+
     path('trips/confirmation_weather/',confirmation_weather, name='confirmation_weather'),
     path('liste_trajets/', liste_trajets, name='liste_trajets'),
     path('modifier_trajet/<int:trajet_id>/', modifier_trajet, name='modifier_trajet'),  # URL pour modifier un trajet

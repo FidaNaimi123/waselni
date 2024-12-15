@@ -70,6 +70,7 @@ def confirmation_weather(request):
     if request.method == 'POST':
         form = WeatherForm(request.POST)
         if form.is_valid():
+            
             point_depart = form.cleaned_data['point_depart']
             point_arrivee = form.cleaned_data['point_arrivee']
             
@@ -89,19 +90,31 @@ def confirmation_weather(request):
         form = WeatherForm()  # Crée un nouveau formulaire vide
 
     return render(request, 'Trip/weather.html', {'form': form})
+
 def creer_trajet(request):
     if request.method == 'POST':
         form = TrajetForm(request.POST)
         if form.is_valid():
             form.save()  # Enregistre le trajet dans la base de données
-            return redirect('liste_trajets')  # Redirige vers la liste des trajets après création
+            point_depart = form.cleaned_data['point_depart']
+            point_arrivee = form.cleaned_data['point_arrivee']
+            
+            # Appel de la fonction pour récupérer les données météo
+            weather_depart = get_weather_with_region(point_depart)
+            weather_arrivee = get_weather_with_region(point_arrivee)
+            
+            context = {
+                'weather_depart': weather_depart,
+                'weather_arrivee': weather_arrivee,
+                'form': form,
+            }
+            return render(request, 'Trip/confirmation_weather.html', context)
         else:
             print("Form invalid:", form.errors)  # Affiche les erreurs du formulaire dans la console
     else:
         form = TrajetForm()  # Crée un nouveau formulaire vide
    
     return render(request, 'Trip/creer_trajet.html', {'form': form})
-
 def liste_trajets(request):
     # Récupérer les trajets de base
     trajets = Trajet.objects.all().order_by('date_depart', 'heure_depart')
