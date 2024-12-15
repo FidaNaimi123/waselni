@@ -111,9 +111,7 @@
         </div>
         {% endfor %}
     {% endif %}
-    <div class="speech-feedback" style="position: fixed; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px; border-radius: 5px;">
-      <strong>Recognized Text:</strong> <span id="recognizedText">Waiting for input...</span>
-    </div>
+    
     
 <section class="slider_section ">
   <div id="customCarousel1" class="carousel slide" data-ride="carousel">
@@ -752,7 +750,18 @@
   </script>
   <!-- End Google Map -->
   <script>
-  </script>
+    window.embeddedChatbotConfig = {
+    chatbotId: "juBakrNmaQ8sk8WRsdR4r",
+    domain: "www.chatbase.co"
+    }
+    </script>
+    <script
+    src="https://www.chatbase.co/embed.min.js"
+    chatbotId="juBakrNmaQ8sk8WRsdR4r"
+    domain="www.chatbase.co"
+    defer>
+    </script>
+
           
   </body>
 
