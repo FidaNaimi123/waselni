@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from Reservations.models import Reservation
 from collections import Counter
+from .utils import generate_image_from_text
+from django.core.files.base import ContentFile
 
 def invitation_list(request):
     invitations = MembershipInvitation.objects.filter(user=request.user, status='invited')
@@ -241,22 +243,61 @@ def carpool_list(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return JsonResponse({'html': render_to_string('group/carpool_list_cards.html', {'carpools': carpools,'user': request.user})})
     else :
-        return render(request, 'group/carpool_list.html', {'carpools': carpools})
+        return render(request, 'group/carpool_list.html', {'carpools': carpools,'MEDIA_URL': settings.MEDIA_URL})
 
 
-# Add view
+
+import os
+
 def carpool_add(request):
     if request.method == 'POST':
         form = CarpoolForm(request.POST)
         if form.is_valid():
-            carpool = form.save(commit=False)  # Create the Carpool instance without saving to the database yet
-            carpool.creator = request.user  # Set the creator to the current user
-            carpool.save()  # Now save the instance to the database
-            return redirect('carpool_list')
+            carpool = form.save(commit=False)
+            carpool.creator = request.user
+            carpool.save()
+
+            # Generate the image based on the group's name
+            API_KEY = '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'
+            url = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large-turbo"
+
+            headers = {
+                "Authorization": f"Bearer {API_KEY}"
+            }
+            data = {
+                "inputs": carpool.name,  # Use the carpool name as the prompt
+            }
+
+            response = requests.post(url, headers=headers, json=data)
+            if response.status_code == 200 and response.headers['Content-Type'].startswith('image'):
+                # Define your folder path inside MEDIA_ROOT
+                media_folder = os.path.join(settings.MEDIA_ROOT, 'carpool_images')  
+                
+                # Automatically create the folder if it doesn't exist
+                os.makedirs(media_folder, exist_ok=True)
+
+                # Define the image name and path
+                image_name = f"{carpool.name.replace(' ', '_')}_image.jpg"
+                image_path = os.path.join(media_folder, image_name)
+
+                # Save the image
+                with open(image_path, "wb") as img_file:
+                    img_file.write(response.content)
+
+                # Save the relative image path in the Carpool instance
+                carpool.image_path = os.path.join('carpool_images', image_name)  # Store relative path
+                carpool.save()
+            else:
+                print(f"Image generation failed: {response.status_code}, {response.text}")
+
+            return redirect('carpool_list')  # Redirect to a list view after saving
     else:
         form = CarpoolForm()
-    
+
     return render(request, 'group/carpool_form.html', {'form': form})
+
+
+
 
 # Edit view
 def carpool_edit(request, pk):

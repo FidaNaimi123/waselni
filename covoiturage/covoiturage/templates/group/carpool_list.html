@@ -30,10 +30,9 @@
         <div class="row">
             <div class="col-md-10">
                 <div class="mb-4 text-right">
-                    <a href="{% url 'carpool_add' %}" class="btn btn-custom" id="add-carpool-btn" >Add Carpool</a>
+                    <a href="{% url 'carpool_add' %}" class="btn btn-custom" id="add-carpool-btn">Add Carpool</a>
                     <a href="{% url 'reservation_invitations' %}" class="btn btn-custom" id="reservation-invitations-btn">Reservation invitations</a>
-                    <a href="{% url 'invitation_list' %}" class="btn btn-custom" id="capool-invitations-btn">Capool invitations</a>
-                    <button id="voice-search-btn" class="btn btn-custom">Voice Search</button>             
+                    <a href="{% url 'invitation_list' %}" class="btn btn-custom" id="capool-invitations-btn">Carpool invitations</a>
                 </div>
                 
                 <div class="row" id="carpool-cards">
@@ -47,10 +46,17 @@
                                 data-carpool-id="{{ carpool.id }}"
                                 data-carpool-creator="{{ carpool.creator.id }}"
                             >
-                                <!-- Left Section: Carpool Icon -->
+                                <!-- Left Section: Carpool Image -->
                                 <div class="d-flex align-items-center">
-                                    <div class="icon-wrapper rounded-circle d-flex justify-content-center align-items-center" style="background-color: #eef2f6; width: 60px; height: 60px; margin-right: 20px;">
-                                        <span style="font-size: 24px; color: #555;">🚗</span> <!-- Replace with an actual icon -->
+                                    <div class="image-wrapper rounded-circle d-flex justify-content-center align-items-center" 
+                                         style="width: 60px; height: 60px; margin-right: 20px; overflow: hidden; background-color: #eef2f6;">
+                                        {% if carpool.image_path %}
+                                            <!-- Manually prepend MEDIA_URL -->
+                                            <img src="/media/{{ carpool.image_path }}" alt="Carpool Image" 
+                                                 style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% else %}
+                                            <span style="font-size: 24px; color: #555;">🚗</span>
+                                        {% endif %}
                                     </div>
                                     <!-- Carpool Info -->
                                     <div>
@@ -68,10 +74,11 @@
                                     <div class="hover-buttons text-right d-none">
                                         <a href="{% url 'carpool_edit' carpool.id %}" class="btn btn-outline-warning btn-sm">Modify</a>
                                         <a href="{% url 'carpool_delete' carpool.id %}" 
-                                        class="btn btn-outline-danger btn-sm" 
-                                        onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this carpool?');">
-                                         Delete
-                                     </a>                                    </div>
+                                           class="btn btn-outline-danger btn-sm" 
+                                           onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this carpool?');">
+                                            Delete
+                                        </a>
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -82,6 +89,8 @@
                     {% endfor %}
                 </div>
             </div>
+            
+            
             
 
             <!-- Right Column (Filter / Sort) -->
@@ -118,154 +127,6 @@
         </div>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Initialize the SpeechRecognition object
-            var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'en-US'; // You can change this language to match the language of your users
-            recognition.continuous = true; // Keep the recognition on for continuous listening
-            recognition.interimResults = true; // Allows for interim results (so it doesn't wait for you to finish speaking)
-            const recognizedTextDisplay = document.createElement("div");
-            recognizedTextDisplay.style.position = "fixed";
-            recognizedTextDisplay.style.bottom = "20px";
-            recognizedTextDisplay.style.left = "20px";
-            recognizedTextDisplay.style.backgroundColor = "#f8f9fa";
-            recognizedTextDisplay.style.padding = "10px";
-            recognizedTextDisplay.style.border = "1px solid #ccc";
-            recognizedTextDisplay.style.borderRadius = "5px";
-            recognizedTextDisplay.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
-            document.body.appendChild(recognizedTextDisplay);
-    
-            // Function to read carpool names aloud
-            function readCarpoolNames() {
-                const carpoolCardsContainer = document.getElementById("carpool-cards");
-                
-                // Get all carpool name elements (assuming each carpool name is in a .carpool-name element)
-                const carpoolNames = carpoolCardsContainer.querySelectorAll('h5');
-                
-                // Create a speech synthesis utterance
-                const utterance = new SpeechSynthesisUtterance();
-                let carpoolText = '';
-    
-                // Concatenate all carpool names into a single string
-                carpoolNames.forEach(function (card) {
-                    const name = card.textContent.trim();
-                    if (name) {
-                        carpoolText += `${name}. `;
-                    }
-                });
-    
-                // Set the text to be read aloud
-                utterance.text = carpoolText;
-    
-                // Set the language and other options (you can adjust as needed)
-                utterance.lang = 'en-US';
-                utterance.pitch = 1;
-                utterance.rate = 1;
-    
-                // Speak the concatenated text
-                window.speechSynthesis.speak(utterance);
-            }
-    
-            // Read carpool names on page load
-            readCarpoolNames();
-    
-            // Event handler for when speech is recognized
-            recognition.onresult = function(event) {
-                var transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                console.log("Recognized speech: " + transcript);
-                recognizedTextDisplay.textContent = "You said: " + transcript;
-    
-                // Check if the user said "view [carpool name]"
-                var viewCommand = transcript.match(/view (.+)/);
-                if (viewCommand) {
-                    var carpoolName = viewCommand[1].toLowerCase();
-                    var carpools = document.querySelectorAll('.group-card');
-                    carpools.forEach(function(carpool) {
-                        var carpoolNameText = carpool.querySelector('h5').textContent.toLowerCase();
-                        if (carpoolNameText.includes(carpoolName)) {
-                            carpool.click();
-                        }
-                    });
-                }
-    
-                // Check if the user said "modify [carpool name]" or "delete [carpool name]"
-                var modifyCommand = transcript.match(/modify (.+)/);
-                var deleteCommand = transcript.match(/delete (.+)/);
-                
-                if (modifyCommand || deleteCommand) {
-                    var carpoolName = (modifyCommand || deleteCommand)[1].toLowerCase();
-                    var carpools = document.querySelectorAll('.group-card');
-                    carpools.forEach(function(carpool) {
-                        var carpoolNameText = carpool.querySelector('h5').textContent.toLowerCase();
-                        if (carpoolNameText.includes(carpoolName)) {
-                            // Check if the user is the group creator
-                            var carpoolCreatorId = carpool.dataset.carpoolCreator;
-                            var currentUserId = "{{ user.id }}"; // Get the current user ID dynamically
-                            if (carpoolCreatorId == currentUserId) {
-                                if (modifyCommand) {
-                                    // Navigate to the modify page
-                                    var carpoolId = carpool.dataset.carpoolId;
-                                    window.location.href = window.location.href + carpoolId + "/edit/";  // Modify this URL to match your route
-                                } else if (deleteCommand) {
-                                    // Confirm deletion and trigger delete
-                                    var carpoolId = carpool.dataset.carpoolId;
-                                    if (confirm('Are you sure you want to delete this carpool?')) {
-                                        window.location.href = window.location.href + carpoolId + "/delete/";  // Modify this URL to match your route
-                                    }
-                                }
-                            } else {
-                                alert("You are not the group creator.");
-                            }
-                        }
-                    });
-                }
-    
-                var addCarpoolCommand = transcript.match(/add carpool/);
-                var reservationInvitationsCommand = transcript.match(/reservation invitations/);
-                var carpoolInvitationsCommand = transcript.match(/carpool invitations/);
-    
-                if (addCarpoolCommand) {
-                    // Trigger click for Add Carpool
-                    document.getElementById("add-carpool-btn").click();
-                } else if (reservationInvitationsCommand) {
-                    // Trigger click for Reservation Invitations
-                    document.getElementById("reservation-invitations-btn").click();
-                } else if (carpoolInvitationsCommand) {
-                    // Trigger click for Carpool Invitations
-                    document.getElementById("capool-invitations-btn").click();
-                }
-    
-                // Check if the user said "sort by [option]"
-                var sortCommand = transcript.match(/sort by (.+)/);
-                if (sortCommand) {
-                    var sortOption = sortCommand[1].toLowerCase();
-                    var sortSelect = document.getElementById("sortSelect");
-    
-                    // Match recognized command to the options in the dropdown
-                    if (sortOption.includes("members count")) {
-                        sortSelect.value = "members_count";
-                    } else if (sortOption.includes("creation date")) {
-                        sortSelect.value = "creation_date";
-                    } else {
-                        alert("Sort option not recognized.");
-                        return;
-                    }
-    
-                    // Trigger the sort function once a selection is made
-                    applySort();
-                }
-            };
-    
-            // Start the recognition when the voice search button is clicked
-            document.getElementById("voice-search-btn").onclick = function() {
-                recognition.start();
-            };
-    
-            // Optional: Handle errors (e.g., if speech recognition is not supported)
-            recognition.onerror = function(event) {
-                console.log('Speech recognition error: ' + event.error);
-            };
-        });
     </script>
         
     <script>

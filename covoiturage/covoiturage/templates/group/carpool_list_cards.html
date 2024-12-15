@@ -1,5 +1,6 @@
 {% load static %}
 <link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
+
 {% for carpool in carpools %}
 <div class="col-md-12 mb-3">
     <div 
@@ -7,10 +8,14 @@
         style="background-color: #f9f9f9; border-radius: 12px; cursor: pointer;"
         onclick="window.location.href='{% url 'carpool_detail' carpool.id %}'"
     >
-        <!-- Left Section: Carpool Icon -->
+        <!-- Left Section: Carpool Image -->
         <div class="d-flex align-items-center">
             <div class="icon-wrapper rounded-circle d-flex justify-content-center align-items-center" style="background-color: #eef2f6; width: 60px; height: 60px; margin-right: 20px;">
-                <span style="font-size: 24px; color: #555;">🚗</span> <!-- Replace with an actual icon -->
+                {% if carpool.image_path %}
+                    <img src="/media/{{ carpool.image_path }}" alt="{{ carpool.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%;">
+                {% else %}
+                    <span style="font-size: 24px; color: #555;">🚗</span> <!-- Default icon if no image -->
+                {% endif %}
             </div>
             <!-- Carpool Info -->
             <div>

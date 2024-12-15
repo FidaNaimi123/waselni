@@ -4,6 +4,10 @@ from Trip.models import Trajet
 from django.utils import timezone
 from datetime import timedelta
 from django.core.validators import MinValueValidator
+import openai
+from django.core.files.base import ContentFile
+import requests
+from django.conf import settings
 
 class Carpool(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -11,10 +15,14 @@ class Carpool(models.Model):
     creator = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='created_carpools', null=True)
     description = models.TextField(blank=True, help_text="Description of the carpool's purpose.")
     rules = models.TextField(blank=True, help_text="Rules for the carpool.")
-    creation_date = models.DateTimeField(auto_now_add=True)  
+    creation_date = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='carpool_images/', null=True, blank=True, default=None, help_text="Group image")
+    image_data = models.BinaryField(null=True, blank=True, help_text="Binary data of the generated image")
+    image_path = models.CharField(max_length=255, blank=True, null=True)  # Store the file path to the image
+
     def __str__(self):
         return self.name
-
+    
 class GroupRideReservation(models.Model):
     carpool = models.ForeignKey(Carpool, on_delete=models.CASCADE)
     creator = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='group_reservations')

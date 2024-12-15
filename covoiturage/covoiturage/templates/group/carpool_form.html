@@ -13,7 +13,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm p-4 mb-5 bg-white rounded">
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         
                         <!-- Name Field -->
@@ -37,6 +37,10 @@
                         <!-- Save Button -->
                         <button type="submit" class="btn btn-purple btn-sm">Save</button>
                     </form>
+                    {% if carpool.image %}
+    <img src="{{ carpool.image.url }}" alt="Carpool Image" />
+{% endif %}
+
                     <br>
                     <a href="{% url 'carpool_list' %}" class="btn btn-secondary mt-3">Back to list</a>
                 </div>
