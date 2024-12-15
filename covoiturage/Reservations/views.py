@@ -397,7 +397,15 @@ def afficher_historique(request):
 
     return render(request, 'Reservations/historique_reservations.html', context)
 
+def delete_reservation_history(request, reservation_id):
+    # Récupération de la réservation historique par son ID
+    reservation = get_object_or_404(Reservation_Historique, id=reservation_id)
 
+    # Suppression de la réservation
+    reservation.delete()
+
+    # Redirection vers la page précédente ou une autre page de confirmation
+    return redirect('historique_reservations')
 def test_email(request):
     try:
         send_mail(
