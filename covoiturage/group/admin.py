@@ -25,7 +25,7 @@ class CarpoolAdmin(admin.ModelAdmin):
     def display_members(self, obj):
         """Displays members as clickable links in the admin list view."""
         members = obj.members.all()
-        member_links = ', '.join([f'<a href="/admin/users/users/{m.id}/change/">{m.username}</a>' for m in members])
+        member_links = ', '.join([f'<a href="/admin/users/users/{m.id}/change/">{m.email}</a>' for m in members])
         return mark_safe(member_links) if members else 'No members'
     display_members.short_description = 'Members'
 
@@ -37,7 +37,7 @@ class CarpoolAdmin(admin.ModelAdmin):
                 member = Users.objects.get(pk=member_id)
                 for carpool in queryset:
                     carpool.members.add(member)
-                self.message_user(request, f"User {member.username} successfully added to selected carpools.", level=messages.SUCCESS)
+                self.message_user(request, f"User {member.email} successfully added to selected carpools.", level=messages.SUCCESS)
             except Users.DoesNotExist:
                 self.message_user(request, "User not found.", level=messages.ERROR)
         else:
@@ -53,7 +53,7 @@ class CarpoolAdmin(admin.ModelAdmin):
                 member = Users.objects.get(pk=member_id)
                 for carpool in queryset:
                     carpool.members.remove(member)
-                self.message_user(request, f"User {member.username} successfully removed from selected carpools.", level=messages.SUCCESS)
+                self.message_user(request, f"User {member.email} successfully removed from selected carpools.", level=messages.SUCCESS)
             except Users.DoesNotExist:
                 self.message_user(request, "User not found.", level=messages.ERROR)
         else:

@@ -4,85 +4,102 @@
 {% load static %}
 <link href="{% static 'css/carpool.css' %}" rel="stylesheet" />
 
-    <div class="container mt-5">
-        <h2 class="carpool-title mb-4">Create Group Reservation</h2>
+<div class="container mt-5">
+    <h2 class="carpool-title mb-4">Create Group Reservation</h2>
 
-        <form method="post" class="bg-light-grey p-5 rounded shadow-sm">
-            {% csrf_token %}
-            
-            <!-- Carpool Selection -->
-            <div class="form-group1 mb-4">
-                <label for="selected_carpool" class="form-label">Select a Carpool:</label>
-                <select name="selected_carpool" id="selected_carpool" class="form-control1" required>
-                    <option value="" selected disabled>Select a carpool</option>
-                    {% for carpool in carpools %}
-                    <option value="{{ carpool.id }}" 
-         data-members="{{ carpool.member_emails|join:',' }}" 
-        data-members-ids="{{ carpool.member_ids|join:',' }}"
-        data-creator="{{ carpool.creator.id }}"
-        data-creator-email="{{ carpool.creator.email }}">
-    {{ carpool.name }} (Creator: {{ carpool.creator.email }})
-</option>
+    <form method="post" class="bg-light-grey p-5 rounded shadow-sm">
+        {% csrf_token %}
+        
+        <!-- Carpool Selection -->
+        <div class="form-group1 mb-4">
+            <label for="selected_carpool" class="form-label">Select a Carpool:</label>
+            <select name="selected_carpool" id="selected_carpool" class="form-control1" required>
+                <option value="" selected disabled>Select a carpool</option>
+                {% for carpool in carpools %}
+                <option value="{{ carpool.id }}" 
+                        data-members="{{ carpool.member_emails|join:',' }}" 
+                        data-members-ids="{{ carpool.member_ids|join:',' }}"
+                        data-creator="{{ carpool.creator.id }}"
+                        data-creator-email="{{ carpool.creator.email }}">
+                    {{ carpool.name }} (Creator: {{ carpool.creator.email }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
 
-                    {% endfor %}
-                </select>
+        <!-- Member Selection -->
+        <div class="form-group1 mb-4">
+            <label for="selected_members" class="form-label">Select Members:</label>
+            <div id="member_checklist" class="form-check-list">
+                <!-- Checkboxes will be dynamically populated based on the carpool selected -->
             </div>
+        </div>
 
-            <!-- Member Selection -->
-            <div class="form-group1 mb-4">
-                <label for="selected_members" class="form-label">Select Members:</label>
-                <select name="selected_members" id="selected_members" class="form-control1" multiple required>
-                    <!-- Members will be dynamically populated based on the carpool selected -->
-                </select>
-            </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-custom">Reserve</button>
+            <a href="{% url 'trajets_disponibles' %}" class="btn btn-custom">Trajets Disponibles</a>
+        </div>
+    </form>
+    
+</div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-custom">Reserve</button>
-                <a href="{% url 'trajets_disponibles' %}" class="btn btn-custom">Trajets Disponibles</a>
-
-            </div>
-        </form>
+<script>
+    document.getElementById('selected_carpool').addEventListener('change', function () {
+        var selectedCarpool = this.options[this.selectedIndex];
         
-    </div>
-
-    <script>
-        document.getElementById('selected_carpool').addEventListener('change', function () {
-            var selectedCarpool = this.options[this.selectedIndex];
+        // Get members' IDs and emails
+        var memberIds = selectedCarpool.getAttribute('data-members-ids').split(",");
+        var memberEmails = selectedCarpool.getAttribute('data-members').split(", ");
+        var carpoolCreatorId = selectedCarpool.getAttribute('data-creator');
+        var carpoolCreatorEmail = selectedCarpool.getAttribute('data-creator-email'); // Assuming creator's email is also passed
+    
+        // Get the member checklist element
+        var memberChecklist = document.getElementById('member_checklist');
+        
+        // Clear current members
+        memberChecklist.innerHTML = '';
+    
+        // Get the logged-in user's ID and email (pass these dynamically from the backend)
+        var loggedInUserId = "{{ request.user.id }}";
+        var loggedInUserEmail = "{{ request.user.email }}";
+    
+        // Add the creator to the list of members if the logged-in user is not the creator
+        if (carpoolCreatorId !== loggedInUserId) {
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selected_members';
+            checkbox.value = carpoolCreatorId; // Use creator ID as the value
             
-            // Get members' IDs and emails
-            var memberIds = selectedCarpool.getAttribute('data-members-ids').split(",");
-            var memberEmails = selectedCarpool.getAttribute('data-members').split(", ");
-            var carpoolCreatorId = selectedCarpool.getAttribute('data-creator');
-            var carpoolCreatorEmail = selectedCarpool.getAttribute('data-creator-email'); // Assuming creator's email is also passed
-        
-            // Get the member select element
-            var memberSelect = document.getElementById('selected_members');
+            var label = document.createElement('label');
+            label.textContent = carpoolCreatorEmail + ' (Creator)';
+            label.className = 'form-check-label';
             
-            // Clear current members
-            memberSelect.innerHTML = '';
-        
-            // Get the logged-in user's ID and email (pass these dynamically from the backend)
-            var loggedInUserId = "{{ request.user.id }}";
-            var loggedInUserEmail = "{{ request.user.email }}";
-        
-            // Add the creator to the list of members if the logged-in user is not the creator
-            if (carpoolCreatorId !== loggedInUserId) {
-                var option = document.createElement('option');
-                option.value = carpoolCreatorId; // Use creator ID as the value
-                option.textContent = carpoolCreatorEmail + ' (Creator)';
-                memberSelect.appendChild(option);
+            var wrapper = document.createElement('div');
+            wrapper.className = 'form-check';
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+            memberChecklist.appendChild(wrapper);
+        }
+    
+        // Loop through the members and add them to the checklist, excluding the logged-in user
+        memberIds.forEach((id, index) => {
+            if (id !== loggedInUserId) {
+                var checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'selected_members';
+                checkbox.value = id; // Use user ID as the value
+                
+                var label = document.createElement('label');
+                label.textContent = memberEmails[index]; // Display email for readability
+                label.className = 'form-check-label';
+                
+                var wrapper = document.createElement('div');
+                wrapper.className = 'form-check';
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(label);
+                memberChecklist.appendChild(wrapper);
             }
-        
-            // Loop through the members and add them to the select dropdown, excluding the logged-in user
-            memberIds.forEach((id, index) => {
-                if (id !== loggedInUserId) {
-                    var option = document.createElement('option');
-                    option.value = id; // Use user ID as the value
-                    option.textContent = memberEmails[index]; // Display email for readability
-                    memberSelect.appendChild(option);
-                }
-            });
         });
-        
-    </script>
+    });
+</script>
 {% endblock %}

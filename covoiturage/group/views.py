@@ -349,6 +349,8 @@ def select_trip2(request):
         return redirect('create_group_reservation', trip_id=selected_trip_id)
     return redirect('home1')
 
+
+
 def create_group_reservation(request, trip_id):
     # Get the trip object
     trip = get_object_or_404(Trajet, id=trip_id)
@@ -356,10 +358,12 @@ def create_group_reservation(request, trip_id):
     # Get all carpools where the user is a member or the creator
     carpools = Carpool.objects.filter(Q(members__in=[request.user]) | Q(creator=request.user))
 
-    # If there's no carpool, handle the case
+    # If there's no carpool, handle the case with a message
     if not carpools:
-        return render(request, 'error.html', {'message': 'No carpool found for this user.'})
-    
+        messages.error(request, "You are not part of any carpool group. Please create or join a carpool first.")
+        return redirect('trajets_disponibles')  # Redirect to a relevant page (e.g., carpool creation or list page)
+
+    # Prepare member information for each carpool
     for carpool in carpools:
         carpool.members_ids = carpool.members.values_list('id', flat=True)
         carpool.members_emails = carpool.members.values_list('email', flat=True)
@@ -371,10 +375,30 @@ def create_group_reservation(request, trip_id):
 
         # Get the selected members (exclude the user making the reservation)
         selected_members = request.POST.getlist('selected_members')
+        
+        # Handle no members selected case
+        if not selected_members:
+            # Check for duplicate reservation
+            if Reservation.objects.filter(user_id=request.user, trip_id=trip).exists():
+                messages.error(request, "You already have a reservation for this trip.")
+                return redirect('trajets_disponibles')
+            
+            # Automatically create a reservation for the logged-in user only
+            Reservation.objects.create(
+                user_id=request.user,
+                trip_id=trip,
+                seat_count=1,  # Reserve one seat for the user
+                Payment_Method='cash_payment',  # Assuming payment method, can be adjusted
+            )
+
+            # Show a success message and redirect
+            messages.success(request, "Reservation created for yourself only!")
+            return redirect('trajets_disponibles')  # Redirect to the list of available trips
 
         # Limit the number of members to 4
         if len(selected_members) > 4:
-            return render(request, 'error.html', {'message': 'You can select a maximum of 4 members.'})
+            messages.error(request, "You can select a maximum of 4 members.")
+            return redirect('trajets_disponibles')  # Redirect to the group reservation form or relevant page
 
         # Create a GroupReservation
         group_reservation = GroupRideReservation.objects.create(
@@ -382,6 +406,11 @@ def create_group_reservation(request, trip_id):
             trip=trip,
             carpool=selected_carpool  # Link to the selected carpool
         )
+        # Check for duplicate reservation for the creator
+        if Reservation.objects.filter(user_id=request.user, trip_id=trip).exists():
+            messages.error(request, "You already have a reservation for this trip.")
+            return redirect('trajets_disponibles')
+
         # Automatically create a reservation for the creator
         Reservation.objects.create(
             user_id=request.user,
@@ -390,21 +419,27 @@ def create_group_reservation(request, trip_id):
             Payment_Method='cash_payment',  # Assuming payment method, can be adjusted
         )
 
-
         # Create GroupReservationParticipants for each selected member
         for user_id in selected_members:
             user = get_object_or_404(Users, id=user_id)
+            # Check for duplicate reservation for each member
+            if Reservation.objects.filter(user_id=user, trip_id=trip).exists():
+                messages.error(request, f"Reservation for {user.email} already exists for this trip.")
+                return redirect('trajets_disponibles')
+            
             ReservationParticipants.objects.create(
                 group_reservation=group_reservation,
                 user=user,
                 status='pending'  # Set status as pending initially
             )
 
-        # Redirect to the reservation confirmation page for the group
-        return redirect('trajets_disponibles')
+        # Show a success message and redirect
+        messages.success(request, "Group reservation created successfully!")
+        return redirect('trajets_disponibles')  # Redirect to the list of available trips
 
     # Pass the list of carpools to the template for the user to select from
     return render(request, 'group/create_group_reservation.html', {'trip': trip, 'carpools': carpools})
+
 
 
 
