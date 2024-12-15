@@ -32,6 +32,7 @@ def registration(request):
         confirm_password = request.POST.get('confirm_password')
         fullname = request.POST.get('fullname')
         phone = request.POST.get('phone')
+        photo = request.FILES.get('photo')  # Vérifie si une photo a été téléchargée
 
         # Validate that passwords match
         if password != confirm_password:
@@ -42,13 +43,17 @@ def registration(request):
         if Users.objects.filter(email=email).exists() or Comptes.objects.filter(email=email).exists():
             messages.error(request, "Cet email est déjà utilisé.")
             return render(request, 'Login/registration.html', {'is_admin': is_admin})
+        # Si la photo n'est pas fournie, vous pouvez gérer ça ici
+        if not photo:
+            messages.error(request, "Veuillez télécharger une photo.")
+            return render(request, 'Login/registration.html', {'is_admin': is_admin})
 
         # Hash the password and create user and account
         hashed_password = make_password(password)
         user = Users(email=email, password=hashed_password)
         user.save()
 
-        compte = Comptes(fullname=fullname, email=email, phone=phone, password=hashed_password, user=user)
+        compte = Comptes(fullname=fullname, email=email, phone=phone, password=hashed_password, user=user,photo=photo)
         compte.save()
 
         messages.success(request, "Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.")
@@ -209,3 +214,110 @@ def connect_remember(request):
             return redirect('home1')
 
     return render(request, 'Login/index.html')
+
+############################################# autre avec base 64
+############################################# autre avec base 64
+################################################# debut vue connaissance facial ####################################
+
+import base64
+import io
+from django.shortcuts import render, get_object_or_404
+#import face_recognition
+from PIL import Image
+from io import BytesIO
+from django.core.exceptions import ImproperlyConfigured
+
+from django.shortcuts import render
+import base64
+from io import BytesIO
+from PIL import Image
+#import face_recognition
+#from .models import Comptes
+
+import cv2
+import numpy as np
+import base64
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+
+
+def facial_recognition(request):
+    result = None
+    error_message = None
+
+    if request.method == "POST" and 'base64_image' in request.POST:
+        base64_image_data = request.POST['base64_image']
+
+        try:
+            # Décoder l'image Base64
+            image_data = base64.b64decode(base64_image_data)
+            np_image = np.frombuffer(image_data, np.uint8)
+            unknown_image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
+
+            # Charger les visages connus
+            known_encodings = []
+            comptes = Comptes.objects.select_related('user').all()
+            face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+            for c in comptes:
+                if c.photo:  # Vérifier si le compte a une photo associée
+                    compte_image_path = c.photo.path
+                    known_image = cv2.imread(compte_image_path)
+                    gray_known = cv2.cvtColor(known_image, cv2.COLOR_BGR2GRAY)
+
+                    # Détecter les visages
+                    faces = face_cascade.detectMultiScale(gray_known, scaleFactor=1.1, minNeighbors=5)
+                    if len(faces) > 0:
+                        x, y, w, h = faces[0]  # Premier visage détecté
+                        face_encoding = gray_known[y:y+h, x:x+w]
+                        known_encodings.append((c, face_encoding))
+
+            # Détecter le visage dans l'image inconnue
+            gray_unknown = cv2.cvtColor(unknown_image, cv2.COLOR_BGR2GRAY)
+            faces_unknown = face_cascade.detectMultiScale(gray_unknown, scaleFactor=1.1, minNeighbors=5)
+
+            if len(faces_unknown) > 0:
+                x, y, w, h = faces_unknown[0]  # Premier visage détecté
+                unknown_face = gray_unknown[y:y+h, x:x+w]
+
+                # Comparer l'image donnée avec toutes les images connues
+                for c, known_face in known_encodings:
+                    if unknown_face.shape == known_face.shape:
+                        mse = np.mean((unknown_face - known_face) ** 2)
+                        if mse < 1000:  # Seuil ajustable pour correspondance
+                            # Récupérer l'utilisateur associé
+                            user = c.user
+                            if user:
+                                login(request, user)  # Authentifier l'utilisateur
+                                return redirect('home1')  # Redirection après authentification
+
+                # Si aucun visage ne correspond
+                error_message = "Aucun visage correspondant n'a été trouvé."
+            else:
+                error_message = "Aucun visage n'a été détecté dans l'image donnée."
+
+        except Exception as e:
+            error_message = f"Une erreur est survenue : {str(e)}"
+
+    return render(request, 'login/facial_recognition.html', {
+        'result': result,
+        'error_message': error_message,
+    })
+
+
+################################################### fin vue connaissance facial ########################################
+
+
+
+################################################### la partie touche pour la connaissance facial ########################################
+
+################################### index.html ###########################################################################################
+
+################################### facial_recognition.html ###########################################################################################
+
+################################### connaissance.css ###########################################################################################
+
+################################### ajouter un dossier media meme niveau que group et notification etc ... ####################################
+
+################################### registration model et html #################################################################
+################################### urlsusers #################################################################

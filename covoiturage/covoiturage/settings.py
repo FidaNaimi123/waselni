@@ -167,3 +167,11 @@ HUGGING_FACE_API_KEY = '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'
 OPENAI_IMAGE_API_URL = 'https://api.openai.com/v1/images/generations'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+##partie syrine
+#partie reconnaissance syrine
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+CSRF_MIDDLEWARE_ENABLED = True  # Non recommandé pour la production

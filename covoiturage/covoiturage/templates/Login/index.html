@@ -25,14 +25,20 @@
     {% endfor %}
 
     <header class="header">
+        <nav class="navbar">
             
             
             <div class="navbar-right">
                 
+                        <!-- Lien pour connexion par reconnaissance faciale -->
+                        <a href="{% url 'facial_recognition' %}">Se connecter avec reconnaissance faciale</a>
+                            
+                        
                 
                 <!-- Lien Déconnecter -->
                 <a href="{% url 'disconnect' %}" id="logout-link" style="{% if not is_logged_in %}display: none;{% else %}display: inline;{% endif %}">Déconnecter</a>
             </div>
+        </nav>
         
         
         

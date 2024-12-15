@@ -34,6 +34,7 @@ urlpatterns = [
     path('notifications/', include('Notification.urls')),
     path('home', TemplateView.as_view(template_name='home/index.html'), name='home1'), 
     path('', TemplateView.as_view(template_name='login/index.html'), name='login'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) #zzzzzz
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription Utilisateur</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         /* Réinitialisation */
@@ -15,187 +14,119 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Corps de la page */
         body {
             background: linear-gradient(135deg, #05073a, #1c77c3);
             height: 100vh;
             display: flex;
-            justify-content: center;
+            justify-content: space-between; /* Le formulaire à gauche, l'image à droite */
             align-items: center;
             padding: 20px;
-            transition: background-color 0.3s ease-in-out;
         }
 
-        /* Conteneur principal */
-        .registration-container {
-            background: #fff;
-            padding: 15px 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 600px;
-            max-width: 100%;
-            text-align: left;
-            animation: fade-in 0.6s ease-out;
-        }
-
-        /* Animation d'apparition */
-        @keyframes fade-in {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* En-tête du formulaire */
-        .form-header h2 {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #4e54c8;
-        }
-
-        .form-header p {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 30px;
-            line-height: 1.5;
+        .wrapper {
+            display: flex;
+            align-items: center;
+            gap: 30px; /* Espace entre le formulaire et l'image */
+            width: 100%;
         }
 
         /* Formulaire */
-        .registration-form {
-            display: flex;
-            flex-direction: column;
+        .registration-container {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 480px; /* Largeur du formulaire */
+            max-width: 100%;
         }
 
-        /* Groupes de champs */
-        .input-group {
-            margin-bottom: 20px;
+        .form-header h2 {
+            font-size: 22px;
+            font-weight: bold;
+            color: #4e54c8;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .registration-form .input-group {
+            margin-bottom: 12px;
         }
 
         .input-group label {
             font-size: 14px;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
             font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        .input-group input {
+        .input-group input, .input-group select, .input-group textarea {
             width: 100%;
-            padding: 12px 15px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 15px;
-            background-color: #f9f9f9;
-            transition: all 0.3s;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            background: #f9f9f9;
         }
 
-        .input-group input:focus {
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
             border-color: #4e54c8;
+            box-shadow: 0 0 8px rgba(78, 84, 200, 0.2);
             outline: none;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(78, 84, 200, 0.2);
         }
 
-        /* Bouton d'inscription */
         .btn {
             width: 100%;
             background-color: #4e54c8;
             color: #fff;
-            padding: 14px;
+            padding: 10px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s ease-in-out;
-            text-transform: uppercase;
         }
 
         .btn:hover {
             background-color: #3e44b4;
-            transform: translateY(-3px);
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Lien de connexion */
         .login-link {
-            font-size: 14px;
-            color: #555;
-            margin-top: 15px;
             text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
         }
 
         .login-link a {
             color: #4e54c8;
             text-decoration: none;
-            font-weight: 600;
         }
 
         .login-link a:hover {
             text-decoration: underline;
         }
 
-        /* Image du formulaire */
-        .form-image {
-            margin-top: 20px;
-            text-align: center;
-        }
-
+        /* Image */
         .form-image img {
-            width: 100%;
+            max-width: 500px; /* Taille agrandie de l'image */
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Design Responsive */
-        @media (max-width: 600px) {
-            .registration-container {
-                padding: 20px;
-            }
-
-            .form-header h2 {
-                font-size: 24px;
-            }
-
-            .btn {
-                padding: 12px;
-            }
-
-            .form-image img {
-                max-width: 100%;
-                height: auto;
-            }
         }
     </style>
 </head>
 <body>
-    <!--<p>Utilisateur connecté : {{ is_logged_in }}</p> -->
-    {% for message in messages%}
-                <script>
-                    window.onload = function()  {
-                        alert ("{{message}}")
-                    }
-                </script>
-    {% endfor %}
-
-    <div class="registration-container">
-        <div class="form-wrapper">
+    <div class="wrapper">
+        <!-- Formulaire à gauche -->
+        <div class="registration-container">
             <div class="form-header">
                 <h2>Créer Votre Compte</h2>
-                <p>Rejoignez notre communauté de covoiturage pour un campus plus durable !</p>
-                <!--<p>Role de l'utilisateur: {{ user.role }}</p>
-                <p>Role de l'utilisateur: {{ is_admin }}</p>-->
+                <p>Rejoignez notre communauté pour un campus plus durable !</p>
             </div>
-            <form action="{% url 'registration' %}" method="POST" class="registration-form">
+            <form action="{% url 'registration' %}" method="POST" enctype="multipart/form-data" class="registration-form">
                 {% csrf_token %}
                 <div class="input-group">
                     <label for="fullname">Nom Complet</label>
@@ -209,27 +140,28 @@
                     <label for="phone">Numéro de Téléphone</label>
                     <input type="tel" id="phone" name="phone" placeholder="+216 -- --- ---" required>
                 </div>
-
-      
-
-                  
-
                 <div class="input-group">
                     <label for="password">Mot de Passe</label>
                     <input type="password" id="password" name="password" placeholder="********" required>
                 </div>
-                
+                <div class="input-group">
                     <label for="confirm-password">Confirmer le Mot de Passe</label>
                     <input type="password" id="confirm_password" name="confirm_password" placeholder="********" required>
                 </div>
                 <div class="input-group">
+                    <label for="photo">Photo (JPG uniquement)</label>
+                    <input type="file" id="photo" name="photo" accept=".jpg, .jpeg" required>
+                </div>
+                <div class="input-group">
                     <button type="submit" class="btn">S'inscrire</button>
                 </div>
-                <p class="login-link">Vous avez déjà un compte ? <a href="{% url 'index' %}">Connectez-vous ici</a></p>
+                <p class="login-link">Déjà un compte ? <a href="{% url 'index' %}">Connectez-vous ici</a></p>
             </form>
         </div>
+
+        <!-- Image à droite -->
         <div class="form-image">
-            <img src="/static/image/hj-removebg-preview.png" alt="Description de l'image" />
+            <img src="/static/image/hj-removebg-preview.png" alt="Image Formulaire">
         </div>
     </div>
 </body>

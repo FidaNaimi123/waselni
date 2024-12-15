@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnaissance Faciale</title>
+    <link rel="stylesheet" href="{% static 'css/connaissance.css' %}">
+    <script>
+        // Fonction pour convertir l'image en base64 et envoyer la requête
+        function handleFileSelect(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onloadend = function() {
+                    // Convertir le fichier en base64 et soumettre automatiquement
+                    document.getElementById("base64_image").value = reader.result.split(",")[1];
+                    document.getElementById("form").submit();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</head>
+<body>
+    
+    <div class="container">
+        <h1 class="title">Reconnaissance faciale</h1>
+
+        <form id="form" method="post" enctype="multipart/form-data" class="form">
+            {% csrf_token %}
+            <p class="instruction">Sélectionnez une image à comparer :</p>
+            <div class="file-input">
+                <input type="file" id="file" name="uploaded_image" accept="image/*" onchange="handleFileSelect(event)" required>
+                <label for="file">Choisir une image</label>
+            </div>
+            <input type="hidden" id="base64_image" name="base64_image">
+        </form>
+
+        {% if result is not None %}
+            {% if result %}
+                <p class="success">✅ Le visage correspond à celui enregistré pour {{ compte.fullname }}.</p>
+            {% else %}
+                <p class="error">❌ Le visage ne correspond pas ou aucun visage n'a été détecté.</p>
+            {% endif %}
+        {% endif %}
+
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+
+        <a href="{% url 'index' %}" class="link">← Retour à la page de connexion</a>
+    </div>
+</body>
+</html>
